@@ -1,0 +1,21 @@
+package com.danghieu99.monolith.auth.dto.response.auth;
+
+import lombok.*;
+
+import jakarta.validation.constraints.NotNull;
+import java.util.Set;
+
+@ToString
+@EqualsAndHashCode(callSuper = false)
+@Data
+@Builder
+public class LoginResponseBody {
+
+    @NotNull
+    private String username;
+
+    @NotNull
+    private Set<String> roles;
+
+    private String message;
+}

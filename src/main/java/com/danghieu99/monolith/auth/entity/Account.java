@@ -1,0 +1,65 @@
+package com.danghieu99.monolith.auth.entity;
+
+import com.danghieu99.monolith.common.entity.BaseEntity;
+import com.danghieu99.monolith.auth.enums.EGender;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+@Entity
+@Table(name = "accounts")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Builder
+public class Account extends BaseEntity {
+
+    @Column(name = "uuid", unique = true, nullable = false, updatable = false, columnDefinition = "binary(16")
+    private UUID uuid;
+
+    @PrePersist
+    protected void prePersist() {
+        this.uuid = UUID.randomUUID();
+    }
+
+    @Size(min = 3, max = 32)
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    @Column(nullable = false)
+    @JsonIgnore
+    @ToString.Exclude
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EGender gender;
+
+    @Size(min = 5, max = 255)
+    @Column(nullable = false)
+    private String fullName;
+
+    @Size(min = 5, max = 255)
+    @Email
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false, unique = true)
+    private String phone;
+
+    @Size(min = 1, max = 3)
+    @ManyToMany
+    @JoinTable(name = "account_roles",
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ToString.Exclude
+    private Set<Role> roles = new HashSet<>();
+}
