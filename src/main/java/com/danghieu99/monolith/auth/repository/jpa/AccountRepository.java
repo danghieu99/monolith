@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.auth.repository;
+package com.danghieu99.monolith.auth.repository.jpa;
 
 import com.danghieu99.monolith.auth.entity.Account;
 import org.springframework.data.domain.Page;

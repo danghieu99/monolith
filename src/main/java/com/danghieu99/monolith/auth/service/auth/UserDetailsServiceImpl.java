@@ -2,7 +2,7 @@ package com.danghieu99.monolith.auth.service.auth;
 
 import com.danghieu99.monolith.auth.config.authentication.UserDetailsImpl;
 import com.danghieu99.monolith.auth.entity.Account;
-import com.danghieu99.monolith.auth.repository.AccountRepository;
+import com.danghieu99.monolith.auth.repository.jpa.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

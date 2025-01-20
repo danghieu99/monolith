@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.auth.service.auth;
 
 import com.danghieu99.monolith.auth.entity.Token;
-import com.danghieu99.monolith.auth.redisrepository.TokenRepository;
+import com.danghieu99.monolith.auth.repository.redis.TokenRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

@@ -22,15 +22,14 @@ import java.util.UUID;
 @Builder
 public class Account extends BaseEntity {
 
-    @Column(name = "uuid", unique = true, nullable = false, updatable = false, columnDefinition = "binary(16")
+    @Column(unique = true, nullable = false, updatable = false, columnDefinition = "varchar(16)")
     private UUID uuid;
 
     @PrePersist
-    protected void prePersist() {
+    protected void onCreate() {
         this.uuid = UUID.randomUUID();
     }
 
-    @Size(min = 3, max = 32)
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -43,11 +42,9 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private EGender gender;
 
-    @Size(min = 5, max = 255)
     @Column(nullable = false)
     private String fullName;
 
-    @Size(min = 5, max = 255)
     @Email
     @Column(nullable = false, unique = true)
     private String email;
@@ -55,7 +52,6 @@ public class Account extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String phone;
 
-    @Size(min = 1, max = 3)
     @ManyToMany
     @JoinTable(name = "account_roles",
             joinColumns = @JoinColumn(name = "account_id"),

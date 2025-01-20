@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.auth.repository;
+package com.danghieu99.monolith.auth.repository.jpa;
 
 import com.danghieu99.monolith.auth.entity.Role;
 import com.danghieu99.monolith.auth.enums.ERole;

@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.auth.service.account;
 
 import com.danghieu99.monolith.auth.enums.ERole;
-import com.danghieu99.monolith.auth.repository.RoleRepository;
+import com.danghieu99.monolith.auth.repository.jpa.RoleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

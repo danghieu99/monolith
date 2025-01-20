@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.auth.redisrepository;
+package com.danghieu99.monolith.auth.repository.redis;
 
 import com.danghieu99.monolith.auth.entity.Token;
 import org.springframework.data.repository.CrudRepository;

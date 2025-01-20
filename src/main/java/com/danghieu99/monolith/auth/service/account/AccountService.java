@@ -2,7 +2,7 @@ package com.danghieu99.monolith.auth.service.account;
 
 import com.danghieu99.monolith.auth.entity.Account;
 import com.danghieu99.monolith.auth.exception.ResourceNotFoundException;
-import com.danghieu99.monolith.auth.repository.AccountRepository;
+import com.danghieu99.monolith.auth.repository.jpa.AccountRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,10 +21,6 @@ public class AccountService {
 
     private final AccountRepository repository;
 
-    public Account save(@NotNull final Account account) {
-        return repository.save(account);
-    }
-
     public List<Account> getAll() {
         return repository.findAll();
     }
@@ -37,13 +33,9 @@ public class AccountService {
         return repository.findAll(PageRequest.of(0, 50));
     }
 
-    public Account getById(Integer id) {
+    public Account getById(@NotNull Integer id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account", "Id", id));
-    }
-
-    public Page<Account> searchByUsernamePaged(@NotNull String username, Pageable pageable) {
-        return repository.searchByUsername(username, pageable);
     }
 
     public Account getByUsername(@NotNull String username) {
@@ -69,6 +61,10 @@ public class AccountService {
     public Account getByUUID(@NotNull UUID uuid) {
         return repository.findByUuid(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Account", "Uuid", uuid.toString()));
+    }
+
+    public Page<Account> searchByUsernamePaged(@NotNull String username, Pageable pageable) {
+        return repository.searchByUsername(username, pageable);
     }
 
     @Transactional

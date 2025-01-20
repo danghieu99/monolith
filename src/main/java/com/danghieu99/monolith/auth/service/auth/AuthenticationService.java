@@ -87,7 +87,7 @@ public class AuthenticationService {
         Set<Role> userRoles = new HashSet<>();
         userRoles.add(roleService.getByRole(ERole.ROLE_USER));
         account.setRoles(userRoles);
-        Account registeredAccount = accountService.save(account);
+        Account registeredAccount = accountService.create(account);
 
         SignupResponseBody responseBody = SignupResponseBody.builder().username(registeredAccount.getUsername())
                 .roles(registeredAccount.getRoles().stream().map(role -> role.getRole().toString()).collect(Collectors.toSet())).message("Signup success!").build();

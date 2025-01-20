@@ -10,7 +10,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @Configuration
 @EnableConfigurationProperties({TokenProperties.class})
 @RequiredArgsConstructor
-@EnableJpaRepositories(basePackages = {"com.danghieu99.monolith.auth.repository"})
-@EnableRedisRepositories(basePackages = {"com.danghieu99.monolith.auth.redisrepository"})
-public class SpringDataConfig {
+@EnableJpaRepositories(basePackages = {"com.danghieu99.monolith.auth.repository.jpa"})
+@EnableRedisRepositories(basePackages = {"com.danghieu99.monolith.auth.repository.redis"})
+public class AuthSpringDataConfig {
 }
