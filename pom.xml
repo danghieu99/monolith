@@ -32,6 +32,7 @@
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <io.jsonwebtoken.version>0.12.6</io.jsonwebtoken.version>
         <org.springdoc.openapi.version>2.7.0</org.springdoc.openapi.version>
+        <io.minio.version>8.5.16</io.minio.version>
     </properties>
     <dependencies>
         <!--SPRING-->
@@ -148,6 +149,12 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!-- MINIO -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${io.minio.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,19 +1,18 @@
-package com.danghieu99.monolith.init;
+package com.danghieu99.monolith.common.init;
 
+import com.danghieu99.monolith.auth.service.init.AccountInitService;
+import com.danghieu99.monolith.auth.service.init.RoleInitService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class AppStartupRunner implements ApplicationRunner {
 
     private final RoleInitService roleInitService;
     private final AccountInitService accountInitService;
-
-    public AppStartupRunner(RoleInitService roleInitService, AccountInitService accountInitService) {
-        this.roleInitService = roleInitService;
-        this.accountInitService = accountInitService;
-    }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
