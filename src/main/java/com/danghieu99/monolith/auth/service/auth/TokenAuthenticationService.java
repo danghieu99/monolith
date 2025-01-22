@@ -3,7 +3,7 @@ package com.danghieu99.monolith.auth.service.auth;
 import com.danghieu99.monolith.auth.config.authentication.TokenProperties;
 import com.danghieu99.monolith.auth.config.authentication.UserDetailsImpl;
 import com.danghieu99.monolith.auth.entity.Account;
-import com.danghieu99.monolith.auth.exception.ResourceNotFoundException;
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.auth.service.account.AccountCrudService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

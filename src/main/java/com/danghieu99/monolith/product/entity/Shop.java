@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.product.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
+import com.danghieu99.monolith.product.enums.EShopStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -30,6 +31,8 @@ public class Shop extends BaseEntity {
     private String name;
 
     private String description;
+
+    private EShopStatus status;
 
     @OneToMany(mappedBy = "shop")
     @ToString.Exclude

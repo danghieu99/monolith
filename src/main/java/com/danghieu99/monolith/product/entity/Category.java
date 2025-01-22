@@ -16,15 +16,15 @@ import java.util.Set;
 @Builder
 public class Category extends BaseEntity {
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String description;
-
-    private String imageUrl;
 
     @ManyToMany
     @JoinTable(name = "product_categories",
-            joinColumns = @JoinColumn(name = "category_id"),
+            joinColumns = @JoinColumn(name = "category_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     @ToString.Exclude
     private Set<Product> products;

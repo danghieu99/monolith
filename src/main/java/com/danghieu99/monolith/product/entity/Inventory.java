@@ -1,9 +1,7 @@
 package com.danghieu99.monolith.product.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -15,6 +13,9 @@ import lombok.*;
 @ToString
 @Builder
 public class Inventory extends BaseEntity {
+
+    @ManyToOne
+    private Product product;
 
     @OneToOne
     private Variant variant;

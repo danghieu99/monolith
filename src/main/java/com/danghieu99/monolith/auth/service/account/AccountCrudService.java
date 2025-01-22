@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.auth.service.account;
 
 import com.danghieu99.monolith.auth.entity.Account;
-import com.danghieu99.monolith.auth.exception.ResourceNotFoundException;
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.auth.repository.jpa.AccountRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

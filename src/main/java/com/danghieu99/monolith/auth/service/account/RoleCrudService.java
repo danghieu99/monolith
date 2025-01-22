@@ -10,12 +10,14 @@ import com.danghieu99.monolith.auth.entity.Role;
 
 import jakarta.transaction.Transactional;
 
+import java.util.List;
+
 @Service
-public class RoleService {
+public class RoleCrudService {
 
     private final RoleRepository roleRepository;
 
-    public RoleService(RoleRepository roleRepository) {
+    public RoleCrudService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
@@ -30,6 +32,10 @@ public class RoleService {
 
     public Role getByRole(ERole role) {
         return roleRepository.findByRole(role).orElseThrow();
+    }
+
+    public List<Role> getAll() {
+        return roleRepository.findAll();
     }
 
     public Page<Role> getAllPaged(Pageable pageable) {

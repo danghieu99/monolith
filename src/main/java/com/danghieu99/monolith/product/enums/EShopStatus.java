@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.product.enums;
 
-public enum ESellerStatus {
+public enum EShopStatus {
 
     ACTIVE,
     INACTIVE,

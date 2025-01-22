@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.auth.exception;
+package com.danghieu99.monolith.common.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

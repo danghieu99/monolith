@@ -6,15 +6,15 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
-@Table(name = "images")
+@Table(name = "internal_flags")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Builder
-public class Image extends BaseEntity {
-    private String url;
+public class InternalFlag extends BaseEntity {
 
-    private String fileName;
+    private boolean flashSalable;
+
 }

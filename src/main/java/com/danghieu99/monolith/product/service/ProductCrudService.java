@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.product.service;
 
-import com.danghieu99.monolith.auth.exception.ResourceNotFoundException;
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Product;
 import com.danghieu99.monolith.product.repository.jpa.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -9,13 +9,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ProductCrudService {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    public List<Product> getAll() {
+        return productRepository.findAll();
+    }
 
     @Transactional
     public Product create(Product product) {
@@ -50,7 +55,4 @@ public class ProductCrudService {
     public Page<Product> searchByName(String name, Pageable pageable) {
         return productRepository.searchByName(name, pageable);
     }
-
-
-
 }

@@ -7,7 +7,7 @@ import com.danghieu99.monolith.auth.dto.response.account.UserGetProfileResponse;
 import com.danghieu99.monolith.auth.entity.Account;
 import com.danghieu99.monolith.auth.entity.Role;
 import com.danghieu99.monolith.auth.enums.ERole;
-import com.danghieu99.monolith.auth.service.account.RoleService;
+import com.danghieu99.monolith.auth.service.account.RoleCrudService;
 import org.mapstruct.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -23,7 +23,7 @@ public interface AccountMapper {
             @Mapping(target = "roles", qualifiedByName = "ERolesToRoles"),
             @Mapping(target = "password", qualifiedByName = "encodePassword")
     })
-    Account adminSaveRequestToAccount(AdminSaveAccountRequest adminSaveRequest, @Context RoleService roleService);
+    Account adminSaveRequestToAccount(AdminSaveAccountRequest adminSaveRequest, @Context RoleCrudService roleCrudService);
 
     @Mapping(target = "roles", qualifiedByName = "rolesToRoleNames")
     UserGetAccountDetailsResponse accountToUserAccountDetailsResponse(Account account);
@@ -40,8 +40,8 @@ public interface AccountMapper {
     }
 
     @Named("ERolesToRoles")
-    default Set<Role> ERolesToRoles(Set<ERole> roleNames, @Context RoleService roleService) {
-        return roleNames.stream().map(roleService::getByRole).collect(Collectors.toSet());
+    default Set<Role> ERolesToRoles(Set<ERole> roleNames, @Context RoleCrudService roleCrudService) {
+        return roleNames.stream().map(roleCrudService::getByRole).collect(Collectors.toSet());
     }
 
     @Named("encodePassword")

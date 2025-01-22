@@ -28,7 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByCategories(Set<Category> categories, Pageable pageable);
 
-    @Query("select p from Product p join Category c where c.products = :product")
+    @Query("select p from Product p join Category c where elements(c.products) = :product")
     List<Product> findByProductCategoriesContaining(Product product);
 
     @Query("select p from Product p join p.categories c where c = :category")

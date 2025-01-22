@@ -16,7 +16,7 @@ public class AdminAccountService {
 
     private final AccountCrudService accountCrudService;
     private final AccountMapper accountMapper;
-    private final RoleService roleService;
+    private final RoleCrudService roleCrudService;
 
     public Page<Account> getAccounts(Pageable pageable) {
         return pageable == null ? accountCrudService.getFirstPage() : accountCrudService.getAllPaged(pageable);
@@ -35,7 +35,7 @@ public class AdminAccountService {
     }
 
     public Account addAccount(AdminSaveAccountRequest request) {
-        return accountCrudService.create(accountMapper.adminSaveRequestToAccount(request, roleService));
+        return accountCrudService.create(accountMapper.adminSaveRequestToAccount(request, roleCrudService));
     }
 
     public Account updateAccount(int id, AdminSaveAccountRequest request) {
@@ -43,7 +43,7 @@ public class AdminAccountService {
         if (request.getUsername() != null) account.setUsername(request.getUsername());
         if (request.getPassword() != null) account.setPassword(request.getPassword());
         if (request.getRoles() != null) {
-            account.setRoles(request.getRoles().stream().map(roleService::getByRole).collect(Collectors.toSet()));
+            account.setRoles(request.getRoles().stream().map(roleCrudService::getByRole).collect(Collectors.toSet()));
         }
         if (request.getEmail() != null) account.setEmail(request.getEmail());
         if (request.getGender() != null) account.setGender(request.getGender());

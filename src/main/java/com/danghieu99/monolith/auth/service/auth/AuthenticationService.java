@@ -11,7 +11,7 @@ import com.danghieu99.monolith.auth.entity.Token;
 import com.danghieu99.monolith.auth.enums.ERole;
 import com.danghieu99.monolith.auth.mapper.AccountMapper;
 import com.danghieu99.monolith.auth.service.account.AccountCrudService;
-import com.danghieu99.monolith.auth.service.account.RoleService;
+import com.danghieu99.monolith.auth.service.account.RoleCrudService;
 import com.danghieu99.monolith.auth.service.account.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final RoleService roleService;
+    private final RoleCrudService roleCrudService;
 
     private final TokenAuthenticationService tokenAuthenticationService;
 
@@ -85,7 +85,7 @@ public class AuthenticationService {
     public SignupResponse register(SignupRequest request) {
         Account account = accountMapper.signUpRequestToAccount(request);
         Set<Role> userRoles = new HashSet<>();
-        userRoles.add(roleService.getByRole(ERole.ROLE_USER));
+        userRoles.add(roleCrudService.getByRole(ERole.ROLE_USER));
         account.setRoles(userRoles);
         Account registeredAccount = accountCrudService.create(account);
 

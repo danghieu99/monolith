@@ -2,7 +2,7 @@ package com.danghieu99.monolith.auth.service.init;
 
 import com.danghieu99.monolith.auth.entity.Role;
 import com.danghieu99.monolith.auth.enums.ERole;
-import com.danghieu99.monolith.auth.service.account.RoleService;
+import com.danghieu99.monolith.auth.service.account.RoleCrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -10,15 +10,17 @@ import java.util.Arrays;
 @Service
 public class RoleInitService {
 
-    private final RoleService roleService;
+    private final RoleCrudService roleCrudService;
 
-    public RoleInitService(RoleService roleService) {
-        this.roleService = roleService;
+    public RoleInitService(RoleCrudService roleCrudService) {
+        this.roleCrudService = roleCrudService;
     }
 
     public void init() {
-        Arrays.stream(ERole.values()).forEach(role -> {
-            if (!roleService.existsByRole(role)) roleService.save(new Role(role, role.getDescription()));
-        });
+        if (roleCrudService.getAll().isEmpty()) {
+            Arrays.stream(ERole.values()).forEach(role -> {
+                if (!roleCrudService.existsByRole(role)) roleCrudService.save(new Role(role, role.getDescription()));
+            });
+        }
     }
 }

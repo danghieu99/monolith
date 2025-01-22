@@ -26,7 +26,7 @@ public class Account extends BaseEntity {
     private UUID uuid;
 
     @PrePersist
-    protected void onCreate() {
+    private void onCreate() {
         this.uuid = UUID.randomUUID();
     }
 
