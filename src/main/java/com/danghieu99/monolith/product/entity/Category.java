@@ -23,7 +23,8 @@ public class Category extends BaseEntity {
     private String imageUrl;
 
     @ManyToMany
-    @JoinTable(joinColumns = @JoinColumn(name = "category_id"),
+    @JoinTable(name = "product_categories",
+            joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     @ToString.Exclude
     private Set<Product> products;

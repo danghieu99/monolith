@@ -3,7 +3,7 @@ package com.danghieu99.monolith.auth.config.security;
 import com.danghieu99.monolith.auth.config.authentication.TokenProperties;
 import com.danghieu99.monolith.auth.config.authentication.UserDetailsImpl;
 import com.danghieu99.monolith.auth.entity.Account;
-import com.danghieu99.monolith.auth.service.account.AccountService;
+import com.danghieu99.monolith.auth.service.account.AccountCrudService;
 import com.danghieu99.monolith.auth.service.auth.TokenAuthenticationService;
 import com.danghieu99.monolith.auth.service.auth.TokenUtil;
 import com.danghieu99.monolith.auth.service.auth.UserDetailsServiceImpl;
@@ -37,7 +37,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     TokenProperties tokenProperties;
 
     @Autowired
-    AccountService accountService;
+    AccountCrudService accountCrudService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
@@ -45,7 +45,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String access = TokenUtil.parseTokenFromCookies(request.getCookies(), tokenProperties.getAccessTokenName());
             if (access != null && !access.isEmpty() && tokenAuthenticationService.isTokenValid(access) && !tokenAuthenticationService.isTokenExpired(access)) {
                 Integer userId = Integer.valueOf(tokenAuthenticationService.parseClaimsFromToken(access).getSubject());
-                Account account = accountService.getById(userId);
+                Account account = accountCrudService.getById(userId);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails,

@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.cart.entity;
 
-import com.danghieu99.monolith.cart.dto.CartItem;
+import com.danghieu99.monolith.cart.dto.CartItemDto;
 import com.danghieu99.monolith.common.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -23,5 +23,5 @@ public class SavedCart extends BaseEntity {
     private int userId;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<CartItem> cartItems;
+    private List<CartItemDto> items;
 }

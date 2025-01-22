@@ -4,12 +4,14 @@ import com.danghieu99.monolith.auth.dto.request.account.UserChangePasswordReques
 import com.danghieu99.monolith.auth.dto.request.account.UserEditAccountDetailsRequest;
 import com.danghieu99.monolith.auth.service.account.UserAccountService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/account")
+@Validated
 public class UserAccountController {
 
     private final UserAccountService uAccountService;

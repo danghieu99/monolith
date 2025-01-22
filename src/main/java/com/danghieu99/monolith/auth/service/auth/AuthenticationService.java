@@ -10,7 +10,7 @@ import com.danghieu99.monolith.auth.entity.Role;
 import com.danghieu99.monolith.auth.entity.Token;
 import com.danghieu99.monolith.auth.enums.ERole;
 import com.danghieu99.monolith.auth.mapper.AccountMapper;
-import com.danghieu99.monolith.auth.service.account.AccountService;
+import com.danghieu99.monolith.auth.service.account.AccountCrudService;
 import com.danghieu99.monolith.auth.service.account.RoleService;
 import com.danghieu99.monolith.auth.service.account.UserAccountService;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class AuthenticationService {
 
     private final AccountMapper accountMapper;
 
-    private final AccountService accountService;
+    private final AccountCrudService accountCrudService;
 
     private final UserAccountService userAccountService;
 
@@ -87,7 +87,7 @@ public class AuthenticationService {
         Set<Role> userRoles = new HashSet<>();
         userRoles.add(roleService.getByRole(ERole.ROLE_USER));
         account.setRoles(userRoles);
-        Account registeredAccount = accountService.create(account);
+        Account registeredAccount = accountCrudService.create(account);
 
         SignupResponseBody responseBody = SignupResponseBody.builder().username(registeredAccount.getUsername())
                 .roles(registeredAccount.getRoles().stream().map(role -> role.getRole().toString()).collect(Collectors.toSet())).message("Signup success!").build();

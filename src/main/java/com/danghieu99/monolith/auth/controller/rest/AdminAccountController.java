@@ -9,11 +9,13 @@ import com.danghieu99.monolith.auth.dto.request.account.AdminSaveAccountRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/admin/accounts")
 @RequiredArgsConstructor
+@Validated
 public class AdminAccountController {
 
     private final AdminAccountService aAccountService;

@@ -1,7 +1,8 @@
 package com.danghieu99.monolith.product.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
@@ -14,13 +15,7 @@ import lombok.*;
 @Builder
 public class Attribute extends BaseEntity {
 
-    @ManyToOne(optional = false)
-    private Product product;
-
-    @ToString.Exclude
-    @JoinColumn
     private String type;
 
-    @ToString.Exclude
     private String value;
 }

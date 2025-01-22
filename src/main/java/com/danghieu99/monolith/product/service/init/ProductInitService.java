@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.product.service.init;
 
-import com.danghieu99.monolith.product.service.ProductService;
+import com.danghieu99.monolith.product.service.ProductCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductInitService {
 
-    private final ProductService productService;
+    private final ProductCrudService productCrudService;
 
 
 }

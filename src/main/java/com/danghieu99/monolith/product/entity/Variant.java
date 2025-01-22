@@ -4,8 +4,6 @@ import com.danghieu99.monolith.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -25,13 +23,16 @@ public class Variant extends BaseEntity {
     @JoinTable(
             name = "variant_attributes",
             joinColumns = @JoinColumn(name = "variant_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "attribute_id", referencedColumnName = "id"),
-            uniqueConstraints = {@UniqueConstraint(columnNames = {"attribute_type_id"})}
+            inverseJoinColumns = {@JoinColumn(name = "attribute_id", referencedColumnName = "id"),
+                    @JoinColumn(name = "attribute_type", referencedColumnName = "type")},
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"attribute_type"})}
     )
     @ToString.Exclude
-    private Set<Attribute> attributes = new HashSet<>();
+    private Set<Attribute> attributes;
 
-    private String sku;
+    @OneToOne
+    private Price price;
 
-    private String imgUrl;
+    @OneToOne(optional = false)
+    private Inventory inventory;
 }

@@ -37,13 +37,22 @@ public class Product extends BaseEntity {
     @ManyToOne(optional = false)
     private Shop shop;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany
+    @JoinColumn(name = "product_id", nullable = false)
     @ToString.Exclude
     private List<Attribute> attributeTypes = new ArrayList<>();
 
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
     private Set<Variant> variants = new HashSet<>();
+
+    @OneToOne
+    private Image thumbnail;
+
+    @OneToMany
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @ToString.Exclude
+    private List<Image> gallery = new ArrayList<>();
 
     @CreationTimestamp
     private Instant createdAt;

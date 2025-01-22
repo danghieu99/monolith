@@ -14,32 +14,32 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminAccountService {
 
-    private final AccountService accountService;
+    private final AccountCrudService accountCrudService;
     private final AccountMapper accountMapper;
     private final RoleService roleService;
 
     public Page<Account> getAccounts(Pageable pageable) {
-        return pageable == null ? accountService.getFirstPage() : accountService.getAllPaged(pageable);
+        return pageable == null ? accountCrudService.getFirstPage() : accountCrudService.getAllPaged(pageable);
     }
 
     public Account getAccountById(int id) {
-        return accountService.getById(id);
+        return accountCrudService.getById(id);
     }
 
     public Account getAccountByUsername(String username) {
-        return accountService.getByUsername(username);
+        return accountCrudService.getByUsername(username);
     }
 
     public Page<Account> searchAccountsByUsername(String username, Pageable pageable) {
-        return accountService.searchByUsernamePaged(username, pageable);
+        return accountCrudService.searchByUsernameContains(username, pageable);
     }
 
     public Account addAccount(AdminSaveAccountRequest request) {
-        return accountService.create(accountMapper.adminSaveRequestToAccount(request, roleService));
+        return accountCrudService.create(accountMapper.adminSaveRequestToAccount(request, roleService));
     }
 
     public Account updateAccount(int id, AdminSaveAccountRequest request) {
-        Account account = accountService.getById(id);
+        Account account = accountCrudService.getById(id);
         if (request.getUsername() != null) account.setUsername(request.getUsername());
         if (request.getPassword() != null) account.setPassword(request.getPassword());
         if (request.getRoles() != null) {
@@ -49,10 +49,10 @@ public class AdminAccountService {
         if (request.getGender() != null) account.setGender(request.getGender());
         if (request.getPhone() != null) account.setPhone(request.getPhone());
         if (request.getFullName() != null) account.setFullName(request.getFullName());
-        return accountService.update(account);
+        return accountCrudService.update(account);
     }
 
     public void deleteAccountById(int id) {
-        accountService.deleteById(id);
+        accountCrudService.deleteById(id);
     }
 }

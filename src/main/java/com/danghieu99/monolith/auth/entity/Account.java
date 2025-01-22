@@ -22,7 +22,7 @@ import java.util.UUID;
 @Builder
 public class Account extends BaseEntity {
 
-    @Column(unique = true, nullable = false, updatable = false, columnDefinition = "varchar(16)")
+    @Column(unique = true, nullable = false, updatable = false)
     private UUID uuid;
 
     @PrePersist

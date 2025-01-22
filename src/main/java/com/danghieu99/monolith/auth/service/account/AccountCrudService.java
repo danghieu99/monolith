@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AccountService {
+public class AccountCrudService {
 
     private final AccountRepository repository;
 
@@ -63,8 +63,12 @@ public class AccountService {
                 .orElseThrow(() -> new ResourceNotFoundException("Account", "Uuid", uuid.toString()));
     }
 
-    public Page<Account> searchByUsernamePaged(@NotNull String username, Pageable pageable) {
-        return repository.searchByUsername(username, pageable);
+    public Page<Account> searchByUsernameContains(@NotNull String username, @NotNull Pageable pageable) {
+        return repository.findByUsernameContains(username, pageable);
+    }
+
+    public Page<Account> searchBYEmailPaged(@NotNull String email, @NotNull Pageable pageable) {
+        return repository.findByEmailContains(email, pageable);
     }
 
     @Transactional

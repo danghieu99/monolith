@@ -12,22 +12,35 @@ import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer> {
+
+    Optional<Account> findById(int id);
+
     Optional<Account> findByUsername(String username);
+
+    @Query("select a from Account  a where a.username like concat('%',:username, '%')")
+    Page<Account> findByUsernameContains(String username, Pageable pageable);
 
     Optional<Account> findByUuid(UUID uuid);
 
     Optional<Account> findByEmail(String email);
 
+    @Query("select a from Account a where a.email like concat('%',:email,'%')")
+    Page<Account> findByEmailContains(String email, Pageable pageable);
+
+    @Query("select a from Account a where a.email like concat('%', :email)")
+    Page<Account> findByEmailStartingWith(String email, Pageable pageable);
+
+    @Query("select a from Account a where a.email like concat(:email, '%')")
+    Page<Account> findByEmailEndingWith(String email, Pageable pageable);
+
     Optional<Account> findByPhone(String phone);
 
-    Optional<Account> findById(int id);
+    @Query("select a from Account a where a.phone like concat('%', :phone, '%')")
+    Page<Account> findByPhoneContaining(String phone, Pageable pageable);
 
-    boolean existsByUsername(String username);
+    @Query("select a from Account a where a.phone like concat('%', :phone)")
+    Page<Account> findByPhoneStartingWith(String phone, Pageable pageable);
 
-    boolean existsByEmail(String email);
-
-    boolean existsByPhone(String phone);
-
-    @Query("SELECT a FROM Account a WHERE a.username LIKE CONCAT('%',:username, '%')")
-    Page<Account> searchByUsername(String username, Pageable pageable);
+    @Query("select a from Account a where a.phone like concat(:phone, '%')")
+    Page<Account> findByPhoneEndingWith(String phone, Pageable pageable);
 }

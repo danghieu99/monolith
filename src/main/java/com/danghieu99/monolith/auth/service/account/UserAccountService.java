@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserAccountService {
 
-    private final AccountService accountService;
+    private final AccountCrudService accountCrudService;
 
     private final AccountMapper accountMapper;
 
@@ -32,28 +32,29 @@ public class UserAccountService {
     }
 
     public UserGetProfileResponse getUserProfile(String uuid) {
-        return accountMapper.accountToUserGetProfileResponse(accountService.getByUUID(UUID.fromString(uuid)));
+        return accountMapper.accountToUserGetProfileResponse(accountCrudService.getByUUID(UUID.fromString(uuid)));
     }
 
     public UserGetAccountDetailsResponse getCurrentAccountDetails() {
-        return accountMapper.accountToUserAccountDetailsResponse(accountService.getById(getCurrentUserDetails().getId()));
+        return accountMapper.accountToUserAccountDetailsResponse(accountCrudService.getById(getCurrentUserDetails().getId()));
     }
 
     public String getCurrentUserUUID() {
-        return accountService.getById(getCurrentUserDetails().getId()).getId().toString();
+        return accountCrudService.getById(getCurrentUserDetails().getId()).getId().toString();
     }
 
     public UserEditAccountResponse editAccountDetails(UserEditAccountDetailsRequest request) {
-        Account account = accountService.getById(getCurrentUserDetails().getId());
+        Account account = accountCrudService.getById(getCurrentUserDetails().getId());
         if (request.getUsername() != null) account.setUsername(request.getUsername());
         if (request.getEmail() != null) account.setEmail(request.getEmail());
         if (request.getGender() != null) account.setGender(request.getGender());
         if (request.getPhone() != null) account.setPhone(request.getPhone());
         if (request.getFullName() != null) account.setFullName(request.getFullName());
-        accountService.update(account);
+        accountCrudService.update(account);
         return UserEditAccountResponse.builder().message("Edit success!").build();
     }
 
+    //add email confirm
     public void changeUserAccountPassword(UserChangePasswordRequest request) {
         if (request.getNewPassword().equals(request.getOldPassword())) {
             throw new IllegalArgumentException("Password not changed");
@@ -64,8 +65,8 @@ public class UserAccountService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot authenticate with current password");
         }
-        Account account = accountService.getById(getCurrentUserDetails().getId());
+        Account account = accountCrudService.getById(getCurrentUserDetails().getId());
         account.setPassword(request.getNewPassword());
-        accountService.update(account);
+        accountCrudService.update(account);
     }
 }

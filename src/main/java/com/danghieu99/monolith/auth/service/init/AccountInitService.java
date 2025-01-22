@@ -4,7 +4,7 @@ import com.danghieu99.monolith.auth.entity.Account;
 import com.danghieu99.monolith.auth.entity.Role;
 import com.danghieu99.monolith.auth.enums.EGender;
 import com.danghieu99.monolith.auth.enums.ERole;
-import com.danghieu99.monolith.auth.service.account.AccountService;
+import com.danghieu99.monolith.auth.service.account.AccountCrudService;
 import com.danghieu99.monolith.auth.service.account.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,15 +17,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AccountInitService {
 
-    private final AccountService accountService;
+    private final AccountCrudService accountCrudService;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
 
     public void init() {
-        if (accountService.getAll().isEmpty()) {
+        if (accountCrudService.getAll().isEmpty()) {
             Set<Role> adminRoles = new HashSet<>();
             adminRoles.add(roleService.getByRole(ERole.ROLE_ADMIN));
-            accountService.create(Account.builder()
+            accountCrudService.create(Account.builder()
                     .username("admin")
                     .password(passwordEncoder.encode("adminpassword"))
                     .gender(EGender.MALE)
@@ -37,7 +37,7 @@ public class AccountInitService {
 
             Set<Role> userRoles = new HashSet<>();
             userRoles.add(roleService.getByRole(ERole.ROLE_USER));
-            accountService.create(Account.builder()
+            accountCrudService.create(Account.builder()
                     .username("user")
                     .password(passwordEncoder.encode("userpassword"))
                     .gender(EGender.MALE)

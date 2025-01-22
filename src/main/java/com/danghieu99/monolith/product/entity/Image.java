@@ -2,22 +2,19 @@ package com.danghieu99.monolith.product.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
-@Table(name = "inventories")
+@Table(name = "images")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Builder
-public class Inventory extends BaseEntity {
+public class Image extends BaseEntity {
+    private String url;
 
-    @OneToOne
-    private Variant variant;
-
-    private int stock;
+    private String fileName;
 }

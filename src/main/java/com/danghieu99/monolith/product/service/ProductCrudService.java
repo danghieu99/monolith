@@ -5,13 +5,15 @@ import com.danghieu99.monolith.product.entity.Product;
 import com.danghieu99.monolith.product.repository.jpa.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService {
+public class ProductCrudService {
 
     private ProductRepository productRepository;
 
@@ -44,4 +46,11 @@ public class ProductService {
         return productRepository.findByUuid(UUID.fromString(uuid))
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "uuid", uuid));
     }
+
+    public Page<Product> searchByName(String name, Pageable pageable) {
+        return productRepository.searchByName(name, pageable);
+    }
+
+
+
 }
