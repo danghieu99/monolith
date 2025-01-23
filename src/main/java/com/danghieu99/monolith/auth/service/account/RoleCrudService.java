@@ -30,7 +30,7 @@ public class RoleCrudService {
         return roleRepository.findByRole(role).isPresent();
     }
 
-    public Role getByRole(ERole role) {
+    public Role getByERole(ERole role) {
         return roleRepository.findByRole(role).orElseThrow();
     }
 

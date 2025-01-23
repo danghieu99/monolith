@@ -85,7 +85,7 @@ public class AuthenticationService {
     public SignupResponse register(SignupRequest request) {
         Account account = accountMapper.signUpRequestToAccount(request);
         Set<Role> userRoles = new HashSet<>();
-        userRoles.add(roleCrudService.getByRole(ERole.ROLE_USER));
+        userRoles.add(roleCrudService.getByERole(ERole.ROLE_USER));
         account.setRoles(userRoles);
         Account registeredAccount = accountCrudService.create(account);
 

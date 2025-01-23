@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +24,16 @@ public class ProductInitService {
 
     public void init() {
         if (productCrudService.getAll().isEmpty()) {
-            Set<Category> categories = new HashSet<>();
-            categories.add(categoryService.getById(1));
-            productCrudService.create(Product.builder()
-                    .name("Default Product")
-                    .description("Default product description")
-                    .shop(shopService.getById(1))
-                    .categories(categories)
-                    .build());
+            IntStream.range(1, 50).parallel().forEach(i -> {
+                Set<Category> categories = new HashSet<>();
+                categories.add(categoryService.getById(i));
+                productCrudService.create(Product.builder()
+                        .name("Default Product" + i)
+                        .description("Default product description" + i)
+                        .shop(shopService.getById(i))
+                        .categories(categories)
+                        .build());
+            });
         }
     }
 }

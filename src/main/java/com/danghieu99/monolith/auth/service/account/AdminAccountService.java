@@ -43,7 +43,7 @@ public class AdminAccountService {
         if (request.getUsername() != null) account.setUsername(request.getUsername());
         if (request.getPassword() != null) account.setPassword(request.getPassword());
         if (request.getRoles() != null) {
-            account.setRoles(request.getRoles().stream().map(roleCrudService::getByRole).collect(Collectors.toSet()));
+            account.setRoles(request.getRoles().stream().map(roleCrudService::getByERole).collect(Collectors.toSet()));
         }
         if (request.getEmail() != null) account.setEmail(request.getEmail());
         if (request.getGender() != null) account.setGender(request.getGender());

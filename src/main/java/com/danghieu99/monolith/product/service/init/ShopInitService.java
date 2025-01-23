@@ -6,6 +6,8 @@ import com.danghieu99.monolith.product.service.ShopService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.IntStream;
+
 @Service
 @RequiredArgsConstructor
 public class ShopInitService {
@@ -14,11 +16,13 @@ public class ShopInitService {
 
     public void init() {
         if (shopService.getAll().isEmpty()) {
-            shopService.create(Shop.builder()
-                    .name("Default shop")
-                    .description("Default shop description")
-                    .status(EShopStatus.ACTIVE)
-                    .build());
+            IntStream.range(1, 50).parallel().forEach(i -> {
+                shopService.create(Shop.builder()
+                        .name("Default shop" + i)
+                        .description("Default shop description" + i)
+                        .status(EShopStatus.ACTIVE)
+                        .build());
+            });
         }
     }
 }

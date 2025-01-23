@@ -15,6 +15,7 @@ import jakarta.validation.constraints.Size;
 @Getter
 @Setter
 @ToString
+@Builder
 public class Role extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 50, nullable = false)

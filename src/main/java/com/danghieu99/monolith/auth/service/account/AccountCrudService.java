@@ -64,7 +64,7 @@ public class AccountCrudService {
     }
 
     public Page<Account> searchByUsernameContains(@NotNull String username, @NotNull Pageable pageable) {
-        return repository.findByUsernameContains(username, pageable);
+        return repository.findByUsernameContaining(username, pageable);
     }
 
     public Page<Account> searchBYEmailPaged(@NotNull String email, @NotNull Pageable pageable) {

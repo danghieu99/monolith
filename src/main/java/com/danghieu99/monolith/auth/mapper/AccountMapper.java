@@ -40,8 +40,8 @@ public interface AccountMapper {
     }
 
     @Named("ERolesToRoles")
-    default Set<Role> ERolesToRoles(Set<ERole> roleNames, @Context RoleCrudService roleCrudService) {
-        return roleNames.stream().map(roleCrudService::getByRole).collect(Collectors.toSet());
+    default Set<Role> ERolesToRoles(Set<ERole> eRoles, @Context RoleCrudService roleCrudService) {
+        return eRoles.stream().map(roleCrudService::getByERole).collect(Collectors.toSet());
     }
 
     @Named("encodePassword")
