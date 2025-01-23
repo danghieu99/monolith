@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class WebSecurityConfig {
         allowedHeaders.add("Allow");
         allowedHeaders.add("Alternates");
         allowedHeaders.add("Content-Range");
+        allowedHeaders.add("Content-Type");
         allowedHeaders.add("Content-Disposition");
         allowedHeaders.add("Connection");
         allowedHeaders.add("Cookies");
@@ -113,7 +115,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/v1/**").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 );
-
+        http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

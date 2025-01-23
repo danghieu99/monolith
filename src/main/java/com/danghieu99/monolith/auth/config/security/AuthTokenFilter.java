@@ -7,6 +7,7 @@ import com.danghieu99.monolith.auth.service.account.AccountCrudService;
 import com.danghieu99.monolith.auth.service.auth.TokenAuthenticationService;
 import com.danghieu99.monolith.auth.service.auth.TokenUtil;
 import com.danghieu99.monolith.auth.service.auth.UserDetailsServiceImpl;
+import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 
 @Slf4j
@@ -40,7 +43,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     AccountCrudService accountCrudService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String access = TokenUtil.parseTokenFromCookies(request.getCookies(), tokenProperties.getAccessTokenName());
             if (access != null && !access.isEmpty() && tokenAuthenticationService.isTokenValid(access) && !tokenAuthenticationService.isTokenExpired(access)) {
@@ -69,9 +72,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
                 }
             }
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.debug("Unexpected token error: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+        filterChain.doFilter(request, response);
     }
 }
