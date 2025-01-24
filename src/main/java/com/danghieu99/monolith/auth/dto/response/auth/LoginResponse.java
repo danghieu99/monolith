@@ -10,9 +10,6 @@ import java.util.List;
 @Data
 @Builder
 public class LoginResponse {
-
-
-
     @NotNull
     private LoginResponseBody body;
 

@@ -54,32 +54,26 @@ public class AuthenticationService {
     private final TokenProperties tokenProperties;
 
     public LoginResponse authenticate(LoginRequest request) {
-        try {
-            Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            int userId = userDetails.getId();
-            Set<String> roles = userDetails.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toSet());
-            List<ResponseCookie> cookies = new ArrayList<>();
-            ResponseCookie accessToken = ResponseCookie.from(tokenProperties.getAccessTokenName(), tokenAuthenticationService.buildAccessToken(userDetails)).build();
-            ResponseCookie refreshToken = ResponseCookie.from(tokenProperties.getRefreshTokenName(), tokenAuthenticationService.buildRefreshToken(userDetails)).build();
-            cookies.add(accessToken);
-            cookies.add(refreshToken);
-            var saveToken = Token.builder().userId(userId).tokenValue(refreshToken.getValue()).build();
-            refreshTokenService.save(saveToken);
-            var body = LoginResponseBody.builder()
-                    .roles(roles)
-                    .username(userDetails.getUsername())
-                    .message("Login success!")
-                    .build();
-            return LoginResponse.builder().body(body).cookies(cookies).build();
-        } catch (Exception e) {
-            log.error("Authentication error: {}", e.getMessage(), e);
-            throw new AuthenticationException("Failed to authenticate") {
-            };
-        }
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        int userId = userDetails.getId();
+        Set<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+        List<ResponseCookie> cookies = new ArrayList<>();
+        ResponseCookie accessToken = ResponseCookie.from(tokenProperties.getAccessTokenName(), tokenAuthenticationService.buildAccessToken(userDetails)).build();
+        ResponseCookie refreshToken = ResponseCookie.from(tokenProperties.getRefreshTokenName(), tokenAuthenticationService.buildRefreshToken(userDetails)).build();
+        cookies.add(accessToken);
+        cookies.add(refreshToken);
+        var saveToken = Token.builder().userId(userId).tokenValue(refreshToken.getValue()).build();
+        refreshTokenService.save(saveToken);
+        var body = LoginResponseBody.builder()
+                .roles(roles)
+                .username(userDetails.getUsername())
+                .message("Login success!")
+                .build();
+        return LoginResponse.builder().body(body).cookies(cookies).build();
     }
 
     public SignupResponse register(SignupRequest request) {
@@ -88,11 +82,9 @@ public class AuthenticationService {
         userRoles.add(roleCrudService.getByERole(ERole.ROLE_USER));
         account.setRoles(userRoles);
         Account registeredAccount = accountCrudService.create(account);
-
         SignupResponseBody responseBody = SignupResponseBody.builder().username(registeredAccount.getUsername())
                 .roles(registeredAccount.getRoles().stream().map(role -> role.getRole().toString()).collect(Collectors.toSet())).message("Signup success!").build();
-        return SignupResponse.builder()
-                .body(responseBody).build();
+        return SignupResponse.builder().body(responseBody).build();
     }
 
     public LogoutResponse logout(HttpServletRequest request) {

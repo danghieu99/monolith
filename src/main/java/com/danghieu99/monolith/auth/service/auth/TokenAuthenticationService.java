@@ -91,8 +91,17 @@ public class TokenAuthenticationService {
     public boolean isTokenValid(String token) {
         try {
             parseClaimsFromToken(token);
-        } catch (SecurityException | IncorrectClaimException | MalformedJwtException |
-                 UnsupportedJwtException | IllegalArgumentException e) {
+        } catch (JwtException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isTokenCryptValid(String token) {
+        try {
+            parseClaimsFromToken(token);
+        } catch (MalformedJwtException | UnsupportedJwtException |
+                 ExpiredJwtException e) {
             return false;
         }
         return true;

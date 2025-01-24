@@ -22,12 +22,12 @@ public class SignupRequest {
 
     @NotNull
     @Size(min = 5, max = 255)
-    @Pattern(regexp = "^[\\p{L}\\p{M}'\\-.\\s]$")
+    @Pattern(regexp = "^[a-zA-Z ]+$")
     private String fullName;
 
     @NotNull
     @Size(min = 3, max = 100)
-    @Pattern(regexp = "^[a-zA-Z]+$")
+    @Pattern(regexp = "(?i)\\b(MALE|FEMALE)\\b")
     private String gender;
 
     @NotNull
@@ -37,6 +37,6 @@ public class SignupRequest {
 
     @NotNull
     @Size(min = 3, max = 25)
-    @Pattern(regexp = "^\\+?(\\d{1,4})?[\\s.-]?\\(?\\d{1,4}\\)?[\\s.-]?\\d{1,4}[\\s.-]?\\d{1,9}(?:\\s?(?:ext|x)\\s?\\d{1,5})?$")
+    @Pattern(regexp = "^[0-9]+$")
     private String phone;
 }
