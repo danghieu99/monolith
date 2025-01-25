@@ -4,8 +4,8 @@ import com.danghieu99.monolith.auth.config.authentication.TokenProperties;
 import com.danghieu99.monolith.auth.config.authentication.UserDetailsImpl;
 import com.danghieu99.monolith.auth.entity.Account;
 import com.danghieu99.monolith.auth.service.account.AccountCrudService;
-import com.danghieu99.monolith.auth.service.auth.TokenAuthenticationService;
-import com.danghieu99.monolith.auth.service.auth.TokenUtil;
+import com.danghieu99.monolith.auth.service.token.AuthTokenService;
+import com.danghieu99.monolith.common.util.TokenUtil;
 import com.danghieu99.monolith.auth.service.auth.UserDetailsServiceImpl;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.ServletException;
@@ -33,7 +33,7 @@ import java.io.IOException;
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Autowired
-    TokenAuthenticationService tokenAuthenticationService;
+    AuthTokenService authTokenService;
 
     @Autowired
     UserDetailsServiceImpl userDetailsService;
@@ -50,8 +50,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String access = TokenUtil.parseTokenFromCookies(request.getCookies(), tokenProperties.getAccessTokenName());
 
             if (access != null && !access.isEmpty()) {
-                if (tokenAuthenticationService.isTokenValid(access)) {
-                    Integer userId = Integer.valueOf(tokenAuthenticationService.parseClaimsFromToken(access).getSubject());
+                if (authTokenService.isTokenValid(access)) {
+                    Integer userId = Integer.valueOf(authTokenService.parseClaimsFromToken(access).getSubject());
                     Account account = accountCrudService.getById(userId);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
                     try {
@@ -66,13 +66,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         throw e;
                     }
                 }
-                if (tokenAuthenticationService.isTokenCryptValid(access) && tokenAuthenticationService.isTokenExpired(access)) {
+                if (authTokenService.isTokenCryptValid(access) && authTokenService.isTokenExpired(access)) {
                     String refresh = TokenUtil.parseTokenFromCookies(request.getCookies(), tokenProperties.getRefreshTokenName());
-                    if (refresh != null && !refresh.isEmpty() && tokenAuthenticationService.isTokenValid(refresh)
-                            && tokenAuthenticationService.validateTokenSubjects(access, refresh)
-                            && tokenAuthenticationService.isTokenStored(refresh)) {
-                        UserDetailsImpl userDetails = tokenAuthenticationService.getUserDetailsFromToken(refresh);
-                        String newAccessToken = tokenAuthenticationService.buildAccessToken(userDetails);
+                    if (refresh != null && !refresh.isEmpty() && authTokenService.isTokenValid(refresh)
+                            && authTokenService.validateTokenSubjects(access, refresh)
+                            && authTokenService.isTokenStored(refresh)) {
+                        UserDetailsImpl userDetails = authTokenService.getUserDetailsFromToken(refresh);
+                        String newAccessToken = authTokenService.buildAccessToken(userDetails);
                         ResponseCookie cookie = ResponseCookie.from(tokenProperties.getAccessTokenName(), newAccessToken)
                                 .httpOnly(true)
                                 .secure(true)

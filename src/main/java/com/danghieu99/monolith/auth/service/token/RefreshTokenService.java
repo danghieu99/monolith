@@ -1,22 +1,26 @@
-package com.danghieu99.monolith.auth.service.auth;
+package com.danghieu99.monolith.auth.service.token;
 
+import com.danghieu99.monolith.auth.config.authentication.TokenProperties;
 import com.danghieu99.monolith.auth.entity.Token;
 import com.danghieu99.monolith.auth.repository.redis.TokenRepository;
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class RefreshTokenService {
 
     private final TokenRepository repository;
 
-    public RefreshTokenService(TokenRepository repository) {
-        this.repository = repository;
-    }
+    private final TokenProperties tokenProperties;
 
-    public Token save(Token entity) {
-        return repository.save(entity);
+    public Token save(Token token) {
+        return repository.save(token);
     }
 
     public boolean existsByValue(String value) {
@@ -35,12 +39,11 @@ public class RefreshTokenService {
         return repository.findByTokenValue(value);
     }
 
-    public boolean updateByUserId(Integer id, Token token) {
-        if (repository.existsByUserId(id)) {
-            repository.save(token);
-            return true;
+    public Token updateByUserId(Token token) {
+        if (!repository.existsByUserId(token.getUserId())) {
+            throw new ResourceNotFoundException("Token", "userId", token.getUserId());
         }
-        return false;
+        return repository.save(token);
     }
 
     public void deleteByUserId(Integer id) {

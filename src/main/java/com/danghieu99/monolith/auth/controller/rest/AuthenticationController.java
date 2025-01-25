@@ -67,7 +67,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout/all")
-    public ResponseEntity<?> logoutAllDevices() {
+    public ResponseEntity<?> logoutFromAllDevices() {
         LogoutResponse response = authenticationService.logoutFromAllDevices();
         return ResponseEntity.ok()
 //                .header("Access-Control-Allow-Credentials", "true")
@@ -75,7 +75,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/refresh")
-    public ResponseEntity<?> refreshAuthentication() {
+    public ResponseEntity<?> getNewRefreshToken() {
         ResponseCookie cookie = authenticationService.refreshAuthentication();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());

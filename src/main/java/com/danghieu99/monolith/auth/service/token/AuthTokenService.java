@@ -1,10 +1,12 @@
-package com.danghieu99.monolith.auth.service.auth;
+package com.danghieu99.monolith.auth.service.token;
 
 import com.danghieu99.monolith.auth.config.authentication.TokenProperties;
 import com.danghieu99.monolith.auth.config.authentication.UserDetailsImpl;
 import com.danghieu99.monolith.auth.entity.Account;
+import com.danghieu99.monolith.auth.service.auth.UserDetailsServiceImpl;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.auth.service.account.AccountCrudService;
+import com.danghieu99.monolith.common.util.TokenUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
-public class TokenAuthenticationService {
+public class AuthTokenService {
 
     private final TokenProperties tokenProperties;
 
@@ -31,30 +33,26 @@ public class TokenAuthenticationService {
 
     private final RefreshTokenService tokenService;
 
-    public void deleteRefreshTokenByValue(HttpServletRequest request) {
-        String refresh = TokenUtil.parseTokenFromCookies(request.getCookies(), tokenProperties.getRefreshTokenName());
-        tokenService.deleteByValue(refresh);
-    }
-
-    public void deleteRefreshTokenByUserId(int userId) {
-        tokenService.deleteByUserId(userId);
-    }
+    private final RefreshTokenService refreshTokenService;
 
     public String buildAccessToken(UserDetailsImpl userDetails) {
-        return buildToken(userDetails, tokenProperties.getAccessTokenExpireMs());
-    }
-
-    public String buildRefreshToken(UserDetailsImpl userDetails) {
-        return buildToken(userDetails, tokenProperties.getRefreshTokenExpireMs());
-    }
-
-    public String buildToken(UserDetailsImpl userDetails, int expireIn) {
         SecretKey secretKey = Keys.hmacShaKeyFor(tokenProperties.getTokenSecretKey().getBytes());
         Claims claims = Jwts.claims()
                 .subject(String.valueOf(userDetails.getId()))
                 .issuer(tokenProperties.getTokenIssuer())
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plusMillis(expireIn)))
+                .expiration(Date.from(Instant.now().plusMillis(tokenProperties.getAccessTokenExpireMs())))
+                .build();
+        return TokenUtil.buildToken(secretKey, claims);
+    }
+
+    public String buildRefreshToken(UserDetailsImpl userDetails) {
+        SecretKey secretKey = Keys.hmacShaKeyFor(tokenProperties.getTokenSecretKey().getBytes());
+        Claims claims = Jwts.claims()
+                .subject(String.valueOf(userDetails.getId()))
+                .issuer(tokenProperties.getTokenIssuer())
+                .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(Instant.now().plusMillis(tokenProperties.getRefreshTokenExpireMs())))
                 .build();
         return TokenUtil.buildToken(secretKey, claims);
     }
@@ -86,6 +84,11 @@ public class TokenAuthenticationService {
                         null,
                         userDetails.getAuthorities());
         return (UserDetailsImpl) authentication.getPrincipal();
+    }
+
+    public void deleteCurrentRefreshToken(HttpServletRequest request) {
+        String refresh = TokenUtil.parseTokenFromCookies(request.getCookies(), tokenProperties.getRefreshTokenName());
+        refreshTokenService.deleteByValue(refresh);
     }
 
     public boolean isTokenValid(String token) {

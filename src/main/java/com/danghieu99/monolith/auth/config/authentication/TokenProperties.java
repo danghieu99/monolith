@@ -2,6 +2,7 @@ package com.danghieu99.monolith.auth.config.authentication;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;;
 
 @ConfigurationProperties(prefix = "com.danghieu99.monolith.jwt")
