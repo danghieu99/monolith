@@ -22,10 +22,7 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
-    @ManyToMany
-    @JoinTable(name = "product_categories",
-            joinColumns = @JoinColumn(name = "category_id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @ManyToMany(mappedBy = "categories")
     @ToString.Exclude
     private Set<Product> products;
 

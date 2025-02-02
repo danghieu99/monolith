@@ -35,7 +35,9 @@ public class AdminAccountService {
     }
 
     public Account addAccount(AdminSaveAccountRequest request) {
-        return accountCrudService.create(accountMapper.adminSaveRequestToAccount(request, roleCrudService));
+        var newAccount = accountMapper.toAccount(request);
+        newAccount.setRoles(request.getRoles().stream().map(roleCrudService::getByERole).collect(Collectors.toSet()));
+        return accountCrudService.create(newAccount);
     }
 
     public Account updateAccount(int id, AdminSaveAccountRequest request) {

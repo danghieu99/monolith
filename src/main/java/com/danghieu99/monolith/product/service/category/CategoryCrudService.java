@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service;
+package com.danghieu99.monolith.product.service.category;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Category;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryService {
+public class CategoryCrudService {
 
     private final CategoryRepository repository;
 

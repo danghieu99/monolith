@@ -22,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +53,7 @@ public class AuthenticationService {
     private final TokenProperties tokenProperties;
 
     private final AuthTokenService authTokenService;
+    private final PasswordEncoder passwordEncoder;
 
     public LoginResponse authenticate(LoginRequest request) {
         Authentication authentication = authenticationManager
@@ -81,7 +83,8 @@ public class AuthenticationService {
     }
 
     public SignupResponse register(SignupRequest request) {
-        Account account = accountMapper.signUpRequestToAccount(request);
+        Account account = accountMapper.toAccount(request);
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
         Set<Role> userRoles = new HashSet<>();
         userRoles.add(roleCrudService.getByERole(ERole.ROLE_USER));
         account.setRoles(userRoles);

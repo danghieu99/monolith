@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service;
+package com.danghieu99.monolith.product.service.product;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Product;
@@ -30,6 +30,7 @@ public class ProductCrudService {
         return productRepository.save(product);
     }
 
+    @Transactional
     public Product update(Product product) {
         if (product.getId() == null) {
             throw new IllegalArgumentException("Update product id must not be null");
@@ -53,6 +54,10 @@ public class ProductCrudService {
     }
 
     public Page<Product> searchByName(String name, Pageable pageable) {
-        return productRepository.searchByName(name, pageable);
+        return productRepository.findByNameContaining(name, pageable);
+    }
+
+    public void deleteById(Integer id) {
+        productRepository.deleteById(id);
     }
 }

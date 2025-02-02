@@ -19,17 +19,17 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Optional<Product> findByName(String name);
 
     @Query("select p from Product p where p.name like %:name%")
-    List<Product> searchByName(String name);
+    List<Product> findByNameContaining(String name);
 
     @Query("select p from Product p where p.name like %:name%")
-    Page<Product> searchByName(String name, Pageable pageable);
+    Page<Product> findByNameContaining(String name, Pageable pageable);
 
     List<Product> findByCategories(Set<Category> categories);
 
     Page<Product> findByCategories(Set<Category> categories, Pageable pageable);
 
-    @Query("select p from Product p join Category c where elements(c.products) = :product")
-    List<Product> findByProductCategoriesContaining(Product product);
+    @Query("select p from Category c join c.products p where p = :product")
+    List<Product> findBySameCategories(Product product);
 
     @Query("select p from Product p join p.categories c where c = :category")
     List<Product> findByCategoriesContaining(Category category);

@@ -10,6 +10,7 @@ import com.danghieu99.monolith.auth.enums.ERole;
 import com.danghieu99.monolith.auth.service.account.RoleCrudService;
 import org.mapstruct.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,32 +21,22 @@ import java.util.stream.Collectors;
 public interface AccountMapper {
 
     @Mappings({
-            @Mapping(target = "roles", qualifiedByName = "ERolesToRoles"),
-            @Mapping(target = "password", qualifiedByName = "encodePassword")
+            @Mapping(target = "roles", ignore = true),
+            @Mapping(target = "password", ignore = true),
     })
-    Account adminSaveRequestToAccount(AdminSaveAccountRequest adminSaveRequest, @Context RoleCrudService roleCrudService);
+    Account toAccount(AdminSaveAccountRequest adminSaveRequest);
 
     @Mapping(target = "roles", qualifiedByName = "rolesToRoleNames")
-    UserGetAccountDetailsResponse accountToUserAccountDetailsResponse(Account account);
+    UserGetAccountDetailsResponse toUserAccountDetailsResponse(Account account);
 
     @Mapping(target = "roles", qualifiedByName = "rolesToRoleNames")
-    UserGetProfileResponse accountToUserGetProfileResponse(Account account);
+    UserGetProfileResponse toUserGetProfileResponse(Account account);
 
-    @Mapping(target = "password", qualifiedByName = "encodePassword")
-    Account signUpRequestToAccount(SignupRequest signupRequest);
+    @Mapping(target = "password", ignore = true)
+    Account toAccount(SignupRequest signupRequest);
 
     @Named("rolesToRoleNames")
     default Set<String> rolesToRoleNames(Set<Role> roles) {
         return roles.stream().map(role -> role.getRole().name()).collect(Collectors.toSet());
-    }
-
-    @Named("ERolesToRoles")
-    default Set<Role> ERolesToRoles(Set<ERole> eRoles, @Context RoleCrudService roleCrudService) {
-        return eRoles.stream().map(roleCrudService::getByERole).collect(Collectors.toSet());
-    }
-
-    @Named("encodePassword")
-    default String encodePassword(String password) {
-        return new BCryptPasswordEncoder().encode(password);
     }
 }

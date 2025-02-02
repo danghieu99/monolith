@@ -6,7 +6,7 @@ import com.danghieu99.monolith.auth.entity.Account;
 import com.danghieu99.monolith.auth.service.auth.UserDetailsServiceImpl;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.auth.service.account.AccountCrudService;
-import com.danghieu99.monolith.common.util.TokenUtil;
+import com.danghieu99.monolith.auth.util.TokenUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;

@@ -150,7 +150,7 @@
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- MINIO -->
+        <!-- STORAGE -->
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>

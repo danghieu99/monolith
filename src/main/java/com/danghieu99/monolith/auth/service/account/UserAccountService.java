@@ -32,11 +32,11 @@ public class UserAccountService {
     }
 
     public UserGetProfileResponse getUserProfile(String uuid) {
-        return accountMapper.accountToUserGetProfileResponse(accountCrudService.getByUUID(UUID.fromString(uuid)));
+        return accountMapper.toUserGetProfileResponse(accountCrudService.getByUUID(UUID.fromString(uuid)));
     }
 
     public UserGetAccountDetailsResponse getCurrentAccountDetails() {
-        return accountMapper.accountToUserAccountDetailsResponse(accountCrudService.getById(getCurrentUserDetails().getId()));
+        return accountMapper.toUserAccountDetailsResponse(accountCrudService.getById(getCurrentUserDetails().getId()));
     }
 
     public String getCurrentUserUUID() {

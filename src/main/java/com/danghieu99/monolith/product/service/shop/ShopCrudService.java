@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service;
+package com.danghieu99.monolith.product.service.shop;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Shop;
@@ -7,10 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ShopService {
+public class ShopCrudService {
 
     private final ShopRepository repository;
 
@@ -34,6 +35,10 @@ public class ShopService {
 
     public Shop getById(int id) {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Shop", "id", id));
+    }
+
+    public Shop getByUUID(String uuid) {
+        return repository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new ResourceNotFoundException("Shop", "UUID", uuid));
     }
 
     public Shop getByName(String name) {

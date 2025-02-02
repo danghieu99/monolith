@@ -54,8 +54,8 @@ public class Account extends BaseEntity {
 
     @ManyToMany
     @JoinTable(name = "account_roles",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+            joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false))
     @ToString.Exclude
     private Set<Role> roles = new HashSet<>();
 }

@@ -6,14 +6,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface ShopRepository extends JpaRepository<Shop, Integer> {
 
     Optional<Shop> findByName(String name);
 
-    @Query("select s from Shop s join s.products sp where sp.uuid = :productUuid")
-    Optional<Shop> findByProductUuid(String productUuid);
+    Optional<Shop> findByUuid(UUID uuid);
 
+    @Query("select s from Shop s join s.products sp where sp.uuid = :productUUID")
+    Optional<Shop> findByProductUuid(UUID productUUID);
 
 }

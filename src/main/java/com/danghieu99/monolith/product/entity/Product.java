@@ -1,8 +1,8 @@
 package com.danghieu99.monolith.product.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
-import com.danghieu99.monolith.product.entity.value.Image;
 import jakarta.persistence.*;
+import jakarta.validation.ValidationException;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -20,21 +20,33 @@ import java.util.*;
 public class Product extends BaseEntity {
 
     @Builder
-    public Product(String name, String description, Set<Category> categories, Shop shop, List<Attribute> attributes, Set<Variant> variants, InternalFlag internalFlag) {
+    public Product(String name,
+                   String description,
+                   Set<Category> categories,
+                   Shop shop) {
         this.name = name;
         this.description = description;
         this.categories = categories;
         this.shop = shop;
-        this.attributes = attributes;
-        this.variants = variants;
-        this.internalFlag = internalFlag;
     }
 
     private UUID uuid;
 
     @PrePersist
-    private void onCreate() {
+    private void prePersist() {
         this.uuid = UUID.randomUUID();
+        validateVariants();
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        validateVariants();
+    }
+
+    private void validateVariants() {
+        if (variants.isEmpty()) {
+            throw new ValidationException("Product requires at least one Variant");
+        }
     }
 
     @Column(unique = true, nullable = false)
@@ -43,31 +55,26 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
-    @ManyToMany(mappedBy = "products")
-    @ToString.Exclude
-    private Set<Category> categories = new HashSet<>();
-
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "shop_id", referencedColumnName = "id", nullable = false)
     private Shop shop;
 
-    @OneToMany(mappedBy = "product")
+    @ManyToMany
+    @JoinTable(name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false))
     @ToString.Exclude
-    private List<Attribute> attributes = new ArrayList<>();
+    private Set<Category> categories = new HashSet<>();
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @ToString.Exclude
     private Set<Variant> variants = new HashSet<>();
 
-    @OneToOne
-    private ImageSet imageSet;
-
     @CreationTimestamp
+    @Setter(AccessLevel.NONE)
     private Instant createdAt;
 
     @UpdateTimestamp
+    @Setter(AccessLevel.NONE)
     private Instant updatedAt;
-
-    @OneToOne
-    private InternalFlag internalFlag;
 }

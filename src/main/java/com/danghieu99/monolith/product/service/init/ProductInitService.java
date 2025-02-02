@@ -2,16 +2,16 @@ package com.danghieu99.monolith.product.service.init;
 
 import com.danghieu99.monolith.product.entity.Category;
 import com.danghieu99.monolith.product.entity.Product;
-import com.danghieu99.monolith.product.entity.Shop;
-import com.danghieu99.monolith.product.enums.EShopStatus;
-import com.danghieu99.monolith.product.service.CategoryService;
-import com.danghieu99.monolith.product.service.ProductCrudService;
-import com.danghieu99.monolith.product.service.ShopService;
+import com.danghieu99.monolith.product.entity.Variant;
+import com.danghieu99.monolith.product.service.category.CategoryCrudService;
+import com.danghieu99.monolith.product.service.product.ProductCrudService;
+import com.danghieu99.monolith.product.service.shop.ShopCrudService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
@@ -19,20 +19,36 @@ import java.util.stream.IntStream;
 public class ProductInitService {
 
     private final ProductCrudService productCrudService;
-    private final ShopService shopService;
-    private final CategoryService categoryService;
+    private final ShopCrudService shopCrudService;
+    private final CategoryCrudService categoryService;
 
+    @Transactional
     public void init() {
         if (productCrudService.getAll().isEmpty()) {
             IntStream.range(1, 50).parallel().forEach(i -> {
                 Set<Category> categories = new HashSet<>();
                 categories.add(categoryService.getById(i));
-                productCrudService.create(Product.builder()
-                        .name("Default Product" + i)
-                        .description("Default product description" + i)
-                        .shop(shopService.getById(i))
-                        .categories(categories)
-                        .build());
+                Product newProduct = new Product("Default product " + i,
+                        "Default product description " + i,
+                        categories,
+                        shopCrudService.getById(i));
+
+                Set<Variant> variants = new HashSet<>();
+                IntStream.range(1, 5).parallel().forEach(j -> {
+                    Map<String, String> attributes = new HashMap<>();
+                    IntStream.range(1, 5).parallel().forEach(k -> {
+                        attributes.put("Default type " + UUID.randomUUID(), "Default value " + k);
+                    });
+                    variants.add(Variant.builder()
+                            .attributes(attributes)
+                            .stock(j)
+                            .price(BigDecimal.valueOf(j))
+                            .product(newProduct)
+                            .build());
+                });
+
+                newProduct.setVariants(variants);
+                productCrudService.create(newProduct);
             });
         }
     }
