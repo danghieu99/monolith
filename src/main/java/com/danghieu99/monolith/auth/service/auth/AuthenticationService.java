@@ -14,7 +14,7 @@ import com.danghieu99.monolith.auth.service.account.AccountCrudService;
 import com.danghieu99.monolith.auth.service.account.RoleCrudService;
 import com.danghieu99.monolith.auth.service.account.UserAccountService;
 import com.danghieu99.monolith.auth.service.token.AuthTokenService;
-import com.danghieu99.monolith.auth.service.token.RefreshTokenService;
+import com.danghieu99.monolith.auth.service.token.RefreshTokenCrudService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
@@ -42,7 +42,7 @@ public class AuthenticationService {
 
     private final RoleCrudService roleCrudService;
 
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenCrudService refreshTokenCrudService;
 
     private final AccountMapper accountMapper;
 
@@ -73,7 +73,7 @@ public class AuthenticationService {
                 .tokenValue(refreshToken.getValue())
                 .expiration(tokenProperties.getRefreshTokenExpireMs())
                 .build();
-        refreshTokenService.save(saveToken);
+        refreshTokenCrudService.save(saveToken);
         var body = LoginResponseBody.builder()
                 .roles(roles)
                 .username(userDetails.getUsername())
@@ -101,7 +101,7 @@ public class AuthenticationService {
     }
 
     public LogoutResponse logoutFromAllDevices() {
-        refreshTokenService.deleteByUserId(userAccountService.getCurrentUserDetails().getId());
+        refreshTokenCrudService.deleteByUserId(userAccountService.getCurrentUserDetails().getId());
         LogoutResponseBody response = LogoutResponseBody.builder().message("Logout from all devices success!").build();
         return LogoutResponse.builder().body(response).build();
     }

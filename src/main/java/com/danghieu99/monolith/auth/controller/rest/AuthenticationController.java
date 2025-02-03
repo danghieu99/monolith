@@ -18,14 +18,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Validated
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     @JsonFormat
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authenticationService.authenticate(request);
@@ -42,7 +42,7 @@ public class AuthenticationController {
                 .body(response.getBody());
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth//register")
     public ResponseEntity<?> register(@Valid @RequestBody SignupRequest request) {
         SignupResponse response = authenticationService.register(request);
 //        HttpHeaders headers = new HttpHeaders();
@@ -58,7 +58,7 @@ public class AuthenticationController {
                 .body(response.getBody());
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/user/auth/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         LogoutResponse response = authenticationService.logout(request);
         return ResponseEntity.ok()
@@ -66,7 +66,7 @@ public class AuthenticationController {
                 .body(response.getBody());
     }
 
-    @PostMapping("/logout/all")
+    @PostMapping("user/auth/logout-all")
     public ResponseEntity<?> logoutFromAllDevices() {
         LogoutResponse response = authenticationService.logoutFromAllDevices();
         return ResponseEntity.ok()
@@ -74,7 +74,7 @@ public class AuthenticationController {
                 .body(response.getBody());
     }
 
-    @GetMapping("/refresh")
+    @GetMapping("user/auth/refresh")
     public ResponseEntity<?> getNewRefreshToken() {
         ResponseCookie cookie = authenticationService.refreshAuthentication();
         HttpHeaders headers = new HttpHeaders();

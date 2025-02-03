@@ -4,8 +4,9 @@ import com.danghieu99.monolith.auth.entity.Token;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface TokenRepository extends CrudRepository<Token, Integer> {
+public interface TokenRepository extends CrudRepository<Token, UUID> {
     boolean existsByTokenValue(String token);
 
     boolean existsByUserId(int userId);

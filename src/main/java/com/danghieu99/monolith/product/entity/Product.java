@@ -30,6 +30,7 @@ public class Product extends BaseEntity {
         this.shop = shop;
     }
 
+    @Column(nullable = false, unique = true, updatable = false)
     private UUID uuid;
 
     @PrePersist

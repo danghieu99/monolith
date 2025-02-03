@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RefreshTokenService {
+public class RefreshTokenCrudService {
 
     private final TokenRepository repository;
 

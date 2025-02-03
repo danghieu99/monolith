@@ -31,9 +31,9 @@ public class AuthTokenService {
 
     private final UserDetailsServiceImpl userDetailsService;
 
-    private final RefreshTokenService tokenService;
+    private final RefreshTokenCrudService tokenService;
 
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenCrudService refreshTokenCrudService;
 
     public String buildAccessToken(UserDetailsImpl userDetails) {
         SecretKey secretKey = Keys.hmacShaKeyFor(tokenProperties.getTokenSecretKey().getBytes());
@@ -88,7 +88,7 @@ public class AuthTokenService {
 
     public void deleteCurrentRefreshToken(HttpServletRequest request) {
         String refresh = TokenUtil.parseTokenFromCookies(request.getCookies(), tokenProperties.getRefreshTokenName());
-        refreshTokenService.deleteByValue(refresh);
+        refreshTokenCrudService.deleteByValue(refresh);
     }
 
     public boolean isTokenValid(String token) {

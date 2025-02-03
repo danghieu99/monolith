@@ -1,11 +1,12 @@
 package com.danghieu99.monolith.auth.entity;
 
-import com.danghieu99.monolith.common.entity.BaseRedisEntity;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor
@@ -13,7 +14,10 @@ import java.util.concurrent.TimeUnit;
 @Builder
 @Getter
 @RedisHash("tokens")
-public class Token extends BaseRedisEntity {
+public class Token {
+
+    @Id
+    private final UUID id = UUID.randomUUID();
 
     @NotNull
     private Integer userId;
