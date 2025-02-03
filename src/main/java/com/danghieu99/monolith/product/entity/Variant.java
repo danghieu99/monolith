@@ -25,8 +25,9 @@ public class Variant extends BaseEntity {
     @ElementCollection
     @CollectionTable(name = "variant_attributes",
             joinColumns = @JoinColumn(name = "variant_id", nullable = false),
-            indexes = {@Index(name = "attributes", columnList = "attribute_type, attribute_value")})
-    @MapKeyColumn(name = "attribute_type", unique = true)
+            uniqueConstraints = @UniqueConstraint(name = "uq_variant_attribute_type", columnNames = {"variant_id", "attribute_type"}),
+            indexes = {@Index(name = "attributes_idx", columnList = "attribute_type, attribute_value")})
+    @MapKeyColumn(name = "attribute_type")
     @Column(name = "attribute_value")
     @ToString.Exclude
     private Map<String, String> attributes = new HashMap<>();

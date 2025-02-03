@@ -37,7 +37,7 @@ public class ProductInitService {
                 IntStream.range(1, 5).parallel().forEach(j -> {
                     Map<String, String> attributes = new HashMap<>();
                     IntStream.range(1, 5).parallel().forEach(k -> {
-                        attributes.put("Default type " + UUID.randomUUID(), "Default value " + k);
+                        attributes.put("Default type " + k, "Default value " + k);
                     });
                     variants.add(Variant.builder()
                             .attributes(attributes)
