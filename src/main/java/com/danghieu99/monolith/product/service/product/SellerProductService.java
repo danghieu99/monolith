@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.product.service.product;
 
-import com.danghieu99.monolith.product.dto.request.SaveProductRequest;
+import com.danghieu99.monolith.product.dto.request.SellerSaveProductRequest;
 import com.danghieu99.monolith.product.entity.Product;
 import com.danghieu99.monolith.product.entity.Variant;
 import com.danghieu99.monolith.product.mapper.ProductMapper;
@@ -27,7 +27,7 @@ public class SellerProductService {
     private final ProductCrudService productCrudService;
 
     @Transactional
-    public Product addProduct(SaveProductRequest request) {
+    public Product addProduct(SellerSaveProductRequest request) {
         Product newProduct = mapper.toProduct(request);
         newProduct.setShop(shopCrudService.getByUUID(request.getShopUUID()));
         newProduct.setCategories(request.getCategories().stream().map(categoryCrudService::getByName).collect(Collectors.toSet()));

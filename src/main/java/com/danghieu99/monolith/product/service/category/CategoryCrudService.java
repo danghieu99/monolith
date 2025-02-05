@@ -43,4 +43,8 @@ public class CategoryCrudService {
     public Category getById(int id) {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
     }
+
+    public void deleteById(int id) {
+        repository.deleteById(id);
+    }
 }

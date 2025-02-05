@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.product.mapper;
 
-import com.danghieu99.monolith.product.dto.request.SaveProductRequest;
+import com.danghieu99.monolith.product.dto.request.SellerSaveProductRequest;
 import com.danghieu99.monolith.product.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,5 +15,5 @@ public interface ProductMapper {
     @Mappings({@Mapping(target = "shop", ignore = true),
             @Mapping(target = "categories", ignore = true)
     })
-    Product toProduct(SaveProductRequest request);
+    Product toProduct(SellerSaveProductRequest request);
 }

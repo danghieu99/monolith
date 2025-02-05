@@ -45,7 +45,7 @@ public class Product extends BaseEntity {
     }
 
     private void validateVariants() {
-        if (variants.isEmpty()) {
+        if (variants == null || variants.isEmpty()) {
             throw new ValidationException("Product requires at least one Variant");
         }
     }
