@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,7 +19,4 @@ public class CartItemDto {
 
     @NotNull
     private final Map<String, String> attributes;
-
-    @NotNull
-    private final BigDecimal price;
 }

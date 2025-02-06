@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.product.enums;
 
 public enum EShopStatus {
-    ACTIVE,
-    INACTIVE,
-    SUSPENDED
+    SHOP_ACTIVE,
+    SHOP_INACTIVE,
+    SHOP_SUSPENDED
 }

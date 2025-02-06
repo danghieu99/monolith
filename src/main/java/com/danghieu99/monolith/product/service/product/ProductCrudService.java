@@ -4,6 +4,8 @@ import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Product;
 import com.danghieu99.monolith.product.repository.jpa.ProductRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +25,7 @@ public class ProductCrudService {
     }
 
     @Transactional
-    public Product create(Product product) {
+    public Product create(@NotNull Product product) {
         if (product.getId() != null) {
             throw new IllegalArgumentException("New product id must be null");
         }
@@ -31,33 +33,33 @@ public class ProductCrudService {
     }
 
     @Transactional
-    public Product update(Product product) {
+    public Product update(@NotNull Product product) {
         if (product.getId() == null) {
             throw new IllegalArgumentException("Update product id must not be null");
         }
         return productRepository.save(product);
     }
 
-    public Product getById(Integer id) {
+    public Product getById(@NotNull Integer id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
     }
 
-    public Product getByName(String name) {
+    public Product getByName(@NotEmpty String name) {
         return productRepository.findByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "name", name));
     }
 
-    public Product getByUuid(String uuid) {
+    public Product getByUuid(@NotEmpty String uuid) {
         return productRepository.findByUuid(UUID.fromString(uuid))
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "uuid", uuid));
     }
 
-    public Page<Product> searchByName(String name, Pageable pageable) {
+    public Page<Product> searchByName(@NotNull String name, Pageable pageable) {
         return productRepository.findByNameContaining(name, pageable);
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(@NotNull Integer id) {
         productRepository.deleteById(id);
     }
 }

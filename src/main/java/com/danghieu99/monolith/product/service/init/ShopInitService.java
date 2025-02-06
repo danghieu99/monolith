@@ -22,7 +22,7 @@ public class ShopInitService {
                 shopCrudService.create(Shop.builder()
                         .name("Default shop " + i)
                         .description("Default shop description " + i)
-                        .status(i % 5 != 0 ? EShopStatus.ACTIVE : EShopStatus.INACTIVE)
+                        .status(i % 5 != 0 ? EShopStatus.SHOP_ACTIVE : EShopStatus.SHOP_INACTIVE)
                         .build());
             });
         }

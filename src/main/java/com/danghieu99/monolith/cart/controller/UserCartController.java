@@ -1,8 +1,8 @@
 package com.danghieu99.monolith.cart.controller;
 
 import com.danghieu99.monolith.cart.dto.CartItemDto;
-import com.danghieu99.monolith.cart.service.cart.UserCartItemService;
-import com.danghieu99.monolith.cart.service.savedcart.SavedCartService;
+import com.danghieu99.monolith.cart.service.cart.SaveCartService;
+import com.danghieu99.monolith.cart.service.cart.UserCartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,27 +12,39 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/user/cart")
 public class UserCartController {
 
-    private final UserCartItemService userCartItemService;
+    private final UserCartService userCartService;
 
-    private final SavedCartService savedCartService;
+    private final SaveCartService saveCartService;
 
     @GetMapping("")
     public ResponseEntity<?> getCurrentUserCart() {
-        return ResponseEntity.ok().body(userCartItemService.getCurrentUserCartItems());
+        return ResponseEntity.ok().body(userCartService.getCurrentUserCart());
     }
 
-    @PostMapping("")
+    @DeleteMapping("/clear")
+    public ResponseEntity<?> clearCurrentUserCart() {
+        userCartService.clearCurrentUserCart();
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/add")
     public ResponseEntity<?> addCartItem(@RequestBody CartItemDto cartItemDto) {
-        return ResponseEntity.ok().body(userCartItemService.addCartItem(cartItemDto));
+        return ResponseEntity.ok().body(userCartService.addCartItem(cartItemDto));
     }
 
-    @PutMapping("")
+    @PutMapping("/edit")
     public ResponseEntity<?> updateCartItem(@RequestBody CartItemDto cartItemDto) {
-        return ResponseEntity.ok().body(userCartItemService.updateCartItem(cartItemDto));
+        return ResponseEntity.ok().body(userCartService.updateCartItem(cartItemDto));
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("/remove")
     public ResponseEntity<?> deleteCartItem(@RequestParam String id) {
-        return ResponseEntity.ok().body(userCartItemService.deleteCartItem(id));
+        return ResponseEntity.ok().body(userCartService.deleteCartItem(id));
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<?> saveCurrentCart() {
+        userCartService.saveCurrentUserCartItems();
+        return ResponseEntity.ok().build();
     }
 }

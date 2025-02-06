@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CartItemCrudService {
+public class RedisCartService {
 
     private final CartItemRepository cartItemRepository;
 

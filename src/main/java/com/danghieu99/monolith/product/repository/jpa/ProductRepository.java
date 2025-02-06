@@ -63,4 +63,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("select p from Product p join p.shop s where s.uuid = :uuid")
     Page<Product> findByShopUUID(UUID uuid, Pageable pageable);
+
+    void setStatusById(int id, EProductStatus status);
+
+    void setStatusByUuid(UUID uuid, EProductStatus status);
 }
