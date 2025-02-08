@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Repository
@@ -20,9 +21,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("select p from Product p where p.name like %:name%")
     List<Product> findByNameContaining(String name);
-
-    @Query("select p from Product p where p.name like %:name%")
-    Page<Product> findByNameContaining(String name, Pageable pageable);
 
     List<Product> findByCategories(Set<Category> categories);
 
@@ -64,7 +62,13 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("select p from Product p join p.shop s where s.uuid = :uuid")
     Page<Product> findByShopUUID(UUID uuid, Pageable pageable);
 
-    void setStatusById(int id, EProductStatus status);
+    @Query("select p from Product p where p.name like %:name%")
+    Page<Product> findByNameContaining(String name, Pageable pageable);
 
-    void setStatusByUuid(UUID uuid, EProductStatus status);
+    @Query("select p from Product p where " +
+            "(:name is null or p.name like concat('%', :name, '%'))" +
+            "and (:categories is null or exists(select c from p.categories c where c.name like concat('%', :categories, '%'))) " +
+            "and (:minPrice is null or p.price >= :minPrice) " +
+            "and (:maxPrice is null or p.price <= :maxPrice)")
+    Page<Product> findByNameContainingAndCategoryNameContainingAndPriceRange(String name, Set<String> categories, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 }

@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 
@@ -78,4 +79,7 @@ public class Product extends BaseEntity {
     @UpdateTimestamp
     @Setter(AccessLevel.NONE)
     private Instant updatedAt;
+
+    @Column(nullable = false)
+    private BigDecimal price;
 }

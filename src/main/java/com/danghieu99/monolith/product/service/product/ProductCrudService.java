@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -45,6 +47,10 @@ public class ProductCrudService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
     }
 
+    public Product getByUUID(@NotNull UUID uuid) {
+        return productRepository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException("Product", "uuid", uuid));
+    }
+
     public Product getByName(@NotEmpty String name) {
         return productRepository.findByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "name", name));
@@ -61,5 +67,9 @@ public class ProductCrudService {
 
     public void deleteById(@NotNull Integer id) {
         productRepository.deleteById(id);
+    }
+
+    public Page<Product> searchByParams(String name, Set<String> categories, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        return productRepository.findByNameContainingAndCategoryNameContainingAndPriceRange(name, categories, minPrice, maxPrice, pageable);
     }
 }

@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.security.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
-import com.danghieu99.monolith.security.enums.EGender;
+import com.danghieu99.monolith.security.constant.EGender;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 

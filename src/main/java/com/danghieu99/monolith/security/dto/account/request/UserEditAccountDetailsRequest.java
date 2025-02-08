@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.security.dto.account.request;
 
-import com.danghieu99.monolith.security.enums.EGender;
+import com.danghieu99.monolith.security.constant.EGender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

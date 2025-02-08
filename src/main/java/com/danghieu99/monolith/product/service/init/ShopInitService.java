@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.product.service.init;
 
 import com.danghieu99.monolith.product.entity.Shop;
-import com.danghieu99.monolith.product.enums.EShopStatus;
+import com.danghieu99.monolith.product.constant.EShopStatus;
 import com.danghieu99.monolith.product.service.shop.ShopCrudService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,6 @@
 package com.danghieu99.monolith.product.controller.product;
 
+import com.danghieu99.monolith.product.dto.request.SearchByParamsRequest;
 import com.danghieu99.monolith.product.service.product.UserProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,38 +21,13 @@ public class ProductController {
         return ResponseEntity.ok(userProductService.getAll());
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity<?> search(@RequestParam String keyword, @RequestParam(required = false) @PageableDefault(size = 25, direction = Sort.Direction.ASC, sort = "name") Pageable pageable) {
-//        return ResponseEntity.ok(userProductService.searchByNameAndCategory(keyword));
-//    }
-//
-//    @GetMapping("/categories")
-//    public ResponseEntity<?> getCategories(@RequestParam(required = false) Pageable pageable) {
-//        return ResponseEntity.ok(userProductService.getAllCategories());
-//    }
-//
-//    public ResponseEntity<?> filterSearchResults(UserFilterSearchRequest request, @RequestParam(required = false) Pageable pageable) {
-//        return ResponseEntity.ok(userProductService.filterSearchRequest(request));
-//    }
-//
-//    @GetMapping("/product/{uuid}")
-//    public ResponseEntity<?> getProductDetailsByUUID(@PathVariable String uuid, @RequestParam(required = false) Pageable pageable) {
-//        return ResponseEntity.ok(userProductService.getProductDetailsByUUID(uuid));
-//    }
-//
-//    public ResponseEntity<?> foo() {
-//        return ResponseEntity.ok();
-//    }
-//
-//    public ResponseEntity<?> foo() {
-//        return ResponseEntity.ok();
-//    }
-//
-//    public ResponseEntity<?> foo() {
-//        return ResponseEntity.ok();
-//    }
-//
-//    public ResponseEntity<?> foo() {
-//        return ResponseEntity.ok();
-//    }
+    @GetMapping("/search")
+    public ResponseEntity<?> advancedSearchRequest(SearchByParamsRequest request, @RequestParam(required = false) Pageable pageable) {
+        return ResponseEntity.ok(userProductService.searchByParams(request, pageable));
+    }
+
+    @GetMapping("/details/{uuid}")
+    public ResponseEntity<?> getProductDetailsByUUID(@PathVariable String uuid) {
+        return ResponseEntity.ok(userProductService.getProductDetailsByUUID(uuid));
+    }
 }

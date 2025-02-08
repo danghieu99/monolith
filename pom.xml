@@ -30,6 +30,7 @@
         <java.version>21</java.version>
         <org.projectlombok.version>1.18.36</org.projectlombok.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <org.projectlombok.lombok-mapstruct-binding.version>0.2.0</org.projectlombok.lombok-mapstruct-binding.version>
         <io.jsonwebtoken.version>0.12.6</io.jsonwebtoken.version>
         <org.springdoc.openapi.version>2.7.0</org.springdoc.openapi.version>
         <io.minio.version>8.5.16</io.minio.version>
@@ -191,7 +192,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>0.2.0</version>
+                            <version>${org.projectlombok.lombok-mapstruct-binding.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

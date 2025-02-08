@@ -2,8 +2,8 @@ package com.danghieu99.monolith.security.service.init;
 
 import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.security.entity.Role;
-import com.danghieu99.monolith.security.enums.EGender;
-import com.danghieu99.monolith.security.enums.ERole;
+import com.danghieu99.monolith.security.constant.EGender;
+import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.service.account.AccountCrudService;
 import com.danghieu99.monolith.security.service.account.RoleCrudService;
 import jakarta.transaction.Transactional;
@@ -32,8 +32,6 @@ public class AccountInitService {
             userRoles.add(roleCrudService.getByERole(ERole.ROLE_USER));
             Set<Role> adminRoles = new HashSet<>();
             adminRoles.add(roleCrudService.getByERole(ERole.ROLE_ADMIN));
-            Set<Role> modRoles = new HashSet<>();
-            modRoles.add(roleCrudService.getByERole(ERole.ROLE_MODERATOR));
             Set<Role> sellerRoles = new HashSet<>();
             sellerRoles.add(roleCrudService.getByERole(ERole.ROLE_SELLER));
 
@@ -61,19 +59,6 @@ public class AccountInitService {
                         .roles(userRoles)
                         .build());
             });
-
-            IntStream.range(1, 20).parallel().forEach(i -> {
-                accountCrudService.create(Account.builder()
-                        .username("moderator" + i)
-                        .password(passwordEncoder.encode("modpassword" + i))
-                        .gender(EGender.valueOf(i % 2 == 0 ? "MALE" : "FEMALE"))
-                        .email("mod" + i + "@mail.com")
-                        .phone("0012345678" + i)
-                        .fullName("Moderator Full Name " + i)
-                        .roles(modRoles)
-                        .build());
-            });
-
 
             IntStream.range(1, 20).parallel().forEach(i -> {
                 accountCrudService.create(Account.builder()

@@ -1,12 +1,12 @@
 package com.danghieu99.monolith.product.service.product;
 
 import com.danghieu99.monolith.product.dto.request.SellerSaveProductRequest;
+import com.danghieu99.monolith.product.dto.response.GetProductDetailsResponse;
 import com.danghieu99.monolith.product.entity.Product;
 import com.danghieu99.monolith.product.entity.Variant;
 import com.danghieu99.monolith.product.mapper.ProductMapper;
 import com.danghieu99.monolith.product.service.category.CategoryCrudService;
 import com.danghieu99.monolith.product.service.shop.ShopCrudService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SellerProductService {
 
-    private final ProductMapper mapper;
+    private final ProductMapper productMapper;
 
     private final ShopCrudService shopCrudService;
 
@@ -26,18 +26,15 @@ public class SellerProductService {
 
     private final ProductCrudService productCrudService;
 
-    @Transactional
-    public Product addProduct(SellerSaveProductRequest request) {
-        Product newProduct = mapper.toProduct(request);
+    public GetProductDetailsResponse addProduct(SellerSaveProductRequest request) {
+        Product newProduct = productMapper.toProduct(request);
         newProduct.setShop(shopCrudService.getByUUID(request.getShopUUID()));
         newProduct.setCategories(request.getCategories().stream().map(categoryCrudService::getByName).collect(Collectors.toSet()));
         newProduct.setVariants(request.getVariants().stream()
-                .map(variant -> Variant.builder()
-                        .attributes(variant.getAttributes())
-                        .stock(variant.getStock())
-                        .price(variant.getPrice())
+                .map(attribute -> Variant.builder()
+                        .attributes(attribute)
                         .build())
-                .collect(Collectors.toSet()));
-        return productCrudService.create(newProduct);
+                .collect(Collectors.toUnmodifiableSet()));
+        return productMapper.toGetProductDetailsResponse(productCrudService.create(newProduct));
     }
 }

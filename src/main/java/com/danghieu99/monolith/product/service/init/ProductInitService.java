@@ -20,14 +20,14 @@ public class ProductInitService {
 
     private final ProductCrudService productCrudService;
     private final ShopCrudService shopCrudService;
-    private final CategoryCrudService categoryService;
+    private final CategoryCrudService categoryCrudService;
 
     @Transactional
     public void init() {
         if (productCrudService.getAll().isEmpty()) {
             IntStream.range(1, 50).parallel().forEach(i -> {
                 Set<Category> categories = new HashSet<>();
-                categories.add(categoryService.getById(i));
+                categories.add(categoryCrudService.getById(i));
                 Product newProduct = new Product("Default product " + i,
                         "Default product description " + i,
                         categories,

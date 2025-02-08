@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.cart.enums;
+package com.danghieu99.monolith.cart.constant;
 
 public enum ECartStatus {
     ACTIVE,

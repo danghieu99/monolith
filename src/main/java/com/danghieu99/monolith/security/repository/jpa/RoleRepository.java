@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.security.repository.jpa;
 
 import com.danghieu99.monolith.security.entity.Role;
-import com.danghieu99.monolith.security.enums.ERole;
+import com.danghieu99.monolith.security.constant.ERole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

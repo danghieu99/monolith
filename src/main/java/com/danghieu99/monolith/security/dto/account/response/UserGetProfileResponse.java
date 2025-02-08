@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.security.dto.account.response;
 
-import com.danghieu99.monolith.security.enums.EGender;
+import com.danghieu99.monolith.security.constant.EGender;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.security.service.init;
 
 import com.danghieu99.monolith.security.entity.Role;
-import com.danghieu99.monolith.security.enums.ERole;
+import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.service.account.RoleCrudService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

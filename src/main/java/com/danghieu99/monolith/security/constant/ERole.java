@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.security.enums;
+package com.danghieu99.monolith.security.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,11 +1,11 @@
-package com.danghieu99.monolith.product.dto;
+package com.danghieu99.monolith.product.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class CategoryDto {
+public class GetCategoryResponse {
 
     private final String name;
 

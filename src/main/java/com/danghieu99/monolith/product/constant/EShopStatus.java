@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.enums;
+package com.danghieu99.monolith.product.constant;
 
 public enum EShopStatus {
     SHOP_ACTIVE,

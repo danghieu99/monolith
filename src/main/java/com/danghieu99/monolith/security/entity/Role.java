@@ -2,7 +2,7 @@ package com.danghieu99.monolith.security.entity;
 
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
-import com.danghieu99.monolith.security.enums.ERole;
+import com.danghieu99.monolith.security.constant.ERole;
 import lombok.*;
 
 import jakarta.persistence.*;
