@@ -36,9 +36,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query("select a from Account a where a.phone like concat('%', :phone)")
     Page<Account> findByPhoneStartingWith(String phone, Pageable pageable);
 
-    @Query("select a from Account a join a.roles r where r.role = :eRole")
+    @Query("select a from Account a join AccountRole ar on a.id = ar.accountId join Role r on r = :eRole")
     Page<Account> findByERole(ERole eRole, Pageable pageable);
-
-    @Query("select a from Account a join a.roles r where r.role = :role")
-    Page<Account> findByRolesContaining(ERole role, Pageable pageable);
 }

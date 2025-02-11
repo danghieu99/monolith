@@ -13,7 +13,7 @@ public interface VariantRepository extends JpaRepository<Variant, Integer> {
 
     Optional<Variant> findByUuid(UUID uuid);
 
-    @Query("select v from Variant v where v.product.uuid = :productUUID")
+    @Query("select v from Variant v join Product p on v.productId = p.id where p.uuid = :productUUID")
     Optional<Variant> findByProductUuid(UUID productUUID);
 
     void deleteByUuid(UUID uuid);

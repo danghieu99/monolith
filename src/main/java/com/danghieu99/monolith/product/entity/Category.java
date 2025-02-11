@@ -7,7 +7,10 @@ import lombok.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "categories",
+        uniqueConstraints = {@UniqueConstraint(name = "uq_super_category",
+                columnNames = "id, super_category_id")
+        })
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,13 +20,11 @@ import java.util.Set;
 public class Category extends BaseEntity {
 
     @Column(nullable = false)
+    private int superCategoryId;
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private String description;
-
-    @ManyToMany(mappedBy = "categories")
-    @ToString.Exclude
-    private Set<Product> products;
-
 }

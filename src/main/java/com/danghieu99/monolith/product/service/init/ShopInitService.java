@@ -18,7 +18,7 @@ public class ShopInitService {
     @Transactional
     public void init() {
         if (shopCrudService.getAll().isEmpty()) {
-            IntStream.range(1, 50).parallel().forEach(i -> {
+            IntStream.range(1, 100).parallel().forEach(i -> {
                 shopCrudService.create(Shop.builder()
                         .name("Default shop " + i)
                         .description("Default shop description " + i)

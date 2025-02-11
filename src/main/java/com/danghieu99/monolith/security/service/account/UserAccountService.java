@@ -7,32 +7,39 @@ import com.danghieu99.monolith.security.dto.account.response.UserGetAccountDetai
 import com.danghieu99.monolith.security.dto.account.response.UserGetProfileResponse;
 import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.security.mapper.AccountMapper;
+import com.danghieu99.monolith.security.repository.jpa.RoleRepository;
 import com.danghieu99.monolith.security.service.auth.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserAccountService {
 
     private final AccountCrudService accountCrudService;
-
     private final AccountMapper accountMapper;
-
     private final AuthenticationManager authenticationManager;
-
     private final AuthenticationService authenticationService;
+    private final RoleRepository roleRepository;
 
     public UserGetProfileResponse getUserProfile(String uuid) {
-        return accountMapper.toUserGetProfileResponse(accountCrudService.getByUUID(UUID.fromString(uuid)));
+        var account = accountCrudService.getByUUID(UUID.fromString(uuid));
+        var profileResponse = accountMapper.toUserGetProfileResponse(account);
+        profileResponse.setRoles(accountMapper.rolesToRoleNames(roleRepository.findByAccountId(account.getId())));
+        return profileResponse;
     }
 
     public UserGetAccountDetailsResponse getCurrentAccountDetails() {
-        return accountMapper.toUserAccountDetailsResponse(accountCrudService.getById(authenticationService.getCurrentUserDetails().getId()));
+        int userId = authenticationService.getCurrentUserDetails().getId();
+        var detailsResponse = accountMapper.toUserAccountDetailsResponse(accountCrudService.getById(userId));
+        detailsResponse.setRoles(accountMapper.rolesToRoleNames(roleRepository.findByAccountId(userId)));
+        return detailsResponse;
     }
 
     public String getCurrentUserUUID() {
@@ -50,7 +57,7 @@ public class UserAccountService {
         return UserEditAccountResponse.builder().message("Edit success!").build();
     }
 
-    //add email confirm
+    //add email confirmation
     public void changeUserAccountPassword(UserChangePasswordRequest request) {
         if (request.getNewPassword().equals(request.getOldPassword())) {
             throw new IllegalArgumentException("Password not changed");

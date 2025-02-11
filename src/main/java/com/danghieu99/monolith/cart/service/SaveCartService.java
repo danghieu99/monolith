@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.cart.service.cart;
+package com.danghieu99.monolith.cart.service;
 
 import com.danghieu99.monolith.cart.entity.SaveCartItem;
 import com.danghieu99.monolith.cart.repository.jpa.SaveCartItemRepository;

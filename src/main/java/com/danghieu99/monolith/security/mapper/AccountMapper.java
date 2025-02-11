@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.security.mapper;
 
 import com.danghieu99.monolith.security.dto.account.request.AdminSaveAccountRequest;
+import com.danghieu99.monolith.security.dto.account.response.AdminSaveAccountResponse;
 import com.danghieu99.monolith.security.dto.auth.request.SignupRequest;
 import com.danghieu99.monolith.security.dto.account.response.UserGetAccountDetailsResponse;
 import com.danghieu99.monolith.security.dto.account.response.UserGetProfileResponse;
@@ -17,15 +18,16 @@ import java.util.stream.Collectors;
 public interface AccountMapper {
 
     @Mappings({
-            @Mapping(target = "roles", ignore = true),
-            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "password", ignore = true)
     })
     Account toAccount(AdminSaveAccountRequest adminSaveRequest);
 
-    @Mapping(target = "roles", qualifiedByName = "rolesToRoleNames")
+    AdminSaveAccountResponse toAdminSaveAccountResponse(Account account);
+
+    @Mapping(target = "roles", ignore = true)
     UserGetAccountDetailsResponse toUserAccountDetailsResponse(Account account);
 
-    @Mapping(target = "roles", qualifiedByName = "rolesToRoleNames")
+    @Mapping(target = "roles", ignore = true)
     UserGetProfileResponse toUserGetProfileResponse(Account account);
 
     @Mapping(target = "password", ignore = true)

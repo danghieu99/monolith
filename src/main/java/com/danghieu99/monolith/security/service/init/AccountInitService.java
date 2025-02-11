@@ -1,10 +1,11 @@
 package com.danghieu99.monolith.security.service.init;
 
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.entity.Role;
+import com.danghieu99.monolith.security.entity.AccountRole;
 import com.danghieu99.monolith.security.constant.EGender;
 import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.service.account.AccountCrudService;
+import com.danghieu99.monolith.security.service.account.AccountRoleCrudService;
 import com.danghieu99.monolith.security.service.account.RoleCrudService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,53 +25,62 @@ public class AccountInitService {
     private final AccountCrudService accountCrudService;
     private final PasswordEncoder passwordEncoder;
     private final RoleCrudService roleCrudService;
+    private final AccountRoleCrudService accountRoleCrudService;
 
     @Transactional
     public void init() {
         if (accountCrudService.getAll().isEmpty()) {
-            Set<Role> userRoles = new HashSet<>();
-            userRoles.add(roleCrudService.getByERole(ERole.ROLE_USER));
-            Set<Role> adminRoles = new HashSet<>();
-            adminRoles.add(roleCrudService.getByERole(ERole.ROLE_ADMIN));
-            Set<Role> sellerRoles = new HashSet<>();
-            sellerRoles.add(roleCrudService.getByERole(ERole.ROLE_SELLER));
-
+            Set<Account> accounts = new HashSet<>();
+            Set<AccountRole> accountRoles = new HashSet<>();
 
             IntStream.range(1, 10).parallel().forEach(i -> {
-                accountCrudService.create(Account.builder()
+                var adminAccount = Account.builder()
                         .username("admin" + i)
                         .password(passwordEncoder.encode("adminpassword" + i))
                         .gender(EGender.valueOf(i % 2 == 0 ? "MALE" : "FEMALE"))
                         .email("admin" + i + "@mail.com")
                         .phone("012345678" + i)
                         .fullName("Admin Full Name " + i)
-                        .roles(adminRoles)
+                        .build();
+                var savedAdminAccount = accountCrudService.save(adminAccount);
+                accountRoles.add(AccountRole.builder()
+                        .accountId(savedAdminAccount.getId())
+                        .roleId(roleCrudService.getByERole(ERole.ROLE_ADMIN).getId())
                         .build());
             });
 
             IntStream.range(1, 100).parallel().forEach(i -> {
-                accountCrudService.create(Account.builder()
+                var userAccount = (Account.builder()
                         .username("user" + i)
                         .password(passwordEncoder.encode("userpassword" + i))
                         .gender(EGender.valueOf(i % 2 == 0 ? "MALE" : "FEMALE"))
                         .email("user" + i + "@mail.com")
                         .phone("023456789" + i)
                         .fullName("User Full Name " + i)
-                        .roles(userRoles)
+                        .build());
+                var savedUserAccount = accountCrudService.save(userAccount);
+                accountRoles.add(AccountRole.builder()
+                        .accountId(savedUserAccount.getId())
+                        .roleId(roleCrudService.getByERole(ERole.ROLE_USER).getId())
                         .build());
             });
 
             IntStream.range(1, 20).parallel().forEach(i -> {
-                accountCrudService.create(Account.builder()
+                var sellerAccount = Account.builder()
                         .username("seller" + i)
                         .password(passwordEncoder.encode("sellerpassword" + i))
                         .gender(EGender.valueOf(i % 2 == 0 ? "MALE" : "FEMALE"))
                         .email("seller" + i + "@mail.com")
                         .phone("00100123456" + i)
                         .fullName("Seller Full Name " + i)
-                        .roles(sellerRoles)
+                        .build();
+                var savedSellerAccount = accountCrudService.save(sellerAccount);
+                accountRoles.add(AccountRole.builder()
+                        .accountId(savedSellerAccount.getId())
+                        .roleId(roleCrudService.getByERole(ERole.ROLE_SELLER).getId())
                         .build());
             });
+            accountRoleCrudService.saveAll(accountRoles);
         }
     }
 }

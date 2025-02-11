@@ -29,5 +29,5 @@ public class SellerSaveProductRequest {
     private final BigDecimal price;
 
     @NotEmpty
-    private final Set<Map<String, String>> variants;
+    private final Set<SellerSaveVariantRequest> variants;
 }

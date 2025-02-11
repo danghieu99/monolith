@@ -34,8 +34,4 @@ public class Shop extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EShopStatus status;
-
-    @OneToMany(mappedBy = "shop")
-    @ToString.Exclude
-    private Set<Product> products;
 }

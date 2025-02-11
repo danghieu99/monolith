@@ -1,7 +1,9 @@
 package com.danghieu99.monolith.security.service.account;
 
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.repository.jpa.RoleRepository;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -46,6 +48,11 @@ public class RoleCrudService {
     @Cacheable("roles")
     public List<Role> getAll() {
         return roleRepository.findAll();
+    }
+
+    @Cacheable("roles")
+    public Role getById(@NotNull int id) {
+        return roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
     }
 
     public Page<Role> getAllPaged(Pageable pageable) {

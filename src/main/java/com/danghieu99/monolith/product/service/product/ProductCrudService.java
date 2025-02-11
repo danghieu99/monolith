@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -32,6 +33,11 @@ public class ProductCrudService {
             throw new IllegalArgumentException("New product id must be null");
         }
         return productRepository.save(product);
+    }
+
+    @Transactional
+    public Collection<Product> saveAll(@NotEmpty Collection<Product> products) {
+        return productRepository.saveAll(products);
     }
 
     @Transactional

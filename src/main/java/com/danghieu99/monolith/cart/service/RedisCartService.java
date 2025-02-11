@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.cart.service.cart;
+package com.danghieu99.monolith.cart.service;
 
 import com.danghieu99.monolith.cart.entity.CartItem;
 import com.danghieu99.monolith.cart.repository.redis.CartItemRepository;

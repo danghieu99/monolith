@@ -83,12 +83,11 @@ public class AuthenticationService {
     public SignupResponse register(SignupRequest request) {
         Account account = accountMapper.toAccount(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
+        Account registeredAccount = accountCrudService.save(account);
         Set<Role> userRoles = new HashSet<>();
         userRoles.add(roleCrudService.getByERole(ERole.ROLE_USER));
-        account.setRoles(userRoles);
-        Account registeredAccount = accountCrudService.create(account);
         SignupResponseBody responseBody = SignupResponseBody.builder().username(registeredAccount.getUsername())
-                .roles(registeredAccount.getRoles().stream().map(role -> role.getRole().toString()).collect(Collectors.toSet())).message("Signup success!").build();
+                .roles(accountMapper.rolesToRoleNames(userRoles)).message("Signup success!").build();
         return SignupResponse.builder().body(responseBody).build();
     }
 

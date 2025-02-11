@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,11 +73,16 @@ public class AccountCrudService {
     }
 
     @Transactional
-    public Account create(@NotNull Account account) {
+    public Account save(@NotNull Account account) {
         if (account.getId() != null) {
             throw new IllegalArgumentException("New account id must be null");
         }
         return repository.save(account);
+    }
+
+    @Transactional
+    public Collection<Account> saveAll(@NotNull Collection<Account> accounts) {
+        return repository.saveAll(accounts);
     }
 
     @Transactional

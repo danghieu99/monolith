@@ -22,53 +22,42 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("select p from Product p where p.name like %:name%")
     List<Product> findByNameContaining(String name);
 
-    List<Product> findByCategories(Set<Category> categories);
+    @Query("select p from Product p join ProductCategory pc on p.id = pc.productId where pc.productId = :productId")
+    List<Product> findBySameCategoryProductId(int productId);
 
-    Page<Product> findByCategories(Set<Category> categories, Pageable pageable);
+    @Query("select p from Product p join ProductCategory pc on p.id = pc.productId where pc.categoryId = :categoryId")
+    List<Product> findByCategoryId(int categoryId);
 
-    @Query("select p from Category c join c.products p where p = :product")
-    List<Product> findBySameCategories(Product product);
+    @Query("select p from Product p join ProductCategory pc on p.id = pc.productId where pc.categoryId = :categoryId")
+    Page<Product> findByCategoryId(Category category, Pageable pageable);
 
-    @Query("select p from Product p join p.categories c where c = :category")
-    List<Product> findByCategoriesContaining(Category category);
+    @Query("select p from Product p join ProductCategory pc on p.id = pc.productId where pc.categoryId in :categoryIds")
+    List<Product> findByCategoryAnyOf(Collection<Integer> categoryIds);
 
-    @Query("select p from Product p join p.categories c where c = :category")
-    Page<Product> findByCategoriesContaining(Category category, Pageable pageable);
+    @Query("select p from Product p join ProductCategory pc on p.id = pc.productId where pc.categoryId in :categoryIds")
+    Page<Product> findByCategoryAnyOf(Collection<Integer> categoryIds, Pageable pageable);
 
-    @Query("select p from Product p join p.categories c where c in :categories")
-    List<Product> findByCategoriesContainingAny(Collection<Category> categories);
-
-    @Query("select p from Product p join p.categories c where c in :categories")
-    Page<Product> findByCategoriesContainingAny(Collection<Category> categories, Pageable pageable);
-
-    @Query("select p from Product p join p.categories c where p.name like concat('%' , :keyword, '%') or c.name like concat('%' , :keyword, '%')")
-    List<Product> findByNameOrCategoryContaining(String keyword);
-
-    @Query("select p from Product p join p.shop s where s = :shop")
-    List<Product> findByShop(Shop shop);
-
-    @Query("select p from Product p join p.shop s where s = :shop")
-    Page<Product> findByShop(Shop shop, Pageable pageable);
-
-    @Query("select p from Product p join p.shop s where s.id = :id")
+    @Query("select p from Product p join Shop s on s.id = p.shopId where s.id = :shopId")
     List<Product> findByShopId(int id);
 
-    @Query("select p from Product p join p.shop s where s.id = :id")
-    Page<Product> findByShopId(int id, Pageable pageable);
+    @Query("select p from Product p join Shop s on s.id = p.shopId where s.id = :shopId")
+    Page<Product> findByShopId(int shopId, Pageable pageable);
 
-    @Query("select p from Product p join p.shop s where s.uuid = :uuid")
+    @Query("select p from Product p join Shop s on s.id = p.shopId where s.uuid = :uuid")
     List<Product> findByShopUuid(UUID uuid);
 
-    @Query("select p from Product p join p.shop s where s.uuid = :uuid")
+    @Query("select p from Product p join Shop s on s.id = p.shopId where s.uuid = :uuid")
     Page<Product> findByShopUUID(UUID uuid, Pageable pageable);
 
     @Query("select p from Product p where p.name like %:name%")
     Page<Product> findByNameContaining(String name, Pageable pageable);
 
-    @Query("select p from Product p where " +
-            "(:name is null or p.name like concat('%', :name, '%'))" +
-            "and (:categories is null or exists(select c from p.categories c where c.name like concat('%', :categories, '%'))) " +
-            "and (:minPrice is null or p.price >= :minPrice) " +
-            "and (:maxPrice is null or p.price <= :maxPrice)")
+    @Query("select p from Product p " +
+            "join ProductCategory pc on p.id = pc.productId " +
+            "join Category c on c.id = pc.categoryId " +
+            "where (:name is null or p.name like concat('%', :name, '%'))" +
+            "and (:categories is null or c.name like concat('%', :categories, '%'))" +
+            "and (:minPrice is null or p.basePrice >= :minPrice)" +
+            "and (:maxPrice is null or p.basePrice <= :maxPrice)")
     Page<Product> findByNameContainingAndCategoryNameContainingAndPriceRange(String name, Set<String> categories, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 }

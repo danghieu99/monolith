@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.security.config.auth;
 
 import com.danghieu99.monolith.security.entity.Account;
+import com.danghieu99.monolith.security.entity.Role;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +11,7 @@ import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
@@ -32,8 +34,8 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(Account account) {
-        List<GrantedAuthority> authorities = account.getRoles().stream()
+    public static UserDetailsImpl build(Account account, Set<Role> roles) {
+        List<GrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                 .collect(Collectors.toList());
 
