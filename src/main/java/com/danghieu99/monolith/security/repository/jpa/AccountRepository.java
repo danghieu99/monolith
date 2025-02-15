@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,16 +27,28 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Optional<Account> findByEmail(String email);
 
     @Query("select a from Account a where a.email like concat('%', :email, '%')")
+    List<Account> findByEmailContains(String email);
+
+    @Query("select a from Account a where a.email like concat('%', :email, '%')")
     Page<Account> findByEmailContains(String email, Pageable pageable);
 
     Optional<Account> findByPhone(String phone);
 
     @Query("select a from Account a where a.phone like concat('%', :phone, '%')")
+    List<Account> findByPhoneContaining(String phone);
+
+    @Query("select a from Account a where a.phone like concat('%', :phone, '%')")
     Page<Account> findByPhoneContaining(String phone, Pageable pageable);
+
+    @Query("select a from Account a where a.phone like concat('%', :phone)")
+    List<Account> findByPhoneStartingWith(String phone);
 
     @Query("select a from Account a where a.phone like concat('%', :phone)")
     Page<Account> findByPhoneStartingWith(String phone, Pageable pageable);
 
-    @Query("select a from Account a join AccountRole ar on a.id = ar.accountId join Role r on r = :eRole")
+    @Query("select a from Account a join AccountRole ar on ar.accountId = a.id join Role r on ar.roleId = r.id where r.role = :eRole")
+    List<Account> findByERole(ERole eRole);
+
+    @Query("select a from Account a join AccountRole ar on ar.accountId = a.id join Role r on ar.roleId = r.id where r.role = :eRole")
     Page<Account> findByERole(ERole eRole, Pageable pageable);
 }

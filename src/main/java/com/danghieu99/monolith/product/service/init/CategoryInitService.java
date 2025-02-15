@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.product.service.init;
 
 import com.danghieu99.monolith.product.entity.Category;
-import com.danghieu99.monolith.product.service.category.CategoryCrudService;
+import com.danghieu99.monolith.product.service.product.daoservice.CategoryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class CategoryInitService {
 
-    private final CategoryCrudService categoryService;
+    private final CategoryService categoryService;
 
     @Transactional
     public void init() {

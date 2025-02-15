@@ -2,10 +2,11 @@ package com.danghieu99.monolith.product.repository.jpa;
 
 import com.danghieu99.monolith.product.entity.Category;
 import com.danghieu99.monolith.product.entity.Product;
-import com.danghieu99.monolith.product.entity.Shop;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -55,9 +56,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("select p from Product p " +
             "join ProductCategory pc on p.id = pc.productId " +
             "join Category c on c.id = pc.categoryId " +
-            "where (:name is null or p.name like concat('%', :name, '%'))" +
+            "where p.name like concat('%', :name, '%')" +
             "and (:categories is null or c.name like concat('%', :categories, '%'))" +
             "and (:minPrice is null or p.basePrice >= :minPrice)" +
             "and (:maxPrice is null or p.basePrice <= :maxPrice)")
     Page<Product> findByNameContainingAndCategoryNameContainingAndPriceRange(String name, Set<String> categories, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+
+    void deleteByUuid(UUID uuid);
 }

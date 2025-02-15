@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.cart.service;
 
 import com.danghieu99.monolith.cart.entity.CartItem;
-import com.danghieu99.monolith.cart.repository.redis.CartItemRepository;
+import com.danghieu99.monolith.cart.dao.redis.CartItemRepository;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

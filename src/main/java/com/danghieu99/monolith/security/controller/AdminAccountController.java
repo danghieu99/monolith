@@ -2,6 +2,7 @@ package com.danghieu99.monolith.security.controller;
 
 import com.danghieu99.monolith.security.dto.account.request.AdminSaveAccountRequest;
 import com.danghieu99.monolith.security.service.account.AdminAccountService;
+import com.danghieu99.monolith.security.service.dao.AccountService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -18,26 +19,21 @@ import org.springframework.web.bind.annotation.*;
 public class AdminAccountController {
 
     private final AdminAccountService aAccountService;
+    private final AccountService accountService;
 
     @GetMapping("")
     public ResponseEntity<?> getAccounts(@RequestParam(required = false) Pageable pageable) {
-        return ResponseEntity.ok(aAccountService.getAccounts(pageable));
+        return ResponseEntity.ok(accountService.getAll(pageable));
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getAccountById(@PathVariable int id) {
-        return ResponseEntity.ok(aAccountService.getAccountById(id));
+        return ResponseEntity.ok(accountService.getById(id));
     }
 
     @GetMapping("/username")
     public ResponseEntity<?> getAccountByUsername(@RequestParam String username) {
-        return ResponseEntity.ok(aAccountService.getAccountByUsername(username));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<?> searchAccountsByUsername(@Size(min = 3, max = 20) @Pattern(regexp = "^[a-zA-Z0-9-_]+$") @RequestParam String username,
-                                                      @RequestParam(required = false) Pageable pageable) {
-        return ResponseEntity.ok(aAccountService.searchAccountsByUsername(username, pageable));
+        return ResponseEntity.ok(accountService.getByUsername(username));
     }
 
     @PostMapping("/add")

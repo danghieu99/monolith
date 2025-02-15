@@ -8,8 +8,6 @@ import lombok.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -33,11 +31,6 @@ public class Account extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
-    private String password;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EGender gender;
@@ -51,4 +44,9 @@ public class Account extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String phone;
+
+    @Column(nullable = false)
+    @JsonIgnore
+    @ToString.Exclude
+    private String password;
 }

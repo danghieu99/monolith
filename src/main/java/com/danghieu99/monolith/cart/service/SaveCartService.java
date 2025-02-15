@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.cart.service;
 
 import com.danghieu99.monolith.cart.entity.SaveCartItem;
-import com.danghieu99.monolith.cart.repository.jpa.SaveCartItemRepository;
+import com.danghieu99.monolith.cart.dao.jpa.SaveCartItemRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;

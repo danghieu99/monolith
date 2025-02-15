@@ -11,8 +11,8 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 
 @Configuration
 @RequiredArgsConstructor
-@EnableRedisRepositories(basePackages = {"com.danghieu99.monolith.cart.repository.redis"})
-@EnableJpaRepositories(basePackages = {"com.danghieu99.monolith.cart.repository.jpa"})
+@EnableRedisRepositories(basePackages = {"com.danghieu99.monolith.cart.dao.redis"})
+@EnableJpaRepositories(basePackages = {"com.danghieu99.monolith.cart.dao.jpa"})
 public class CartSpringDataConfig {
 
     private final RedisConnectionFactory redisConnectionFactory;

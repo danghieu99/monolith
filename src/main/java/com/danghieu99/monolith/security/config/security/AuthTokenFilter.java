@@ -3,7 +3,7 @@ package com.danghieu99.monolith.security.config.security;
 import com.danghieu99.monolith.security.config.auth.TokenProperties;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.service.account.AccountCrudService;
+import com.danghieu99.monolith.security.service.dao.AccountService;
 import com.danghieu99.monolith.security.service.auth.TokenAuthenticationService;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import com.danghieu99.monolith.security.service.auth.UserDetailsServiceImpl;
@@ -42,7 +42,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     TokenProperties tokenProperties;
 
     @Autowired
-    AccountCrudService accountCrudService;
+    AccountService accountService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -52,7 +52,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (access != null && !access.isEmpty()) {
                 if (tokenAuthenticationService.isTokenValid(access)) {
                     Integer userId = Integer.valueOf(tokenAuthenticationService.parseClaimsFromToken(access).getSubject());
-                    Account account = accountCrudService.getById(userId);
+                    Account account = accountService.getById(userId);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
                     try {
                         UsernamePasswordAuthenticationToken authentication =

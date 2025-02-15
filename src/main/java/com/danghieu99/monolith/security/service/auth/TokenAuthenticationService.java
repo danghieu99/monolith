@@ -4,7 +4,7 @@ import com.danghieu99.monolith.security.config.auth.TokenProperties;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
-import com.danghieu99.monolith.security.service.account.AccountCrudService;
+import com.danghieu99.monolith.security.service.dao.AccountService;
 import com.danghieu99.monolith.security.service.token.RefreshTokenCrudService;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import io.jsonwebtoken.*;
@@ -27,7 +27,7 @@ public class TokenAuthenticationService {
 
     private final TokenProperties tokenProperties;
 
-    private final AccountCrudService accountCrudService;
+    private final AccountService accountService;
 
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -77,7 +77,7 @@ public class TokenAuthenticationService {
     }
 
     public UserDetailsImpl getUserDetailsFromToken(String refreshToken) {
-        Account account = accountCrudService.getById(Integer.valueOf(parseClaimsFromToken(refreshToken).getSubject()));
+        Account account = accountService.getById(Integer.valueOf(parseClaimsFromToken(refreshToken).getSubject()));
         UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails,

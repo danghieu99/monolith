@@ -9,27 +9,26 @@ import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.security.mapper.AccountMapper;
 import com.danghieu99.monolith.security.repository.jpa.RoleRepository;
 import com.danghieu99.monolith.security.service.auth.AuthenticationService;
+import com.danghieu99.monolith.security.service.dao.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserAccountService {
 
-    private final AccountCrudService accountCrudService;
+    private final AccountService accountService;
     private final AccountMapper accountMapper;
     private final AuthenticationManager authenticationManager;
     private final AuthenticationService authenticationService;
     private final RoleRepository roleRepository;
 
     public UserGetProfileResponse getUserProfile(String uuid) {
-        var account = accountCrudService.getByUUID(UUID.fromString(uuid));
+        var account = accountService.getByUUID(UUID.fromString(uuid));
         var profileResponse = accountMapper.toUserGetProfileResponse(account);
         profileResponse.setRoles(accountMapper.rolesToRoleNames(roleRepository.findByAccountId(account.getId())));
         return profileResponse;
@@ -37,23 +36,23 @@ public class UserAccountService {
 
     public UserGetAccountDetailsResponse getCurrentAccountDetails() {
         int userId = authenticationService.getCurrentUserDetails().getId();
-        var detailsResponse = accountMapper.toUserAccountDetailsResponse(accountCrudService.getById(userId));
+        var detailsResponse = accountMapper.toUserAccountDetailsResponse(accountService.getById(userId));
         detailsResponse.setRoles(accountMapper.rolesToRoleNames(roleRepository.findByAccountId(userId)));
         return detailsResponse;
     }
 
     public String getCurrentUserUUID() {
-        return accountCrudService.getById(authenticationService.getCurrentUserDetails().getId()).getId().toString();
+        return accountService.getById(authenticationService.getCurrentUserDetails().getId()).getId().toString();
     }
 
     public UserEditAccountResponse editAccountDetails(UserEditAccountDetailsRequest request) {
-        Account account = accountCrudService.getById(authenticationService.getCurrentUserDetails().getId());
+        Account account = accountService.getById(authenticationService.getCurrentUserDetails().getId());
         if (request.getUsername() != null) account.setUsername(request.getUsername());
         if (request.getEmail() != null) account.setEmail(request.getEmail());
         if (request.getGender() != null) account.setGender(request.getGender());
         if (request.getPhone() != null) account.setPhone(request.getPhone());
         if (request.getFullName() != null) account.setFullName(request.getFullName());
-        accountCrudService.update(account);
+        accountService.update(account);
         return UserEditAccountResponse.builder().message("Edit success!").build();
     }
 
@@ -68,8 +67,8 @@ public class UserAccountService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot authenticate with current password");
         }
-        Account account = accountCrudService.getById(authenticationService.getCurrentUserDetails().getId());
+        Account account = accountService.getById(authenticationService.getCurrentUserDetails().getId());
         account.setPassword(request.getNewPassword());
-        accountCrudService.update(account);
+        accountService.update(account);
     }
 }

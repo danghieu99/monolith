@@ -10,9 +10,10 @@ import com.danghieu99.monolith.security.entity.Role;
 import com.danghieu99.monolith.security.entity.Token;
 import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.mapper.AccountMapper;
-import com.danghieu99.monolith.security.service.account.AccountCrudService;
-import com.danghieu99.monolith.security.service.account.RoleCrudService;
+import com.danghieu99.monolith.security.service.dao.AccountService;
+import com.danghieu99.monolith.security.service.dao.RoleService;
 import com.danghieu99.monolith.security.service.token.RefreshTokenCrudService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
@@ -39,13 +40,13 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final RoleCrudService roleCrudService;
+    private final RoleService roleService;
 
     private final RefreshTokenCrudService refreshTokenCrudService;
 
     private final AccountMapper accountMapper;
 
-    private final AccountCrudService accountCrudService;
+    private final AccountService accountService;
 
     private final TokenProperties tokenProperties;
 
@@ -53,6 +54,7 @@ public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public LoginResponse authenticate(LoginRequest request) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -80,23 +82,26 @@ public class AuthenticationService {
         return LoginResponse.builder().body(body).cookies(cookies).build();
     }
 
+    @Transactional
     public SignupResponse register(SignupRequest request) {
         Account account = accountMapper.toAccount(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-        Account registeredAccount = accountCrudService.save(account);
+        Account registeredAccount = accountService.save(account);
         Set<Role> userRoles = new HashSet<>();
-        userRoles.add(roleCrudService.getByERole(ERole.ROLE_USER));
+        userRoles.add(roleService.getByERole(ERole.ROLE_USER));
         SignupResponseBody responseBody = SignupResponseBody.builder().username(registeredAccount.getUsername())
                 .roles(accountMapper.rolesToRoleNames(userRoles)).message("Signup success!").build();
         return SignupResponse.builder().body(responseBody).build();
     }
 
+    @Transactional
     public LogoutResponse logout(HttpServletRequest request) {
         tokenAuthenticationService.deleteCurrentRefreshToken(request);
         LogoutResponseBody response = LogoutResponseBody.builder().message("Logout success!").build();
         return LogoutResponse.builder().body(response).build();
     }
 
+    @Transactional
     public LogoutResponse logoutFromAllDevices() {
         refreshTokenCrudService.deleteByUserId(getCurrentUserDetails().getId());
         LogoutResponseBody response = LogoutResponseBody.builder().message("Logout from all devices success!").build();
