@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.security.config.data;
 
-import com.danghieu99.monolith.security.config.auth.TokenProperties;
+import com.danghieu99.monolith.security.config.auth.AuthTokenProperties;
 import com.danghieu99.monolith.security.entity.Token;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,7 +13,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties({TokenProperties.class})
+@EnableConfigurationProperties({AuthTokenProperties.class})
 @EnableJpaRepositories(basePackages = {"com.danghieu99.monolith.security.repository.jpa"})
 @EnableRedisRepositories(basePackages = {"com.danghieu99.monolith.security.repository.redis"})
 public class SecuritySpringDataConfig {

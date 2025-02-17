@@ -1,11 +1,10 @@
 package com.danghieu99.monolith.security.service.auth;
 
-import com.danghieu99.monolith.security.config.auth.TokenProperties;
+import com.danghieu99.monolith.security.config.auth.AuthTokenProperties;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.security.service.dao.AccountService;
-import com.danghieu99.monolith.security.service.token.RefreshTokenCrudService;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -25,45 +24,37 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class TokenAuthenticationService {
 
-    private final TokenProperties tokenProperties;
-
+    private final AuthTokenProperties authTokenProperties;
     private final AccountService accountService;
-
     private final UserDetailsServiceImpl userDetailsService;
-
-    private final RefreshTokenCrudService tokenService;
-
-    private final RefreshTokenCrudService refreshTokenCrudService;
+    private final RefreshTokenService tokenService;
+    private final RefreshTokenService refreshTokenService;
 
     public String buildAccessToken(UserDetailsImpl userDetails) {
-        SecretKey secretKey = Keys.hmacShaKeyFor(tokenProperties.getTokenSecretKey().getBytes());
+        SecretKey secretKey = Keys.hmacShaKeyFor(authTokenProperties.getTokenSecretKey().getBytes());
         Claims claims = Jwts.claims()
                 .subject(String.valueOf(userDetails.getId()))
-                .issuer(tokenProperties.getTokenIssuer())
+                .issuer(authTokenProperties.getTokenIssuer())
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plusMillis(tokenProperties.getAccessTokenExpireMs())))
+                .expiration(Date.from(Instant.now().plusMillis(authTokenProperties.getAccessTokenExpireMs())))
                 .build();
         return TokenUtil.buildToken(secretKey, claims);
     }
 
     public String buildRefreshToken(UserDetailsImpl userDetails) {
-        SecretKey secretKey = Keys.hmacShaKeyFor(tokenProperties.getTokenSecretKey().getBytes());
+        SecretKey secretKey = Keys.hmacShaKeyFor(authTokenProperties.getTokenSecretKey().getBytes());
         Claims claims = Jwts.claims()
                 .subject(String.valueOf(userDetails.getId()))
-                .issuer(tokenProperties.getTokenIssuer())
+                .issuer(authTokenProperties.getTokenIssuer())
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plusMillis(tokenProperties.getRefreshTokenExpireMs())))
+                .expiration(Date.from(Instant.now().plusMillis(authTokenProperties.getRefreshTokenExpireMs())))
                 .build();
         return TokenUtil.buildToken(secretKey, claims);
     }
 
     public Claims parseClaimsFromToken(String token) {
-        SecretKey secretKey = Keys.hmacShaKeyFor(tokenProperties.getTokenSecretKey().getBytes());
-        return TokenUtil.parseToken(secretKey, tokenProperties.getTokenIssuer(), token);
-    }
-
-    public boolean validateTokenSubjects(String access, String refresh) {
-        return parseClaimsFromToken(refresh).getSubject().trim().equals(parseClaimsFromToken(access).getSubject().trim());
+        SecretKey secretKey = Keys.hmacShaKeyFor(authTokenProperties.getTokenSecretKey().getBytes());
+        return TokenUtil.parseToken(secretKey, authTokenProperties.getTokenIssuer(), token);
     }
 
     public boolean isTokenStored(String refreshToken) {
@@ -87,8 +78,8 @@ public class TokenAuthenticationService {
     }
 
     public void deleteCurrentRefreshToken(HttpServletRequest request) {
-        String refresh = TokenUtil.parseTokenFromCookies(request.getCookies(), tokenProperties.getRefreshTokenName());
-        refreshTokenCrudService.deleteByValue(refresh);
+        String refresh = TokenUtil.parseTokenFromCookies(request.getCookies(), authTokenProperties.getRefreshTokenName());
+        refreshTokenService.deleteByValue(refresh);
     }
 
     public boolean isTokenValid(String token) {
@@ -98,24 +89,5 @@ public class TokenAuthenticationService {
             return false;
         }
         return true;
-    }
-
-    public boolean isTokenCryptValid(String token) {
-        try {
-            parseClaimsFromToken(token);
-        } catch (MalformedJwtException | UnsupportedJwtException |
-                 ExpiredJwtException e) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isTokenExpired(String token) {
-        try {
-            parseClaimsFromToken(token);
-        } catch (ExpiredJwtException e) {
-            return true;
-        }
-        return false;
     }
 }

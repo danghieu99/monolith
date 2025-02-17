@@ -30,31 +30,15 @@ public class AuthenticationController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authenticationService.authenticate(request);
         HttpHeaders headers = new HttpHeaders();
-        response.getCookies().forEach(cookie -> headers.add(HttpHeaders.SET_COOKIE, cookie.toString()));
         return ResponseEntity.ok()
                 .headers(headers)
-//                .header(HttpHeaders.AUTHORIZATION, jwtCookie.getValue())
-//                        .header("Access-Control-Allow-Origin", "*")
-//                        .header("Access-Control-Allow-Headers", "true")
-//                        .header("Access-Control-Allow-Credentials", "true")
-//                        .header("Access-Control-Allow-Methods", "*")
-//                        .header("Access-Control-Max-Age", "1209600")
                 .body(response.getBody());
     }
 
     @PostMapping("/auth/register")
     public ResponseEntity<?> register(@Valid @RequestBody SignupRequest request) {
         SignupResponse response = authenticationService.register(request);
-//        HttpHeaders headers = new HttpHeaders();
-//        response.getCookies().forEach(cookie -> headers.add(HttpHeaders.SET_COOKIE, cookie.toString()));
         return ResponseEntity.ok()
-//                .headers(headers)
-//                .header(HttpHeaders.AUTHORIZATION, jwtCookie.getValue())
-//                        .header("Access-Control-Allow-Origin", "*")
-//                        .header("Access-Control-Allow-Headers", "*")
-//                        .header("Access-Control-Allow-Credentials", "true")
-//                        .header("Access-Control-Allow-Methods", "*")
-//                        .header("Access-Control-Max-Age", "1209600")
                 .body(response.getBody());
     }
 
@@ -62,7 +46,6 @@ public class AuthenticationController {
     public ResponseEntity<?> logout(HttpServletRequest request) {
         LogoutResponse response = authenticationService.logout(request);
         return ResponseEntity.ok()
-//                .header("Access-Control-Allow-Credentials", "true")
                 .body(response.getBody());
     }
 
@@ -70,7 +53,6 @@ public class AuthenticationController {
     public ResponseEntity<?> logoutFromAllDevices() {
         LogoutResponse response = authenticationService.logoutFromAllDevices();
         return ResponseEntity.ok()
-//                .header("Access-Control-Allow-Credentials", "true")
                 .body(response.getBody());
     }
 

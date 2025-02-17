@@ -1,15 +1,16 @@
 package com.danghieu99.monolith.security.config.auth;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;;
 
 @ConfigurationProperties(prefix = "com.danghieu99.monolith.jwt")
 @Getter
-public class TokenProperties {
+public class AuthTokenProperties {
 
     @ConstructorBinding
-    public TokenProperties(String cookiePath, String tokenIssuer, String tokenSecretKey, String accessTokenName, String refreshTokenName, int accessTokenExpireMs, int refreshTokenExpireMs) {
+    public AuthTokenProperties(String cookiePath, String tokenIssuer, String tokenSecretKey, String accessTokenName, String refreshTokenName, int accessTokenExpireMs, int refreshTokenExpireMs) {
         this.cookiePath = cookiePath;
         this.tokenIssuer = tokenIssuer;
         this.tokenSecretKey = tokenSecretKey;
@@ -19,17 +20,18 @@ public class TokenProperties {
         this.refreshTokenExpireMs = refreshTokenExpireMs;
     }
 
+    @NotBlank
     private final String cookiePath;
-
+    @NotBlank
     private final String tokenIssuer;
-
+    @NotBlank
     private final String tokenSecretKey;
-
+    @NotBlank
     private final String accessTokenName;
-
+    @NotBlank
     private final String refreshTokenName;
-
+    @NotBlank
     private final int accessTokenExpireMs;
-
+    @NotBlank
     private final int refreshTokenExpireMs;
 }

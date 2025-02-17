@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.security.service.auth;
 
-import com.danghieu99.monolith.security.config.auth.TokenProperties;
+import com.danghieu99.monolith.security.config.auth.AuthTokenProperties;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.dto.auth.request.LoginRequest;
 import com.danghieu99.monolith.security.dto.auth.request.SignupRequest;
@@ -12,10 +12,10 @@ import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.mapper.AccountMapper;
 import com.danghieu99.monolith.security.service.dao.AccountService;
 import com.danghieu99.monolith.security.service.dao.RoleService;
-import com.danghieu99.monolith.security.service.token.RefreshTokenCrudService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,13 +42,13 @@ public class AuthenticationService {
 
     private final RoleService roleService;
 
-    private final RefreshTokenCrudService refreshTokenCrudService;
+    private final RefreshTokenService refreshTokenService;
 
     private final AccountMapper accountMapper;
 
     private final AccountService accountService;
 
-    private final TokenProperties tokenProperties;
+    private final AuthTokenProperties authTokenProperties;
 
     private final TokenAuthenticationService tokenAuthenticationService;
 
@@ -63,23 +63,33 @@ public class AuthenticationService {
         Set<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
-        List<ResponseCookie> cookies = new ArrayList<>();
-        ResponseCookie accessToken = ResponseCookie.from(tokenProperties.getAccessTokenName(), tokenAuthenticationService.buildAccessToken(userDetails)).build();
-        ResponseCookie refreshToken = ResponseCookie.from(tokenProperties.getRefreshTokenName(), tokenAuthenticationService.buildRefreshToken(userDetails)).build();
-        cookies.add(accessToken);
-        cookies.add(refreshToken);
+        ResponseCookie refreshToken = ResponseCookie.from(authTokenProperties.getRefreshTokenName(), tokenAuthenticationService.buildRefreshToken(userDetails)).build();
+        String accessToken = tokenAuthenticationService.buildAccessToken(userDetails);
         var saveToken = Token.builder()
                 .userId(userId)
                 .tokenValue(refreshToken.getValue())
-                .expiration(tokenProperties.getRefreshTokenExpireMs())
+                .expiration(authTokenProperties.getRefreshTokenExpireMs())
                 .build();
-        refreshTokenCrudService.save(saveToken);
+        refreshTokenService.save(saveToken);
+
+        HttpHeaders headers = new HttpHeaders();
+//        response.getCookies().forEach(cookie -> headers.add(HttpHeaders.SET_COOKIE, cookie.toString()));
+        headers.add(HttpHeaders.AUTHORIZATION, refreshToken.getValue());
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        headers.add("Access-Control-Allow-Origin", "*");
+        headers.add("Access-Control-Allow-Headers", "true");
+        headers.add("Access-Control-Allow-Credentials", "true");
+        headers.add("Access-Control-Allow-Methods", "*");
+        headers.add("Access-Control-Max-Age", String.valueOf(authTokenProperties.getRefreshTokenExpireMs()));
         var body = LoginResponseBody.builder()
                 .roles(roles)
                 .username(userDetails.getUsername())
                 .message("Login success!")
                 .build();
-        return LoginResponse.builder().body(body).cookies(cookies).build();
+        return LoginResponse.builder()
+                .body(body)
+                .headers(headers)
+                .build();
     }
 
     @Transactional
@@ -103,13 +113,13 @@ public class AuthenticationService {
 
     @Transactional
     public LogoutResponse logoutFromAllDevices() {
-        refreshTokenCrudService.deleteByUserId(getCurrentUserDetails().getId());
+        refreshTokenService.deleteByUserId(getCurrentUserDetails().getId());
         LogoutResponseBody response = LogoutResponseBody.builder().message("Logout from all devices success!").build();
         return LogoutResponse.builder().body(response).build();
     }
 
     public ResponseCookie refreshAuthentication() {
-        return ResponseCookie.from(tokenProperties.getRefreshTokenName(), tokenAuthenticationService.buildRefreshToken(getCurrentUserDetails())).build();
+        return ResponseCookie.from(authTokenProperties.getRefreshTokenName(), tokenAuthenticationService.buildRefreshToken(getCurrentUserDetails())).build();
     }
 
     public UserDetailsImpl getCurrentUserDetails() {

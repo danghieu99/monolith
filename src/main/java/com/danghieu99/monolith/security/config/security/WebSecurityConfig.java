@@ -1,5 +1,7 @@
 package com.danghieu99.monolith.security.config.security;
 
+import com.danghieu99.monolith.security.config.auth.AuthTokenEntryPoint;
+import com.danghieu99.monolith.security.config.auth.AuthTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
