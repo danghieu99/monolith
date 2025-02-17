@@ -126,7 +126,7 @@ public class SellerProductService {
     }
 
     @Transactional
-    public void deleteVariant(UUID variantUUID) {
-        variantService.deleteByUUID(variantUUID);
+    public void deleteVariant(String variantUUID) {
+        variantService.deleteByUUID(UUID.fromString(variantUUID));
     }
 }

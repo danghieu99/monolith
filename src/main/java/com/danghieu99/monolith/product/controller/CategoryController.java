@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.controller.user;
+package com.danghieu99.monolith.product.controller;
 
 import com.danghieu99.monolith.product.dto.response.CategoryResponse;
 import com.danghieu99.monolith.product.service.product.user.UserCategoryService;
@@ -15,32 +15,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/category")
 @RequiredArgsConstructor
-public class UserCategoryController {
+public class CategoryController {
 
     private final UserCategoryService userCategoryService;
 
     @GetMapping("")
-    public Page<CategoryResponse> getAllCategories(@PageableDefault @NotNull final Pageable pageable) {
+    public Page<CategoryResponse> getAllCategories(@PageableDefault Pageable pageable) {
         return userCategoryService.getAll(pageable);
     }
 
     @GetMapping("/uuid")
-    public CategoryResponse getCategoryByUUID(@RequestParam @NotNull final String uuid, @RequestParam @NotNull final Pageable pageable) {
-        return userCategoryService.getByUUID(uuid, pageable);
+    public CategoryResponse getCategoryByUUID(@RequestParam @NotNull String uuid) {
+        return userCategoryService.getByUUID(uuid);
     }
 
-    @GetMapping("/super-uuid")
-    public Page<CategoryResponse> getCategoryBySuperCategoryUUID(@RequestParam @NotNull String uuid, @RequestParam @NotNull Pageable pageable) {
+    @GetMapping("/sup-uuid")
+    public Page<CategoryResponse> getCategoryBySuperCategoryUUID(@RequestParam @NotNull String uuid, @RequestParam @PageableDefault Pageable pageable) {
         return userCategoryService.getBySuperCategoryUUID(uuid, pageable);
     }
 
     @GetMapping("/sub-uuid")
-    public Page<CategoryResponse> getBySubCategoryUUID(@RequestParam @NotNull String uuid, @RequestParam @NotNull Pageable pageable) {
+    public Page<CategoryResponse> getBySubCategoryUUID(@RequestParam @NotNull String uuid, @RequestParam @PageableDefault Pageable pageable) {
         return userCategoryService.getBySubCategoryUUID(uuid, pageable);
     }
 
-    @GetMapping("/name-containing")
-    public Page<CategoryResponse> searchByNameContaining(@RequestParam @NotNull String name, @RequestParam @NotNull Pageable pageable) {
+    @GetMapping("/search")
+    public Page<CategoryResponse> searchByName(@RequestParam @NotNull String name, @RequestParam @PageableDefault Pageable pageable) {
         return userCategoryService.getByNameContaining(name, pageable);
     }
 }

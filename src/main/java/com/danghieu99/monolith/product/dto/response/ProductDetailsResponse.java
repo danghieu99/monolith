@@ -22,7 +22,7 @@ public class ProductDetailsResponse {
     private String description;
 
     @NotEmpty
-    private Set<Category> categories;
+    private List<Category> categories;
 
     @NotNull
     private Shop shop;

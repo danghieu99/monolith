@@ -4,7 +4,10 @@ import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Shop;
 import com.danghieu99.monolith.product.repository.jpa.ShopRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -46,12 +49,16 @@ public class ShopService {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Shop", "id", id));
     }
 
-    public Shop getByUUID(String uuid) {
-        return repository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new ResourceNotFoundException("Shop", "UUID", uuid));
+    public Shop getByUUID(UUID uuid) {
+        return repository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException("Shop", "UUID", uuid));
     }
 
     public Shop getByName(String name) {
         return repository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Shop", "name", name));
+    }
+
+    public Page<Shop> getByNameContaining(@NotNull String name, @NotNull Pageable pageable) {
+        return repository.findByNameContaining(name, pageable);
     }
 
     @Transactional

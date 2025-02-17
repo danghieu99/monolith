@@ -10,7 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -63,8 +65,12 @@ public class CategoryService {
         return repository.findByNameContaining(name, pageable);
     }
 
-    public Page<Category> getBySubCategoryUUID(final UUID subCategoryUUID, Pageable pageable) {
+    public Page<Category> getBySubCategoryUUID(@NotNull final UUID subCategoryUUID, Pageable pageable) {
         return repository.findBySubCategoryUUID(subCategoryUUID, pageable);
+    }
+
+    public List<Category> getByProductUUID(@NotNull final UUID productUUID) {
+        return repository.findByProductUUID(productUUID);
     }
 
     @Transactional

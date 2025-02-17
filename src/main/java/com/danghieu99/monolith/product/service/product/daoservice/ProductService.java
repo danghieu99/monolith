@@ -27,6 +27,10 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    public Page<Product> getAll(@NotNull Pageable pageable) {
+        return productRepository.findAll(pageable);
+    }
+
     @Transactional
     public Product save(@NotNull Product product) {
         if (product.getId() != null) {

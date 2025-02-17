@@ -15,8 +15,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/seller/product")
@@ -47,22 +45,22 @@ public class SellerProductController {
     }
 
     @GetMapping("/variant")
-    public Page<VariantDetailsResponse> getVariantsByProductUUID(@RequestParam @NotBlank String productUUID, @NotNull Pageable pageable) {
+    public Page<VariantDetailsResponse> getVariantsByProductUUID(@RequestParam @NotBlank String productUUID, @RequestParam @PageableDefault Pageable pageable) {
         return sellerProductService.getVariantsByProductUUID(productUUID, pageable);
     }
 
     @PostMapping("/variant")
-    public VariantDetailsResponse addVariant(@RequestParam @NotBlank SaveVariantRequest request) {
+    public VariantDetailsResponse addVariant(@RequestParam @NotNull SaveVariantRequest request) {
         return sellerProductService.addVariant(request);
     }
 
     @PatchMapping("/variant")
-    public VariantDetailsResponse updateVariantByUUID(@RequestParam @NotBlank String uuid, @RequestParam @NotBlank SaveVariantRequest request) {
+    public VariantDetailsResponse updateVariantByUUID(@RequestParam @NotBlank String uuid, @RequestParam @NotNull SaveVariantRequest request) {
         return sellerProductService.updateVariantPriceStock(uuid, request);
     }
 
     @DeleteMapping("/variant")
-    public ResponseEntity<?> deleteVariant(@RequestParam @NotBlank UUID variantUUID) {
+    public ResponseEntity<?> deleteVariant(@RequestParam @NotBlank String variantUUID) {
         sellerProductService.deleteVariant(variantUUID);
         return ResponseEntity.ok().build();
     }

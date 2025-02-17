@@ -22,7 +22,7 @@ public class UserCategoryService {
         return categoryService.getAll(pageable).map(categoryMapper::toResponse);
     }
 
-    public CategoryResponse getByUUID(@NotNull final String uuid, @NotNull final Pageable pageable) {
+    public CategoryResponse getByUUID(@NotNull final String uuid) {
         return categoryMapper.toResponse(categoryService.getByUUID(UUID.fromString(uuid)));
     }
 
