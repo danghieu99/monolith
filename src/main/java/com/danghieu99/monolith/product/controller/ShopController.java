@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.product.controller;
 
 import com.danghieu99.monolith.product.dto.response.ShopDetailsResponse;
-import com.danghieu99.monolith.product.service.product.user.UserShopService;
+import com.danghieu99.monolith.product.service.shop.ShopService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,20 +17,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ShopController {
 
-    private final UserShopService userShopService;
+    private final ShopService shopService;
 
     @GetMapping("/uuid")
     public ShopDetailsResponse getByUUID(@RequestParam @NotBlank String uuid) {
-        return userShopService.getByUUID(uuid);
+        return shopService.getByUUID(uuid);
     }
 
     @GetMapping("/name")
     public ShopDetailsResponse getByName(@RequestParam @NotBlank String name) {
-        return userShopService.getByName(name);
+        return shopService.getByName(name);
     }
 
     @GetMapping("/search-name")
     public Page<ShopDetailsResponse> getByNameContainingIgnoreCase(@RequestParam @NotBlank String name, @RequestParam @PageableDefault Pageable pageable) {
-        return userShopService.getByNameContaining(name, pageable);
+        return shopService.getByNameContaining(name, pageable);
     }
 }

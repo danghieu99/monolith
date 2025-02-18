@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service.product.daoservice;
+package com.danghieu99.monolith.product.service.dao;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Category;
@@ -10,19 +10,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryService {
+public class CategoryDaoService {
 
     private final CategoryRepository repository;
 
     @Transactional
-    public Category create(Category category) {
+    public Category save(Category category) {
         if (category.getId() != null) {
             throw new IllegalArgumentException("New category id must be null");
         }

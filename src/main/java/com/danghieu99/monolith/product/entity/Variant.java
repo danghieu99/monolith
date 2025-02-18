@@ -17,15 +17,6 @@ import java.util.UUID;
 @Builder
 public class Variant extends BaseEntity {
 
-    @Setter(AccessLevel.NONE)
-    @Column(unique = true, nullable = false, updatable = false)
-    private UUID uuid;
-
-    @PrePersist
-    protected void prePersist() {
-        uuid = UUID.randomUUID();
-    }
-
     @Column(nullable = false)
     private int productId;
 

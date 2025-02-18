@@ -11,9 +11,7 @@ import java.math.BigDecimal;
 @Builder
 public class UpdateProductDetailsRequest {
 
-    @NotEmpty
     private final String name;
 
-    @NotEmpty
     private final String description;
 }

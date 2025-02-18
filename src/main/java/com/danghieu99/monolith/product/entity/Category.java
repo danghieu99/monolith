@@ -20,15 +20,6 @@ import java.util.UUID;
 @Builder
 public class Category extends BaseEntity {
 
-    @Setter(AccessLevel.NONE)
-    @Column(unique = true, nullable = false, updatable = false)
-    private UUID uuid;
-
-    @PrePersist
-    public void prePersist() {
-        this.uuid = UUID.randomUUID();
-    }
-
     @Column(nullable = false)
     private int superCategoryId;
 

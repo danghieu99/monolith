@@ -8,23 +8,20 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.*;
 
 @Entity
-@Table(name = "attributes",
-        uniqueConstraints = {@UniqueConstraint(name = "uq_product_attribute",
-                columnNames = "product_id, type, value")})
+@Table(name = "product_global_attributes",
+        uniqueConstraints = {@UniqueConstraint(name = "uq_product_global_attribute",
+                columnNames = "product_id, global_attribute_id")})
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Builder
-public class Attribute extends BaseEntity {
+public class ProductGlobalAttribute extends BaseEntity {
 
     @Column(nullable = false)
     private int productId;
 
     @Column(nullable = false)
-    private String type;
-
-    @Column(nullable = false)
-    private String value;
+    private int globalAttributeId;
 }

@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.product.controller;
 
 import com.danghieu99.monolith.product.dto.response.CategoryResponse;
-import com.danghieu99.monolith.product.service.product.user.UserCategoryService;
+import com.danghieu99.monolith.product.service.category.CategoryService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,30 +17,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final UserCategoryService userCategoryService;
+    private final CategoryService categoryService;
 
     @GetMapping("")
     public Page<CategoryResponse> getAllCategories(@PageableDefault Pageable pageable) {
-        return userCategoryService.getAll(pageable);
+        return categoryService.getAll(pageable);
     }
 
     @GetMapping("/uuid")
     public CategoryResponse getCategoryByUUID(@RequestParam @NotNull String uuid) {
-        return userCategoryService.getByUUID(uuid);
+        return categoryService.getByUUID(uuid);
     }
 
     @GetMapping("/sup-uuid")
     public Page<CategoryResponse> getCategoryBySuperCategoryUUID(@RequestParam @NotNull String uuid, @RequestParam @PageableDefault Pageable pageable) {
-        return userCategoryService.getBySuperCategoryUUID(uuid, pageable);
+        return categoryService.getBySuperCategoryUUID(uuid, pageable);
     }
 
     @GetMapping("/sub-uuid")
     public Page<CategoryResponse> getBySubCategoryUUID(@RequestParam @NotNull String uuid, @RequestParam @PageableDefault Pageable pageable) {
-        return userCategoryService.getBySubCategoryUUID(uuid, pageable);
+        return categoryService.getBySubCategoryUUID(uuid, pageable);
     }
 
     @GetMapping("/search")
     public Page<CategoryResponse> searchByName(@RequestParam @NotNull String name, @RequestParam @PageableDefault Pageable pageable) {
-        return userCategoryService.getByNameContaining(name, pageable);
+        return categoryService.getByNameContaining(name, pageable);
     }
 }

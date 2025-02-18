@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service.product.daoservice;
+package com.danghieu99.monolith.product.service.dao;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Product;
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService {
+public class ProductDaoService {
 
     private final ProductRepository productRepository;
 
@@ -72,6 +72,10 @@ public class ProductService {
         return productRepository.findByNameContaining(name, pageable);
     }
 
+    public Page<Product> getByCategoryId(@NotNull int id, Pageable pageable) {
+        return productRepository.findByCategoryId(id, pageable);
+    }
+
     @Transactional
     public void deleteById(@NotNull Integer id) {
         productRepository.deleteById(id);
@@ -91,6 +95,9 @@ public class ProductService {
     }
 
     public Page<Product> searchByParams(String name, Set<String> categories, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        if (minPrice.compareTo(maxPrice) > 0) {
+            throw new IllegalArgumentException("maxPrice must be greater than minPrice");
+        }
         return productRepository.findByNameContainingAndCategoryNameContainingAndPriceRange(name, categories, minPrice, maxPrice, pageable);
     }
 }

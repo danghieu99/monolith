@@ -14,5 +14,5 @@ public class UpdateShopDetailsRequest {
 
     private final EShopStatus status;
 
-    private final String imgUrl;
+//    private final String imgUrl;
 }

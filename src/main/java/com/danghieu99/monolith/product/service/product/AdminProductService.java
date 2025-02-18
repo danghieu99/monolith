@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service.product.admin;
+package com.danghieu99.monolith.product.service.product;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

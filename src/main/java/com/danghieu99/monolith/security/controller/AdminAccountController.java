@@ -2,10 +2,8 @@ package com.danghieu99.monolith.security.controller;
 
 import com.danghieu99.monolith.security.dto.account.request.AdminSaveAccountRequest;
 import com.danghieu99.monolith.security.service.account.AdminAccountService;
-import com.danghieu99.monolith.security.service.dao.AccountService;
+import com.danghieu99.monolith.security.service.dao.AccountDaoService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,21 +17,21 @@ import org.springframework.web.bind.annotation.*;
 public class AdminAccountController {
 
     private final AdminAccountService aAccountService;
-    private final AccountService accountService;
+    private final AccountDaoService accountDaoService;
 
     @GetMapping("")
     public ResponseEntity<?> getAccounts(@RequestParam(required = false) Pageable pageable) {
-        return ResponseEntity.ok(accountService.getAll(pageable));
+        return ResponseEntity.ok(accountDaoService.getAll(pageable));
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getAccountById(@PathVariable int id) {
-        return ResponseEntity.ok(accountService.getById(id));
+        return ResponseEntity.ok(accountDaoService.getById(id));
     }
 
     @GetMapping("/username")
     public ResponseEntity<?> getAccountByUsername(@RequestParam String username) {
-        return ResponseEntity.ok(accountService.getByUsername(username));
+        return ResponseEntity.ok(accountDaoService.getByUsername(username));
     }
 
     @PostMapping("/add")

@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service.product.daoservice;
+package com.danghieu99.monolith.product.service.dao;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Shop;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ShopService {
+public class ShopDaoService {
 
     private final ShopRepository repository;
 

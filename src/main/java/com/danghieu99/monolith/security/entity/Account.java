@@ -8,8 +8,6 @@ import lombok.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "accounts")
 @Getter
@@ -19,14 +17,6 @@ import java.util.UUID;
 @ToString
 @Builder
 public class Account extends BaseEntity {
-
-    @Column(unique = true, nullable = false, updatable = false)
-    private UUID uuid;
-
-    @PrePersist
-    private void onCreate() {
-        this.uuid = UUID.randomUUID();
-    }
 
     @Column(nullable = false, unique = true)
     private String username;

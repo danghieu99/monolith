@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.product.controller.admin;
 
-import com.danghieu99.monolith.product.service.product.admin.AdminShopService;
+import com.danghieu99.monolith.product.service.shop.AdminShopService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

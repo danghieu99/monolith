@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -19,8 +20,17 @@ public interface VariantRepository extends JpaRepository<Variant, Integer> {
 
     Optional<Variant> findByUuid(UUID uuid);
 
+    @Query("select v from Variant v where v.productId = :productId")
+    Set<Variant> findByProductId(@NotNull int productId);
+
+    @Query("select v from Variant v where v.productId = :productId")
+    Page<Variant> findByProductId(@NotNull int productId, @NotNull Pageable pageable);
+
     @Query("select v from Variant v join Product p on v.productId = p.id where p.uuid = :productUUID")
     Page<Variant> findByProductUuid(UUID productUUID, Pageable pageable);
+
+    @Query("select v from Variant v join Product p on v.productId = p.id where p.uuid = :productUUID")
+    Set<Variant> findByProductUuid(UUID productUUID);
 
     void deleteByUuid(UUID uuid);
 }

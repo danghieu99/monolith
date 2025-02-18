@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service.product.daoservice;
+package com.danghieu99.monolith.product.service.dao;
 
 import com.danghieu99.monolith.product.repository.jpa.VariantAttributeRepository;
 import com.danghieu99.monolith.product.entity.VariantAttribute;
@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
-public class VariantAttributeService {
+public class VariantAttributeDaoService {
 
     private final VariantAttributeRepository variantAttributeRepository;
 

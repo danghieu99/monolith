@@ -1,8 +1,8 @@
 package com.danghieu99.monolith.security.config.auth;
 
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.service.dao.AccountService;
-import com.danghieu99.monolith.security.service.auth.TokenAuthenticationService;
+import com.danghieu99.monolith.security.service.dao.AccountDaoService;
+import com.danghieu99.monolith.security.service.auth.AuthTokenUtilService;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import com.danghieu99.monolith.security.service.auth.UserDetailsServiceImpl;
 import io.jsonwebtoken.JwtException;
@@ -31,10 +31,10 @@ import java.io.IOException;
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-    TokenAuthenticationService tokenAuthenticationService;
+    AuthTokenUtilService authTokenUtilService;
     UserDetailsServiceImpl userDetailsService;
     AuthTokenProperties authTokenProperties;
-    AccountService accountService;
+    AccountDaoService accountDaoService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -43,9 +43,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             String access = TokenUtil.parseTokenFromCookies(request.getCookies(), authTokenProperties.getAccessTokenName());
             if (access != null && !access.isEmpty()
-                    && tokenAuthenticationService.isTokenValid(access)) {
-                Integer userId = Integer.valueOf(tokenAuthenticationService.parseClaimsFromToken(access).getSubject());
-                Account account = accountService.getById(userId);
+                    && authTokenUtilService.isTokenValid(access)) {
+                Integer userId = Integer.valueOf(authTokenUtilService.parseClaimsFromToken(access).getSubject());
+                Account account = accountDaoService.getById(userId);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
                 try {
                     UsernamePasswordAuthenticationToken authentication =
@@ -61,10 +61,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             } else {
                 String refresh = TokenUtil.parseTokenFromCookies(request.getCookies(), authTokenProperties.getRefreshTokenName());
                 if (refresh != null && !refresh.isEmpty()
-                        && tokenAuthenticationService.isTokenValid(refresh)
-                        && tokenAuthenticationService.isTokenStored(refresh)) {
-                    UserDetailsImpl userDetails = tokenAuthenticationService.getUserDetailsFromToken(refresh);
-                    String newAccessToken = tokenAuthenticationService.buildAccessToken(userDetails);
+                        && authTokenUtilService.isTokenValid(refresh)
+                        && authTokenUtilService.isTokenStored(refresh)) {
+                    UserDetailsImpl userDetails = authTokenUtilService.getUserDetailsFromToken(refresh);
+                    String newAccessToken = authTokenUtilService.buildAccessToken(userDetails);
                     ResponseCookie cookie = ResponseCookie.from(authTokenProperties.getAccessTokenName(), newAccessToken)
                             .httpOnly(true)
                             .secure(true)

@@ -1,8 +1,8 @@
-package com.danghieu99.monolith.product.service.product.user;
+package com.danghieu99.monolith.product.service.shop;
 
 import com.danghieu99.monolith.product.dto.response.ShopDetailsResponse;
 import com.danghieu99.monolith.product.mapper.ShopMapper;
-import com.danghieu99.monolith.product.service.product.daoservice.ShopService;
+import com.danghieu99.monolith.product.service.dao.ShopDaoService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -14,20 +14,20 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserShopService {
+public class ShopService {
 
-    private final ShopService shopService;
+    private final ShopDaoService shopDaoService;
     private final ShopMapper shopMapper;
 
     public ShopDetailsResponse getByUUID(@NotBlank String uuid) {
-        return shopMapper.toResponse(shopService.getByUUID(UUID.fromString(uuid)));
+        return shopMapper.toResponse(shopDaoService.getByUUID(UUID.fromString(uuid)));
     }
 
     public ShopDetailsResponse getByName(@NotBlank String name) {
-        return shopMapper.toResponse(shopService.getByName(name));
+        return shopMapper.toResponse(shopDaoService.getByName(name));
     }
 
     public Page<ShopDetailsResponse> getByNameContaining(@NotBlank String name, @NotNull Pageable pageable) {
-        return shopService.getByNameContaining(name, pageable).map(shopMapper::toResponse);
+        return shopDaoService.getByNameContaining(name, pageable).map(shopMapper::toResponse);
     }
 }

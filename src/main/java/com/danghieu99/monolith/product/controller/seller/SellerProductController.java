@@ -5,7 +5,7 @@ import com.danghieu99.monolith.product.dto.request.SaveVariantRequest;
 import com.danghieu99.monolith.product.dto.request.UpdateProductDetailsRequest;
 import com.danghieu99.monolith.product.dto.response.VariantDetailsResponse;
 import com.danghieu99.monolith.product.dto.response.ProductDetailsResponse;
-import com.danghieu99.monolith.product.service.product.seller.SellerProductService;
+import com.danghieu99.monolith.product.service.product.SellerProductService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ public class SellerProductController {
 
     @PatchMapping("/variant")
     public VariantDetailsResponse updateVariantByUUID(@RequestParam @NotBlank String uuid, @RequestParam @NotNull SaveVariantRequest request) {
-        return sellerProductService.updateVariantPriceStock(uuid, request);
+        return sellerProductService.updateVariantPriceStockByUUID(uuid, request);
     }
 
     @DeleteMapping("/variant")

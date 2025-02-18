@@ -10,8 +10,8 @@ import com.danghieu99.monolith.security.entity.Role;
 import com.danghieu99.monolith.security.entity.Token;
 import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.mapper.AccountMapper;
-import com.danghieu99.monolith.security.service.dao.AccountService;
-import com.danghieu99.monolith.security.service.dao.RoleService;
+import com.danghieu99.monolith.security.service.dao.AccountDaoService;
+import com.danghieu99.monolith.security.service.dao.RoleDaoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +27,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,17 +38,17 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final RoleService roleService;
+    private final RoleDaoService roleDaoService;
 
     private final RefreshTokenService refreshTokenService;
 
     private final AccountMapper accountMapper;
 
-    private final AccountService accountService;
+    private final AccountDaoService accountDaoService;
 
     private final AuthTokenProperties authTokenProperties;
 
-    private final TokenAuthenticationService tokenAuthenticationService;
+    private final AuthTokenUtilService authTokenUtilService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -63,18 +61,21 @@ public class AuthenticationService {
         Set<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
-        ResponseCookie refreshToken = ResponseCookie.from(authTokenProperties.getRefreshTokenName(), tokenAuthenticationService.buildRefreshToken(userDetails)).build();
-        String accessToken = tokenAuthenticationService.buildAccessToken(userDetails);
+
+        ResponseCookie refreshTokenCookie = ResponseCookie
+                .from(authTokenProperties.getRefreshTokenName(), authTokenUtilService.buildRefreshToken(userDetails))
+                .build();
+        String accessToken = authTokenUtilService.buildAccessToken(userDetails);
         var saveToken = Token.builder()
                 .userId(userId)
-                .tokenValue(refreshToken.getValue())
+                .tokenValue(refreshTokenCookie.getValue())
                 .expiration(authTokenProperties.getRefreshTokenExpireMs())
                 .build();
         refreshTokenService.save(saveToken);
 
         HttpHeaders headers = new HttpHeaders();
 //        response.getCookies().forEach(cookie -> headers.add(HttpHeaders.SET_COOKIE, cookie.toString()));
-        headers.add(HttpHeaders.AUTHORIZATION, refreshToken.getValue());
+        headers.add(HttpHeaders.AUTHORIZATION, refreshTokenCookie.toString());
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         headers.add("Access-Control-Allow-Origin", "*");
         headers.add("Access-Control-Allow-Headers", "true");
@@ -82,8 +83,8 @@ public class AuthenticationService {
         headers.add("Access-Control-Allow-Methods", "*");
         headers.add("Access-Control-Max-Age", String.valueOf(authTokenProperties.getRefreshTokenExpireMs()));
         var body = LoginResponseBody.builder()
-                .roles(roles)
                 .username(userDetails.getUsername())
+                .roles(roles)
                 .message("Login success!")
                 .build();
         return LoginResponse.builder()
@@ -96,9 +97,9 @@ public class AuthenticationService {
     public SignupResponse register(SignupRequest request) {
         Account account = accountMapper.toAccount(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-        Account registeredAccount = accountService.save(account);
+        Account registeredAccount = accountDaoService.save(account);
         Set<Role> userRoles = new HashSet<>();
-        userRoles.add(roleService.getByERole(ERole.ROLE_USER));
+        userRoles.add(roleDaoService.getByERole(ERole.ROLE_USER));
         SignupResponseBody responseBody = SignupResponseBody.builder().username(registeredAccount.getUsername())
                 .roles(accountMapper.rolesToRoleNames(userRoles)).message("Signup success!").build();
         return SignupResponse.builder().body(responseBody).build();
@@ -106,7 +107,7 @@ public class AuthenticationService {
 
     @Transactional
     public LogoutResponse logout(HttpServletRequest request) {
-        tokenAuthenticationService.deleteCurrentRefreshToken(request);
+        authTokenUtilService.deleteCurrentRefreshToken(request);
         LogoutResponseBody response = LogoutResponseBody.builder().message("Logout success!").build();
         return LogoutResponse.builder().body(response).build();
     }
@@ -114,12 +115,14 @@ public class AuthenticationService {
     @Transactional
     public LogoutResponse logoutFromAllDevices() {
         refreshTokenService.deleteByUserId(getCurrentUserDetails().getId());
-        LogoutResponseBody response = LogoutResponseBody.builder().message("Logout from all devices success!").build();
+        LogoutResponseBody response = LogoutResponseBody.builder()
+                .message("Logout from all devices success!")
+                .build();
         return LogoutResponse.builder().body(response).build();
     }
 
     public ResponseCookie refreshAuthentication() {
-        return ResponseCookie.from(authTokenProperties.getRefreshTokenName(), tokenAuthenticationService.buildRefreshToken(getCurrentUserDetails())).build();
+        return ResponseCookie.from(authTokenProperties.getRefreshTokenName(), authTokenUtilService.buildRefreshToken(getCurrentUserDetails())).build();
     }
 
     public UserDetailsImpl getCurrentUserDetails() {

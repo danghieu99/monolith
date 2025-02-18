@@ -3,7 +3,7 @@ package com.danghieu99.monolith.product.controller.seller;
 import com.danghieu99.monolith.product.dto.request.SaveShopRequest;
 import com.danghieu99.monolith.product.dto.request.UpdateShopDetailsRequest;
 import com.danghieu99.monolith.product.dto.response.ShopDetailsResponse;
-import com.danghieu99.monolith.product.service.product.seller.SellerShopService;
+import com.danghieu99.monolith.product.service.shop.SellerShopService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

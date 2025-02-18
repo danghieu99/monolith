@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.product.controller;
 
 import com.danghieu99.monolith.product.dto.request.SearchProductRequest;
-import com.danghieu99.monolith.product.service.product.user.UserProductService;
+import com.danghieu99.monolith.product.service.product.ProductService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/products")
 public class ProductController {
 
-    private final UserProductService userProductService;
+    private final ProductService productService;
 
     @GetMapping("")
     public ResponseEntity<?> getAllProducts(@RequestParam(required = false) @PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(userProductService.getAll(pageable));
+        return ResponseEntity.ok(productService.getAll(pageable));
     }
 
     @GetMapping("/search")
     public ResponseEntity<?> advancedSearchRequest(SearchProductRequest request, @RequestParam(required = false) @PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(userProductService.searchByParams(request, pageable));
+        return ResponseEntity.ok(productService.searchByParams(request, pageable));
     }
 
     @GetMapping("/details/{uuid}")
     public ResponseEntity<?> getProductDetailsByUUID(@PathVariable @NotBlank String uuid) {
-        return ResponseEntity.ok(userProductService.getProductDetailsByUUID(uuid));
+        return ResponseEntity.ok(productService.getProductDetailsByUUID(uuid));
     }
 }

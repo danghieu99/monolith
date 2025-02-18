@@ -18,15 +18,6 @@ import java.util.UUID;
 @Builder
 public class Shop extends BaseEntity {
 
-    @Setter(AccessLevel.NONE)
-    @Column(unique = true, nullable = false, updatable = false)
-    private UUID uuid;
-
-    @PrePersist
-    protected void onCreate() {
-        this.uuid = UUID.randomUUID();
-    }
-
     @Column(nullable = false)
     private String name;
 

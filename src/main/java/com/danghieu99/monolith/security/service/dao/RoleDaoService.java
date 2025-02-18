@@ -17,11 +17,11 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Service
-public class RoleService {
+public class RoleDaoService {
 
     private final RoleRepository roleRepository;
 
-    public RoleService(RoleRepository roleRepository) {
+    public RoleDaoService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 

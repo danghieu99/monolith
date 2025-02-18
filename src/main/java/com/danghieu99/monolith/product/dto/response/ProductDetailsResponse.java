@@ -28,5 +28,5 @@ public class ProductDetailsResponse {
     private Shop shop;
 
     @NotEmpty
-    private Set<String> variantUuids;
+    private Set<VariantDetailsResponse> variants;
 }

@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service.product.daoservice;
+package com.danghieu99.monolith.product.service.dao;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Variant;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class VariantService {
+public class VariantDaoService {
 
     private final VariantRepository variantRepository;
 
@@ -37,6 +37,7 @@ public class VariantService {
         return variantRepository.saveAll(variants);
     }
 
+    @Transactional
     public Variant updateByUUID(UUID uuid, Variant variant) {
         var current = getByUUID(uuid);
         if (variant.getPrice() != null) {

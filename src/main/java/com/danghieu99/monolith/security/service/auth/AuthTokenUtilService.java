@@ -3,8 +3,7 @@ package com.danghieu99.monolith.security.service.auth;
 import com.danghieu99.monolith.security.config.auth.AuthTokenProperties;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
-import com.danghieu99.monolith.security.service.dao.AccountService;
+import com.danghieu99.monolith.security.service.dao.AccountDaoService;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -22,12 +21,11 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
-public class TokenAuthenticationService {
+public class AuthTokenUtilService {
 
+    private final AccountDaoService accountDaoService;
     private final AuthTokenProperties authTokenProperties;
-    private final AccountService accountService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final RefreshTokenService tokenService;
     private final RefreshTokenService refreshTokenService;
 
     public String buildAccessToken(UserDetailsImpl userDetails) {
@@ -58,17 +56,12 @@ public class TokenAuthenticationService {
     }
 
     public boolean isTokenStored(String refreshToken) {
-        try {
-            tokenService.findByValue(refreshToken)
-                    .orElseThrow(() -> new ResourceNotFoundException("Token", "Value", refreshToken));
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
+        return refreshTokenService.existsByValue(refreshToken);
     }
 
     public UserDetailsImpl getUserDetailsFromToken(String refreshToken) {
-        Account account = accountService.getById(Integer.valueOf(parseClaimsFromToken(refreshToken).getSubject()));
+        Account account = accountDaoService
+                .getById(Integer.valueOf(parseClaimsFromToken(refreshToken).getSubject()));
         UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails,
