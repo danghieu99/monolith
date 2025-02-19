@@ -6,8 +6,14 @@ import com.danghieu99.monolith.product.dto.request.UpdateProductDetailsRequest;
 import com.danghieu99.monolith.product.dto.response.VariantDetailsResponse;
 import com.danghieu99.monolith.product.dto.response.ProductDetailsResponse;
 import com.danghieu99.monolith.product.entity.*;
+import com.danghieu99.monolith.product.entity.join.ProductCategory;
+import com.danghieu99.monolith.product.entity.join.ProductShop;
+import com.danghieu99.monolith.product.entity.join.VariantAttribute;
 import com.danghieu99.monolith.product.mapper.ProductMapper;
 import com.danghieu99.monolith.product.mapper.VariantMapper;
+import com.danghieu99.monolith.product.repository.jpa.join.ProductCategoryRepository;
+import com.danghieu99.monolith.product.repository.jpa.join.ProductShopRepository;
+import com.danghieu99.monolith.product.repository.jpa.join.VariantAttributeRepository;
 import com.danghieu99.monolith.product.service.dao.*;
 import com.danghieu99.monolith.security.service.auth.AuthenticationService;
 import jakarta.transaction.Transactional;
@@ -28,7 +34,6 @@ import java.util.UUID;
 @Slf4j
 public class SellerProductService {
 
-    private final ProductCategoryDaoService productCategoryDaoService;
     private final ProductMapper productMapper;
     private final ShopDaoService shopDaoService;
     private final CategoryDaoService categoryDaoService;
@@ -37,7 +42,10 @@ public class SellerProductService {
     private final AuthenticationService authenticationService;
     private final VariantMapper variantMapper;
     private final AttributeDaoService attributeDaoService;
-    private final VariantAttributeDaoService variantAttributeDaoService;
+    private final ProductCategoryRepository pCategoryRepository;
+    private final VariantAttributeRepository vAttributeRepository;
+    private final ProductShopRepository productShopRepository;
+    private final VariantAttributeRepository variantAttributeRepository;
 
     public Page<ProductDetailsResponse> getAllByCurrentShop(@NotNull Pageable pageable) {
         Page<Product> products = productDaoService.getByShopId(authenticationService.getCurrentUserDetails().getId(), pageable);
@@ -45,32 +53,30 @@ public class SellerProductService {
     }
 
     @Transactional
-    public ProductDetailsResponse addToCurrentShop(@NotNull SaveProductRequest request) {
+    public void addToCurrentShop(@NotNull SaveProductRequest request) {
+        ProductShop productShop;
+        Set<ProductCategory> productCategories = new HashSet<>();
         Set<Variant> variants = new HashSet<>();
         Set<VariantAttribute> variantAttributes = new HashSet<>();
-        Set<ProductCategory> pCategories = new HashSet<>();
-        Set<VariantDetailsResponse> responseVariants = new HashSet<>();
 
         Product newProduct = productMapper.toProduct(request);
         int userId = authenticationService.getCurrentUserDetails().getId();
-        newProduct.setShopId(shopDaoService.getById(userId).getId());
         var savedProduct = productDaoService.save(newProduct);
-
-
+        productShop = ProductShop.builder()
+                .productId(savedProduct.getId())
+                .shopId(shopDaoService.getByAccountId(userId).getId())
+                .build();
         request.getCategories()
-                .forEach(category -> pCategories.add(ProductCategory.builder()
+                .forEach(category -> productCategories.add(ProductCategory.builder()
                         .categoryId(categoryDaoService.getByName(category.trim()).getId())
                         .productId(savedProduct.getId())
                         .build()));
-
         request.getVariants().forEach(requestVariant -> {
             var variant = variantMapper.toVariant(requestVariant);
             variant.setProductId(savedProduct.getId());
             variant.setPrice(requestVariant.getPrice());
             variant.setStock(requestVariant.getStock());
             var savedVariant = variantDaoService.save(variant);
-            responseVariants.add(variantMapper.toResponse(savedVariant));
-
             requestVariant.getAttributes().forEach((key, value) -> {
                 var savedAttribute = attributeDaoService.save(Attribute.builder()
                         .type(key)
@@ -83,13 +89,10 @@ public class SellerProductService {
                         .build());
             });
         });
-        productCategoryDaoService.saveAll(pCategories);
+        productShopRepository.save(productShop);
+        pCategoryRepository.saveAll(productCategories);
         variantDaoService.saveAll(variants);
-        variantAttributeDaoService.saveAll(variantAttributes);
-
-        var response = productMapper.toGetProductDetailsResponse(savedProduct);
-        response.setVariants(responseVariants);
-        return response;
+        vAttributeRepository.saveAll(variantAttributes);
     }
 
     @Transactional
@@ -106,7 +109,7 @@ public class SellerProductService {
 
     @Transactional
     public void deleteProductByUUID(@NotBlank String uuid) {
-        productDaoService.deleteByUUID(UUID.fromString(uuid));
+        productDaoService.deleteByUUIDCascading(UUID.fromString(uuid));
     }
 
     @Transactional
@@ -115,18 +118,17 @@ public class SellerProductService {
     }
 
     @Transactional
-    public VariantDetailsResponse addVariant(@NotNull SaveVariantRequest request) {
-        return variantMapper.toResponse(variantDaoService.save(variantMapper.toVariant(request)));
+    public void addVariant(@NotNull SaveVariantRequest request) {
+        variantDaoService.save(variantMapper.toVariant(request));
     }
 
     @Transactional
-    public VariantDetailsResponse updateVariantPriceStockByUUID(@NotBlank String variantUUID, @NotNull SaveVariantRequest request) {
-        return variantMapper.toResponse(variantDaoService.updateByUUID(UUID.fromString(variantUUID), variantMapper.toVariant(request)));
+    public void updateVariantPriceStockByUUID(@NotBlank String variantUUID, @NotNull SaveVariantRequest request) {
+        variantDaoService.updateByUUID(UUID.fromString(variantUUID), variantMapper.toVariant(request));
     }
 
     @Transactional
     public void deleteVariant(@NotBlank String variantUUID) {
-
-        variantDaoService.deleteByUUID(UUID.fromString(variantUUID));
+        variantDaoService.deleteByUUIDCascading(UUID.fromString(variantUUID));
     }
 }

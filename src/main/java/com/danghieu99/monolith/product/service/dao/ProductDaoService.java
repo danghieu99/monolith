@@ -3,6 +3,8 @@ package com.danghieu99.monolith.product.service.dao;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Product;
 import com.danghieu99.monolith.product.repository.jpa.ProductRepository;
+import com.danghieu99.monolith.product.repository.jpa.join.ProductCategoryRepository;
+import com.danghieu99.monolith.product.repository.jpa.join.ProductShopRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -11,10 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -22,6 +22,9 @@ import java.util.UUID;
 public class ProductDaoService {
 
     private final ProductRepository productRepository;
+    private final ProductCategoryRepository productCategoryRepository;
+    private final ProductShopRepository productShopRepository;
+    private final VariantDaoService variantDaoService;
 
     public List<Product> getAll() {
         return productRepository.findAll();
@@ -44,10 +47,6 @@ public class ProductDaoService {
         return productRepository.saveAll(products);
     }
 
-    @Transactional
-    public Product update(@NotNull int id, @NotNull Product product) {
-        return productRepository.save(product);
-    }
 
     public Product getById(@NotNull Integer id) {
         return productRepository.findById(id)
@@ -76,15 +75,6 @@ public class ProductDaoService {
         return productRepository.findByCategoryId(id, pageable);
     }
 
-    @Transactional
-    public void deleteById(@NotNull Integer id) {
-        productRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void deleteByUUID(@NotNull UUID uuid) {
-        productRepository.deleteByUuid(uuid);
-    }
 
     public Page<Product> getByShopId(@NotNull Integer shopId, Pageable pageable) {
         return productRepository.findByShopId(shopId, pageable);
@@ -94,10 +84,34 @@ public class ProductDaoService {
         return productRepository.findByShopUUID(shopId, pageable);
     }
 
-    public Page<Product> searchByParams(String name, Set<String> categories, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
-        if (minPrice.compareTo(maxPrice) > 0) {
-            throw new IllegalArgumentException("maxPrice must be greater than minPrice");
-        }
-        return productRepository.findByNameContainingAndCategoryNameContainingAndPriceRange(name, categories, minPrice, maxPrice, pageable);
+    @Transactional
+    public Product update(@NotNull int id, @NotNull Product product) {
+        return productRepository.save(product);
+    }
+
+    @Transactional
+    public void deleteByIdCascading(@NotNull Integer id) {
+        productRepository.deleteById(id);
+        productCategoryRepository.deleteByProductId(id);
+        productShopRepository.deleteByProductId(id);
+        variantDaoService.deleteByProductIdCascading(id);
+    }
+
+    @Transactional
+    public void deleteByUUIDCascading(@NotNull UUID uuid) {
+        productRepository.deleteByUuid(uuid);
+        productCategoryRepository.deleteByProductUUID(uuid);
+        productShopRepository.deleteByProductUUID(uuid);
+        variantDaoService.deleteByProductUUIDCascading(uuid);
+    }
+
+    @Transactional
+    public void deleteByShopId(@NotNull Integer shopId) {
+        productRepository.deleteByShopId(shopId);
+    }
+
+    @Transactional
+    public void deleteByShopUUID(@NotNull UUID shopUUID) {
+        productRepository.deleteByShopUUID(shopUUID);
     }
 }

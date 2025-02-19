@@ -3,6 +3,7 @@ package com.danghieu99.monolith.product.service.dao;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.entity.Variant;
 import com.danghieu99.monolith.product.repository.jpa.VariantRepository;
+import com.danghieu99.monolith.product.repository.jpa.join.VariantAttributeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class VariantDaoService {
 
     private final VariantRepository variantRepository;
+    private final VariantAttributeRepository variantAttributeRepository;
 
     @Transactional
     public Variant save(Variant variant) {
@@ -38,7 +40,7 @@ public class VariantDaoService {
     }
 
     @Transactional
-    public Variant updateByUUID(UUID uuid, Variant variant) {
+    public void updateByUUID(UUID uuid, Variant variant) {
         var current = getByUUID(uuid);
         if (variant.getPrice() != null) {
             current.setPrice(variant.getPrice());
@@ -46,11 +48,24 @@ public class VariantDaoService {
         if (variant.getStock() != null) {
             current.setStock(variant.getStock());
         }
-        return variantRepository.save(variant);
+        variantRepository.save(variant);
     }
 
     @Transactional
-    public void deleteByUUID(UUID uuid) {
+    public void deleteByUUIDCascading(UUID uuid) {
         variantRepository.deleteByUuid(uuid);
+        variantAttributeRepository.deleteByVariantUUID(uuid);
+    }
+
+    @Transactional
+    public void deleteByProductIdCascading(int productId) {
+        variantRepository.deleteByProductId(productId);
+        variantAttributeRepository.deleteByProductId(productId);
+    }
+
+    @Transactional
+    public void deleteByProductUUIDCascading(UUID uuid) {
+        variantRepository.deleteByProductUUID(uuid);
+        variantAttributeRepository.deleteByProductUUID(uuid);
     }
 }

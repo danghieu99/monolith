@@ -5,6 +5,7 @@ import com.danghieu99.monolith.product.dto.request.SaveVariantRequest;
 import com.danghieu99.monolith.product.dto.request.UpdateProductDetailsRequest;
 import com.danghieu99.monolith.product.dto.response.VariantDetailsResponse;
 import com.danghieu99.monolith.product.dto.response.ProductDetailsResponse;
+import com.danghieu99.monolith.product.repository.jpa.join.VariantAttributeRepository;
 import com.danghieu99.monolith.product.service.product.SellerProductService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +16,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/seller/product")
@@ -23,8 +26,9 @@ public class SellerProductController {
     private final SellerProductService sellerProductService;
 
     @PostMapping("/add")
-    public ProductDetailsResponse addToCurrentShop(@RequestBody @NotNull SaveProductRequest request) {
-        return sellerProductService.addToCurrentShop(request);
+    public ResponseEntity<?> addToCurrentShop(@RequestBody @NotNull SaveProductRequest request) {
+        sellerProductService.addToCurrentShop(request);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("")
@@ -50,17 +54,19 @@ public class SellerProductController {
     }
 
     @PostMapping("/variant")
-    public VariantDetailsResponse addVariant(@RequestParam @NotNull SaveVariantRequest request) {
-        return sellerProductService.addVariant(request);
+    public ResponseEntity<?> save(@RequestParam @NotNull SaveVariantRequest request) {
+        sellerProductService.addVariant(request);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/variant")
-    public VariantDetailsResponse updateVariantByUUID(@RequestParam @NotBlank String uuid, @RequestParam @NotNull SaveVariantRequest request) {
-        return sellerProductService.updateVariantPriceStockByUUID(uuid, request);
+    public ResponseEntity<?> updateByUUID(@RequestParam @NotBlank String uuid, @RequestParam @NotNull SaveVariantRequest request) {
+        sellerProductService.updateVariantPriceStockByUUID(uuid, request);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/variant")
-    public ResponseEntity<?> deleteVariant(@RequestParam @NotBlank String variantUUID) {
+    public ResponseEntity<?> deleteByUUID(@RequestParam @NotBlank String variantUUID) {
         sellerProductService.deleteVariant(variantUUID);
         return ResponseEntity.ok().build();
     }

@@ -6,6 +6,7 @@ import com.danghieu99.monolith.product.dto.response.ShopDetailsResponse;
 import com.danghieu99.monolith.product.mapper.ShopMapper;
 import com.danghieu99.monolith.product.service.dao.ShopDaoService;
 import com.danghieu99.monolith.security.service.auth.AuthenticationService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,28 +19,32 @@ public class SellerShopService {
     private final ShopDaoService shopDaoService;
     private final AuthenticationService authenticationService;
 
+    @Transactional
     public ShopDetailsResponse createCurrentUserShop(@NotNull SaveShopRequest request) {
         var newShop = shopMapper.toShop(request);
         newShop.setAccountId(authenticationService.getCurrentUserDetails().getId());
         return shopMapper.toResponse(shopDaoService.save(newShop));
     }
 
+    @Transactional
     public void deleteCurrentUserShop() {
         shopDaoService.deleteById(authenticationService.getCurrentUserDetails().getId());
     }
 
+    @Transactional
     public ShopDetailsResponse editCurrentUserShopDetails(@NotNull UpdateShopDetailsRequest request) {
         int shopId = authenticationService.getCurrentUserDetails().getId();
-        var currentShop = shopDaoService.getById(shopId);
+        var shop = shopDaoService.getById(shopId);
         if (request.getName() != null && !request.getName().isEmpty()) {
-            currentShop.setName(request.getName());
+            shop.setName(request.getName());
         }
         if (request.getDescription() != null && !request.getDescription().isEmpty()) {
-            currentShop.setDescription(request.getDescription());
+            shop.setDescription(request.getDescription());
         }
         if (request.getStatus() != null) {
-            currentShop.setStatus(request.getStatus());
+            shop.setStatus(request.getStatus());
         }
-        return shopMapper.toResponse(shopDaoService.update(currentShop));
+        var updatedShop = shopDaoService.updateById(shop.getId(), shop);
+        return shopMapper.toResponse(updatedShop);
     }
 }

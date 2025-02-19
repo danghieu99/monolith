@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
@@ -30,5 +27,5 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     @Query("select c from Category c join ProductCategory pc on c.id = pc.categoryId join Product p on pc.productId = p.id " +
             "where p.uuid = :uuid")
-    List<Category> findByProductUUID(UUID productUUID);
+    Set<Category> findByProductUUID(UUID productUUID);
 }

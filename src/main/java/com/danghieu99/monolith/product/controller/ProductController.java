@@ -1,6 +1,5 @@
 package com.danghieu99.monolith.product.controller;
 
-import com.danghieu99.monolith.product.dto.request.SearchProductRequest;
 import com.danghieu99.monolith.product.service.product.ProductService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +18,6 @@ public class ProductController {
     @GetMapping("")
     public ResponseEntity<?> getAllProducts(@RequestParam(required = false) @PageableDefault Pageable pageable) {
         return ResponseEntity.ok(productService.getAll(pageable));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<?> advancedSearchRequest(SearchProductRequest request, @RequestParam(required = false) @PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(productService.searchByParams(request, pageable));
     }
 
     @GetMapping("/details/{uuid}")

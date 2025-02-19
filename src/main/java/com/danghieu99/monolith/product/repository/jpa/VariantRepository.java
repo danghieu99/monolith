@@ -20,17 +20,33 @@ public interface VariantRepository extends JpaRepository<Variant, Integer> {
 
     Optional<Variant> findByUuid(UUID uuid);
 
-    @Query("select v from Variant v where v.productId = :productId")
+    @Query("select v from Variant v " +
+            "where v.productId = :productId")
     Set<Variant> findByProductId(@NotNull int productId);
 
-    @Query("select v from Variant v where v.productId = :productId")
+    @Query("select v from Variant v " +
+            "where v.productId = :productId")
     Page<Variant> findByProductId(@NotNull int productId, @NotNull Pageable pageable);
 
-    @Query("select v from Variant v join Product p on v.productId = p.id where p.uuid = :productUUID")
+    @Query("select v from Variant v " +
+            "join Product p on v.productId = p.id " +
+            "where p.uuid = :productUUID")
     Page<Variant> findByProductUuid(UUID productUUID, Pageable pageable);
 
-    @Query("select v from Variant v join Product p on v.productId = p.id where p.uuid = :productUUID")
+    @Query("select v from Variant v " +
+            "join Product p on v.productId = p.id " +
+            "where p.uuid = :productUUID")
     Set<Variant> findByProductUuid(UUID productUUID);
 
     void deleteByUuid(UUID uuid);
+
+    void deleteByProductId(int productId);
+
+    @Transactional
+    @Modifying
+    @Query("delete Variant v " +
+            "where v.productId = (select p.id from Product p " +
+            "where p.uuid = :productUUID)")
+    void deleteByProductUUID(UUID productUUID);
+
 }

@@ -20,10 +20,10 @@ public interface ShopRepository extends JpaRepository<Shop, Integer> {
 
     Optional<Shop> findByUuid(UUID uuid);
 
-    @Query("select s from Shop s join Product p on s.id = p.shopId where p.uuid = :productUUID")
+    Optional<Shop> findByAccountId(int accountId);
+
+    @Query("select s from Shop s join ProductShop ps on s.id = ps.shopId join Product p where p.uuid = :productUUID")
     Optional<Shop> findByProductUuid(UUID productUUID);
 
     void deleteByUuid(UUID uuid);
-
-
 }

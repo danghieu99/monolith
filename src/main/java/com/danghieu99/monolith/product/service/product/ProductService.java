@@ -1,6 +1,5 @@
 package com.danghieu99.monolith.product.service.product;
 
-import com.danghieu99.monolith.product.dto.request.SearchProductRequest;
 import com.danghieu99.monolith.product.dto.response.ProductDetailsResponse;
 import com.danghieu99.monolith.product.entity.Product;
 import com.danghieu99.monolith.product.mapper.ProductMapper;
@@ -25,10 +24,6 @@ public class ProductService {
 
     public Page<Product> getAll(@NotNull Pageable pageable) {
         return productDaoService.getAll(pageable);
-    }
-
-    public Page<Product> searchByParams(@NotNull SearchProductRequest request, @NotNull Pageable pageable) {
-        return productDaoService.searchByParams(request.getName(), request.getCategories(), request.getMinPrice(), request.getMaxPrice(), pageable);
     }
 
     public Page<Product> getByCategoriesContains(@NotNull int categoryId, @NotNull Pageable pageable) {
