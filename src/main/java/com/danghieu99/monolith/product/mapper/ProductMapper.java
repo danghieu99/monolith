@@ -13,8 +13,6 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.WARN)
 public interface ProductMapper {
 
-    @Mappings({@Mapping(target = "shopId", ignore = true),
-    })
     Product toProduct(SaveProductRequest request);
 
     @Mappings({@Mapping(target = "categories", ignore = true)})

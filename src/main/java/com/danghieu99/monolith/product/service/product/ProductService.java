@@ -1,10 +1,11 @@
 package com.danghieu99.monolith.product.service.product;
 
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.dto.response.ProductDetailsResponse;
 import com.danghieu99.monolith.product.entity.Product;
 import com.danghieu99.monolith.product.mapper.ProductMapper;
-import com.danghieu99.monolith.product.service.dao.CategoryDaoService;
-import com.danghieu99.monolith.product.service.dao.ProductDaoService;
+import com.danghieu99.monolith.product.repository.jpa.CategoryRepository;
+import com.danghieu99.monolith.product.repository.jpa.ProductRepository;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -18,22 +19,23 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final ProductDaoService productDaoService;
+    private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final CategoryDaoService categoryDaoService;
+    private final CategoryRepository categoryRepository;
 
     public Page<Product> getAll(@NotNull Pageable pageable) {
-        return productDaoService.getAll(pageable);
+        return productRepository.findAll(pageable);
     }
 
     public Page<Product> getByCategoriesContains(@NotNull int categoryId, @NotNull Pageable pageable) {
-        return productDaoService.getByCategoryId(categoryId, pageable);
+        return productRepository.findByCategoryId(categoryId, pageable);
     }
 
     public ProductDetailsResponse getProductDetailsByUUID(@NotBlank String uuid) {
-        var product = productDaoService.getByUUID(UUID.fromString(uuid));
+        var product = productRepository.findByUuid(UUID.fromString(uuid))
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "uuid", uuid));
         var response = productMapper.toGetProductDetailsResponse(product);
-        response.setCategories(categoryDaoService.getByProductUUID(product.getUuid()));
+        response.setCategories(categoryRepository.findByProductUUID(product.getUuid()));
         return response;
     }
 }

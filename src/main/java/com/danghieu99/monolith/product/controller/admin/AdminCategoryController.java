@@ -17,20 +17,22 @@ public class AdminCategoryController {
     private final CategoryMapper categoryMapper;
 
     @PostMapping("")
-    public CategoryResponse create(@NotNull @RequestParam SaveCategoryRequest category) {
+    public CategoryResponse create(@NotNull @RequestBody SaveCategoryRequest category) {
         return categoryMapper.toResponse(adminCategoryService.save(category));
     }
 
-    public void deleteById(@NotNull int id) {
+    @DeleteMapping("")
+    public void deleteById(@NotNull @RequestParam int id) {
         adminCategoryService.deleteById(id);
     }
 
-    public CategoryResponse getById(@NotNull int id) {
+    @GetMapping
+    public CategoryResponse getById(@NotNull @RequestParam int id) {
         return adminCategoryService.getById(id);
     }
 
     @PatchMapping("")
-    public CategoryResponse updateById(@NotNull int id, @NotNull @RequestBody SaveCategoryRequest request) {
+    public CategoryResponse updateById(@RequestParam @NotNull int id, @RequestBody @NotNull SaveCategoryRequest request) {
         return adminCategoryService.updateById(id, request);
     }
 }

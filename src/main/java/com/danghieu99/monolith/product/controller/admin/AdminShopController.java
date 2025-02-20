@@ -10,6 +10,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminShopController {
 
-    private final AdminShopService adminShopService;
-
 }

@@ -2,7 +2,7 @@ package com.danghieu99.monolith.product.service.init;
 
 import com.danghieu99.monolith.product.entity.Shop;
 import com.danghieu99.monolith.product.constant.EShopStatus;
-import com.danghieu99.monolith.product.service.dao.ShopDaoService;
+import com.danghieu99.monolith.product.repository.jpa.ShopRepository;
 import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.service.dao.AccountDaoService;
 import jakarta.transaction.Transactional;
@@ -16,12 +16,12 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ShopInitService {
 
-    private final ShopDaoService shopDaoService;
+    private final ShopRepository shopRepository;
     private final AccountDaoService accountDaoService;
 
     @Transactional
     public void init() {
-        if (shopDaoService.getAll().isEmpty()) {
+        if (shopRepository.findAll().isEmpty()) {
             var sellers = accountDaoService.getByRole(ERole.ROLE_SELLER);
             Set<Shop> shops = new HashSet<>();
             sellers.forEach(seller -> {
@@ -32,7 +32,7 @@ public class ShopInitService {
                         .status(seller.getId() % 5 != 0 ? EShopStatus.SHOP_ACTIVE : EShopStatus.SHOP_INACTIVE)
                         .build());
             });
-            shopDaoService.saveAll(shops);
+            shopRepository.saveAll(shops);
         }
     }
 }
