@@ -5,8 +5,8 @@ import com.danghieu99.monolith.product.dto.request.SaveVariantRequest;
 import com.danghieu99.monolith.product.dto.request.UpdateProductDetailsRequest;
 import com.danghieu99.monolith.product.dto.response.VariantDetailsResponse;
 import com.danghieu99.monolith.product.dto.response.ProductDetailsResponse;
-import com.danghieu99.monolith.product.repository.jpa.join.VariantAttributeRepository;
 import com.danghieu99.monolith.product.service.product.SellerProductService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,13 +52,13 @@ public class SellerProductController {
     }
 
     @PostMapping("/variant")
-    public ResponseEntity<?> save(@RequestParam @NotNull SaveVariantRequest request) {
+    public ResponseEntity<?> addVariant(@RequestParam @NotNull SaveVariantRequest request) {
         sellerProductService.addVariant(request);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/variant")
-    public ResponseEntity<?> updateByUUID(@RequestParam @NotBlank String uuid, @RequestParam @NotNull SaveVariantRequest request) {
+    public ResponseEntity<?> updatePriceStockByUUID(@RequestParam @NotBlank String uuid, @RequestParam @NotNull SaveVariantRequest request) {
         sellerProductService.updateVariantPriceStockByUUID(uuid, request);
         return ResponseEntity.ok().build();
     }
@@ -69,5 +67,17 @@ public class SellerProductController {
     public ResponseEntity<?> deleteByUUID(@RequestParam @NotBlank String variantUUID) {
         sellerProductService.deleteVariant(variantUUID);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/attribute")
+    public void deleteAttributeByProductUUIDTypeValue(@RequestParam @NotBlank String productUUID,
+                                                      @RequestParam @NotBlank String type,
+                                                      @RequestParam @NotBlank String value) {
+        sellerProductService.deleteAttributeByProductUUIDTypeValue(productUUID, type, value);
+    }
+
+    @DeleteMapping("/attribute")
+    public void deleteAttributeByUUID(@RequestParam @NotBlank String attributeUUID) {
+        sellerProductService.deleteAttributeByUUID(attributeUUID);
     }
 }

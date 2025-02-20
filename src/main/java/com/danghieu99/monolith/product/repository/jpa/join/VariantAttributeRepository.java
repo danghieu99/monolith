@@ -13,8 +13,6 @@ import java.util.UUID;
 @Repository
 public interface VariantAttributeRepository extends JpaRepository<VariantAttribute, Integer> {
 
-    void deleteByVariantId(int variantId);
-
     @Modifying
     @Transactional
     @Query("delete VariantAttribute va " +

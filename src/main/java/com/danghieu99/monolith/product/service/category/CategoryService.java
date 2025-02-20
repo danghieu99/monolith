@@ -1,8 +1,9 @@
 package com.danghieu99.monolith.product.service.category;
 
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.product.dto.response.CategoryResponse;
 import com.danghieu99.monolith.product.mapper.CategoryMapper;
-import com.danghieu99.monolith.product.service.dao.CategoryDaoService;
+import com.danghieu99.monolith.product.repository.jpa.CategoryRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,26 +16,27 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private final CategoryDaoService categoryDaoService;
+    private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
     public Page<CategoryResponse> getAll(@NotNull final Pageable pageable) {
-        return categoryDaoService.getAll(pageable).map(categoryMapper::toResponse);
+        return categoryRepository.findAll(pageable).map(categoryMapper::toResponse);
     }
 
     public CategoryResponse getByUUID(@NotNull final String uuid) {
-        return categoryMapper.toResponse(categoryDaoService.getByUUID(UUID.fromString(uuid)));
+        return categoryMapper.toResponse(categoryRepository.findByUuid(UUID.fromString(uuid))
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "uuid", uuid)));
     }
 
     public Page<CategoryResponse> getBySuperCategoryUUID(@NotNull final String uuid, @NotNull final Pageable pageable) {
-        return categoryDaoService.getBySuperCategoryUUID(UUID.fromString(uuid), pageable).map(categoryMapper::toResponse);
+        return categoryRepository.findBySuperCategoryUUID(UUID.fromString(uuid), pageable).map(categoryMapper::toResponse);
     }
 
     public Page<CategoryResponse> getBySubCategoryUUID(@NotNull final String uuid, @NotNull final Pageable pageable) {
-        return categoryDaoService.getBySubCategoryUUID(UUID.fromString(uuid), pageable).map(categoryMapper::toResponse);
+        return categoryRepository.findBySubCategoryUUID(UUID.fromString(uuid), pageable).map(categoryMapper::toResponse);
     }
 
     public Page<CategoryResponse> getByNameContaining(@NotNull final String name, @NotNull final Pageable pageable) {
-        return categoryDaoService.getByNameContaining(name, pageable).map(categoryMapper::toResponse);
+        return categoryRepository.findByNameContaining(name, pageable).map(categoryMapper::toResponse);
     }
 }

@@ -4,10 +4,12 @@ import com.danghieu99.monolith.product.entity.*;
 import com.danghieu99.monolith.product.entity.join.ProductCategory;
 import com.danghieu99.monolith.product.entity.join.ProductShop;
 import com.danghieu99.monolith.product.entity.join.VariantAttribute;
+import com.danghieu99.monolith.product.repository.jpa.AttributeRepository;
+import com.danghieu99.monolith.product.repository.jpa.ProductRepository;
+import com.danghieu99.monolith.product.repository.jpa.VariantRepository;
 import com.danghieu99.monolith.product.repository.jpa.join.ProductCategoryRepository;
 import com.danghieu99.monolith.product.repository.jpa.join.ProductShopRepository;
 import com.danghieu99.monolith.product.repository.jpa.join.VariantAttributeRepository;
-import com.danghieu99.monolith.product.service.dao.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,18 +21,18 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class ProductInitService {
 
-    private final ProductDaoService productDaoService;
-    private final VariantDaoService variantDaoService;
+    private final ProductRepository productRepository;
+    private final VariantRepository variantRepository;
     private final ProductShopRepository pShopRepository;
-    private final AttributeDaoService attributeDaoService;
+    private final AttributeRepository attributeRepository;
     private final ProductCategoryRepository pCategoryRepository;
     private final VariantAttributeRepository vAttributeRepository;
 
     @Transactional
     public void init() {
-        if (productDaoService.getAll().isEmpty()) {
+        if (productRepository.findAll().isEmpty()) {
             IntStream.range(1, 50).parallel().forEach(i -> {
-                var savedProduct = productDaoService.save(Product.builder().name("Default product " + i)
+                var savedProduct = productRepository.save(Product.builder().name("Default product " + i)
                         .description("Default product description " + i)
                         .basePrice(BigDecimal.valueOf(i))
                         .build());
@@ -46,14 +48,14 @@ public class ProductInitService {
                 });
 
                 IntStream.range(1, 5).parallel().forEach(k -> {
-                    var attribute = attributeDaoService.save(Attribute.builder()
+                    var attribute = attributeRepository.save(Attribute.builder()
                             .productId(savedProduct.getId())
                             .type("Default type " + k)
                             .value("Default value " + k)
                             .build());
 
                     IntStream.range(1, 5).parallel().forEach(j -> {
-                        var variant = variantDaoService.save(Variant.builder()
+                        var variant = variantRepository.save(Variant.builder()
                                 .stock(j)
                                 .price(BigDecimal.valueOf(j))
                                 .productId(savedProduct.getId())

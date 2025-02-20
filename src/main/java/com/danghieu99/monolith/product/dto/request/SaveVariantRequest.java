@@ -23,5 +23,5 @@ public class SaveVariantRequest {
     private BigDecimal price;
 
     @NotNull
-    private int stock;
+    private Integer stock;
 }
