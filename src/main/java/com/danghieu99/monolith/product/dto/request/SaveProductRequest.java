@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -27,4 +28,6 @@ public class SaveProductRequest {
 
     @NotEmpty
     private final Set<SaveVariantRequest> variants;
+
+    private final Set<MultipartFile> imgFiles;
 }

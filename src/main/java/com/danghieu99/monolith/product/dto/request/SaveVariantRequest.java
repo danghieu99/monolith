@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -24,4 +25,6 @@ public class SaveVariantRequest {
 
     @NotNull
     private Integer stock;
+
+    private MultipartFile imgFile;
 }

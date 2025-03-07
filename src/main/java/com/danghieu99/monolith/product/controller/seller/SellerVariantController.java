@@ -26,7 +26,7 @@ public class SellerVariantController {
 
     @PostMapping("")
     public ResponseEntity<?> addVariant(@RequestParam @NotNull SaveVariantRequest request) {
-        sellerProductService.addVariant(request);
+        sellerProductService.saveVariant(request);
         return ResponseEntity.ok().build();
     }
 

@@ -7,15 +7,12 @@ import com.danghieu99.monolith.product.dto.request.UpdateProductDetailsRequest;
 import com.danghieu99.monolith.product.dto.response.VariantDetailsResponse;
 import com.danghieu99.monolith.product.dto.response.ProductDetailsResponse;
 import com.danghieu99.monolith.product.entity.*;
-import com.danghieu99.monolith.product.entity.join.ProductCategory;
-import com.danghieu99.monolith.product.entity.join.ProductShop;
-import com.danghieu99.monolith.product.entity.join.VariantAttribute;
+import com.danghieu99.monolith.product.entity.join.*;
 import com.danghieu99.monolith.product.mapper.ProductMapper;
 import com.danghieu99.monolith.product.mapper.VariantMapper;
 import com.danghieu99.monolith.product.repository.jpa.*;
-import com.danghieu99.monolith.product.repository.jpa.join.ProductCategoryRepository;
-import com.danghieu99.monolith.product.repository.jpa.join.ProductShopRepository;
-import com.danghieu99.monolith.product.repository.jpa.join.VariantAttributeRepository;
+import com.danghieu99.monolith.product.repository.jpa.join.*;
+import com.danghieu99.monolith.product.service.file.FileUploadService;
 import com.danghieu99.monolith.security.service.auth.AuthenticationService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
@@ -27,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,6 +46,10 @@ public class SellerProductService {
     private final ShopRepository shopRepository;
     private final CategoryRepository categoryRepository;
     private final AttributeRepository attributeRepository;
+    private final FileUploadService fileUploadService;
+    private final ImageRepository imageRepository;
+    private final ProductImageRepository productImageRepository;
+    private final VariantImageRepository variantImageRepository;
 
     public Page<ProductDetailsResponse> getAllByCurrentShop(@NotNull Pageable pageable) {
         Page<Product> products = productRepository.findByShopId(authenticationService.getCurrentUserDetails().getId(), pageable);
@@ -60,6 +62,8 @@ public class SellerProductService {
         Set<ProductCategory> productCategories = new HashSet<>();
         Set<Variant> variants = new HashSet<>();
         Set<VariantAttribute> variantAttributes = new HashSet<>();
+        Set<ProductImage> productImages = new HashSet<>();
+        Set<VariantImage> variantImages = new HashSet<>();
 
         Product newProduct = productMapper.toProduct(request);
         int userId = authenticationService.getCurrentUserDetails().getId();
@@ -79,6 +83,22 @@ public class SellerProductService {
                         .productId(savedProduct.getId())
                         .build()));
 
+        request.getImgFiles().forEach(requestProductImage -> {
+            String productImgObjectName = savedProduct.getUuid() + "/full/" + requestProductImage.getOriginalFilename();
+            try {
+                fileUploadService.uploadImage(productImgObjectName, requestProductImage);
+            } catch (Exception e) {
+                throw new RuntimeException("Cannot upload image: " + requestProductImage.getOriginalFilename(), e);
+            }
+            Image image = imageRepository.saveAndFlush(Image.builder()
+                    .objectName(productImgObjectName)
+                    .build());
+            productImages.add(ProductImage.builder()
+                    .imageId(image.getId())
+                    .productId(savedProduct.getId())
+                    .build());
+        });
+
         request.getVariants().forEach(requestVariant -> {
             var variant = variantMapper.toVariant(requestVariant);
             variant.setProductId(savedProduct.getId());
@@ -95,12 +115,29 @@ public class SellerProductService {
                         .attributeId(savedAttribute.getId())
                         .attributeType(savedAttribute.getType())
                         .build());
+
+                String variantImgObjectName = savedVariant.getUuid() + "/full/" + requestVariant.getImgFile().getOriginalFilename();
+                try {
+                    fileUploadService.uploadImage(variantImgObjectName, requestVariant.getImgFile());
+                } catch (Exception e) {
+                    throw new RuntimeException("Cannot upload image: " + requestVariant.getImgFile().getOriginalFilename(), e);
+                }
+                Image image = imageRepository.saveAndFlush(Image.builder()
+                        .objectName(variantImgObjectName)
+                        .build());
+                variantImages.add(VariantImage.builder()
+                        .imageId(image.getId())
+                        .variantId(savedVariant.getId())
+                        .build());
             });
         });
+
         productShopRepository.save(productShop);
         variantRepository.saveAll(variants);
         pCategoryRepository.saveAll(productCategories);
         vAttributeRepository.saveAll(variantAttributes);
+        productImageRepository.saveAll(productImages);
+        variantImageRepository.saveAll(variantImages);
     }
 
     @Transactional
@@ -125,28 +162,29 @@ public class SellerProductService {
     }
 
     @Transactional
-    public Page<VariantDetailsResponse> getVariantsByProductUUID(@NotBlank String productUUID, @NotNull Pageable pageable) {
+    public Page<VariantDetailsResponse> getVariantsByProductUUID(@NotBlank String productUUID, @NotNull Pageable
+            pageable) {
         return variantRepository.findByProductUuid(UUID.fromString(productUUID), pageable).map(variantMapper::toResponse);
     }
 
     @Transactional
-    public void addVariant(@NotNull SaveVariantRequest request) {
+    public void saveVariant(@NotNull SaveVariantRequest request) {
         Product product = productRepository.findByUuid(UUID.fromString(request.getProductUUID()))
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "uuid", request.getProductUUID()));
 
         Set<Integer> attributeIds = new HashSet<>();
         request.getAttributes().forEach((type, value) -> {
-            var optAttribute = attributeRepository
+            Optional<Attribute> attribute = attributeRepository
                     .findByProductUUIDAttributeTypeValueContainsIgnoreCase(UUID.fromString(request.getProductUUID()), type, value);
-            if (optAttribute.isPresent()) {
-                attributeIds.add(optAttribute.get().getId());
+            if (attribute.isPresent()) {
+                attributeIds.add(attribute.get().getId());
             } else {
-                Attribute attribute = Attribute.builder()
+                Attribute newAttribute = Attribute.builder()
                         .productId(product.getId())
                         .type(type)
                         .value(value)
                         .build();
-                attributeIds.add(attributeRepository.saveAndFlush(attribute).getId());
+                attributeIds.add(attributeRepository.saveAndFlush(newAttribute).getId());
             }
         });
 
@@ -163,7 +201,20 @@ public class SellerProductService {
                     .attributeId(attributeId)
                     .build());
         });
+        Set<VariantImage> vImages = new HashSet<>();
+        String objectName = savedVariant.getUuid() + "/full/" + request.getImgFile().getOriginalFilename();
+        try {
+            fileUploadService.uploadImage(objectName, request.getImgFile());
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot upload image: " + request.getImgFile().getOriginalFilename(), e);
+        }
+
+        Image image = Image.builder()
+                .objectName(objectName)
+                .build();
+        imageRepository.save(image);
         variantAttributeRepository.saveAll(vAttributes);
+        variantImageRepository.saveAll(vImages);
     }
 
     @Transactional

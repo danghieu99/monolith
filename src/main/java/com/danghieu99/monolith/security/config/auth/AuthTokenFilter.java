@@ -7,6 +7,8 @@ import com.danghieu99.monolith.security.util.TokenUtil;
 import com.danghieu99.monolith.security.service.auth.UserDetailsServiceImpl;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.ServletException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -27,14 +29,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-    AuthTokenUtilService authTokenUtilService;
-    UserDetailsServiceImpl userDetailsService;
-    AuthTokenProperties authTokenProperties;
-    AccountDaoService accountDaoService;
+    private final AuthTokenUtilService authTokenUtilService;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthTokenProperties authTokenProperties;
+    private final AccountDaoService accountDaoService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -68,7 +70,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     ResponseCookie cookie = ResponseCookie.from(authTokenProperties.getAccessTokenName(), newAccessToken)
                             .httpOnly(true)
                             .secure(true)
-                            .path(authTokenProperties.getCookiePath())
+                            .path("/api/v1")
                             .build();
                     response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
                 }

@@ -28,11 +28,7 @@ import java.util.List;
 public class WebSecurityConfig {
 
     private final AuthTokenEntryPoint authTokenEntryPoint;
-
-    @Bean
-    public AuthTokenFilter authTokenFilter() {
-        return new AuthTokenFilter();
-    }
+    private final AuthTokenFilter authTokenFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -118,7 +114,7 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authTokenEntryPoint)
                 );
-        http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

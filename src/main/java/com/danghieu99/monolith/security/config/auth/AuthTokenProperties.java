@@ -5,13 +5,12 @@ import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;;
 
-@ConfigurationProperties(prefix = "com.danghieu99.monolith.jwt")
+@ConfigurationProperties(prefix = "jwt")
 @Getter
 public class AuthTokenProperties {
 
     @ConstructorBinding
-    public AuthTokenProperties(String cookiePath, String tokenIssuer, String tokenSecretKey, String accessTokenName, String refreshTokenName, int accessTokenExpireMs, int refreshTokenExpireMs) {
-        this.cookiePath = cookiePath;
+    public AuthTokenProperties(String tokenIssuer, String tokenSecretKey, String accessTokenName, String refreshTokenName, int accessTokenExpireMs, int refreshTokenExpireMs) {
         this.tokenIssuer = tokenIssuer;
         this.tokenSecretKey = tokenSecretKey;
         this.accessTokenName = accessTokenName;
@@ -20,8 +19,6 @@ public class AuthTokenProperties {
         this.refreshTokenExpireMs = refreshTokenExpireMs;
     }
 
-    @NotBlank
-    private final String cookiePath;
     @NotBlank
     private final String tokenIssuer;
     @NotBlank
