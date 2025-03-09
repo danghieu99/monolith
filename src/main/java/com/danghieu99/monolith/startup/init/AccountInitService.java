@@ -1,12 +1,12 @@
-package com.danghieu99.monolith.security.service.init;
+package com.danghieu99.monolith.startup.init;
 
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.entity.AccountRole;
+import com.danghieu99.monolith.security.entity.join.AccountRole;
 import com.danghieu99.monolith.security.constant.EGender;
 import com.danghieu99.monolith.security.constant.ERole;
-import com.danghieu99.monolith.security.service.dao.AccountDaoService;
-import com.danghieu99.monolith.security.service.account.AccountRoleService;
-import com.danghieu99.monolith.security.service.dao.RoleDaoService;
+import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
+import com.danghieu99.monolith.security.repository.jpa.AccountRoleRepository;
+import com.danghieu99.monolith.security.repository.jpa.RoleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +22,14 @@ import java.util.stream.IntStream;
 @Slf4j
 public class AccountInitService {
 
-    private final AccountDaoService accountDaoService;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RoleDaoService roleDaoService;
-    private final AccountRoleService accountRoleService;
+    private final RoleRepository roleRepository;
+    private final AccountRoleRepository accountRoleRepository;
 
     @Transactional
     public void init() {
-        if (accountDaoService.getAll().isEmpty()) {
+        if (accountRepository.findAll().isEmpty()) {
             Set<AccountRole> accountRoles = new HashSet<>();
 
             IntStream.range(1, 10).parallel().forEach(i -> {
@@ -41,10 +41,10 @@ public class AccountInitService {
                         .phone("012345678" + i)
                         .fullName("Admin Full Name " + i)
                         .build();
-                var savedAdminAccount = accountDaoService.save(adminAccount);
+                var savedAdminAccount = accountRepository.save(adminAccount);
                 accountRoles.add(AccountRole.builder()
                         .accountId(savedAdminAccount.getId())
-                        .roleId(roleDaoService.getByERole(ERole.ROLE_ADMIN).getId())
+                        .roleId(roleRepository.findByRole(ERole.ROLE_ADMIN).get().getId())
                         .build());
             });
 
@@ -57,10 +57,10 @@ public class AccountInitService {
                         .phone("023456789" + i)
                         .fullName("User Full Name " + i)
                         .build());
-                var savedUserAccount = accountDaoService.save(userAccount);
+                var savedUserAccount = accountRepository.save(userAccount);
                 accountRoles.add(AccountRole.builder()
                         .accountId(savedUserAccount.getId())
-                        .roleId(roleDaoService.getByERole(ERole.ROLE_USER).getId())
+                        .roleId(roleRepository.findByRole(ERole.ROLE_USER).get().getId())
                         .build());
             });
 
@@ -73,13 +73,13 @@ public class AccountInitService {
                         .phone("00100123456" + i)
                         .fullName("Seller Full Name " + i)
                         .build();
-                var savedSellerAccount = accountDaoService.save(sellerAccount);
+                var savedSellerAccount = accountRepository.save(sellerAccount);
                 accountRoles.add(AccountRole.builder()
                         .accountId(savedSellerAccount.getId())
-                        .roleId(roleDaoService.getByERole(ERole.ROLE_SELLER).getId())
+                        .roleId(roleRepository.findByRole(ERole.ROLE_SELLER).get().getId())
                         .build());
             });
-            accountRoleService.saveAll(accountRoles);
+            accountRoleRepository.saveAll(accountRoles);
         }
     }
 }

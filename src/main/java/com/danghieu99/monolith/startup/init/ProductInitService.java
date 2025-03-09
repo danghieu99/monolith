@@ -1,5 +1,6 @@
-package com.danghieu99.monolith.product.service.init;
+package com.danghieu99.monolith.startup.init;
 
+import com.danghieu99.monolith.product.constant.EProductStatus;
 import com.danghieu99.monolith.product.entity.*;
 import com.danghieu99.monolith.product.entity.join.ProductCategory;
 import com.danghieu99.monolith.product.entity.join.ProductShop;
@@ -32,8 +33,10 @@ public class ProductInitService {
     public void init() {
         if (productRepository.findAll().isEmpty()) {
             IntStream.range(1, 50).parallel().forEach(i -> {
-                var savedProduct = productRepository.save(Product.builder().name("Default product " + i)
+                var savedProduct = productRepository.save(Product.builder()
+                        .name("Default product " + i)
                         .description("Default product description " + i)
+                        .status(EProductStatus.LISTED)
                         .basePrice(BigDecimal.valueOf(i))
                         .build());
                 pShopRepository.save(ProductShop.builder()

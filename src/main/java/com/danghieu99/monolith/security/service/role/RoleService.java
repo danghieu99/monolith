@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.security.service.dao;
+package com.danghieu99.monolith.security.service.role;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.security.constant.ERole;
@@ -17,11 +17,11 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Service
-public class RoleDaoService {
+public class RoleService {
 
     private final RoleRepository roleRepository;
 
-    public RoleDaoService(RoleRepository roleRepository) {
+    public RoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
@@ -45,7 +45,6 @@ public class RoleDaoService {
         return roleRepository.findByRole(role).orElseThrow();
     }
 
-    @Cacheable("roles")
     public List<Role> getAll() {
         return roleRepository.findAll();
     }

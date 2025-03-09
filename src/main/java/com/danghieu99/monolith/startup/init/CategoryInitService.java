@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.product.service.init;
+package com.danghieu99.monolith.startup.init;
 
 import com.danghieu99.monolith.product.entity.Category;
 import com.danghieu99.monolith.product.repository.jpa.CategoryRepository;

@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.product.service.file.impl;
 
-import com.danghieu99.monolith.product.service.file.FileUploadService;
+import com.danghieu99.monolith.product.service.file.UploadFileService;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.errors.*;
@@ -16,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 
 @Service
 @RequiredArgsConstructor
-public class MinioUploadImageService implements FileUploadService {
+public class MinioUploadFileService implements UploadFileService {
 
     @Value("${minio.bucket-name}")
     private String bucketName;

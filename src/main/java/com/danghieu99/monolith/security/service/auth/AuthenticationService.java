@@ -1,17 +1,21 @@
 package com.danghieu99.monolith.security.service.auth;
 
+import com.danghieu99.monolith.common.exception.EntityExistsException;
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.security.config.auth.AuthTokenProperties;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.dto.auth.request.LoginRequest;
 import com.danghieu99.monolith.security.dto.auth.request.SignupRequest;
 import com.danghieu99.monolith.security.dto.auth.response.*;
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.entity.Role;
 import com.danghieu99.monolith.security.entity.Token;
 import com.danghieu99.monolith.security.constant.ERole;
+import com.danghieu99.monolith.security.entity.join.AccountRole;
 import com.danghieu99.monolith.security.mapper.AccountMapper;
-import com.danghieu99.monolith.security.service.dao.AccountDaoService;
-import com.danghieu99.monolith.security.service.dao.RoleDaoService;
+import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
+import com.danghieu99.monolith.security.repository.jpa.AccountRoleRepository;
+import com.danghieu99.monolith.security.repository.jpa.RoleRepository;
+import com.danghieu99.monolith.security.repository.redis.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,20 +41,14 @@ import java.util.stream.Collectors;
 public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
-
-    private final RoleDaoService roleDaoService;
-
-    private final RefreshTokenService refreshTokenService;
-
+    private final RoleRepository roleRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final AccountMapper accountMapper;
-
-    private final AccountDaoService accountDaoService;
-
     private final AuthTokenProperties authTokenProperties;
-
     private final AuthTokenUtilService authTokenUtilService;
-
     private final PasswordEncoder passwordEncoder;
+    private final AccountRepository accountRepository;
+    private final AccountRoleRepository accountRoleRepository;
 
     @Transactional
     public LoginResponse authenticate(LoginRequest request) {
@@ -71,7 +69,7 @@ public class AuthenticationService {
                 .tokenValue(refreshTokenCookie.getValue())
                 .expiration(authTokenProperties.getRefreshTokenExpireMs())
                 .build();
-        refreshTokenService.save(saveToken);
+        refreshTokenRepository.save(saveToken);
 
         HttpHeaders headers = new HttpHeaders();
 //        response.getCookies().forEach(cookie -> headers.add(HttpHeaders.SET_COOKIE, cookie.toString()));
@@ -95,14 +93,32 @@ public class AuthenticationService {
 
     @Transactional
     public SignupResponse register(SignupRequest request) {
+        if (accountRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new EntityExistsException("Account", "username", request.getUsername());
+        }
+        if (accountRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new EntityExistsException("Account", "email", request.getEmail());
+        }
         Account account = accountMapper.toAccount(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-        Account registeredAccount = accountDaoService.save(account);
-        Set<Role> userRoles = new HashSet<>();
-        userRoles.add(roleDaoService.getByERole(ERole.ROLE_USER));
-        SignupResponseBody responseBody = SignupResponseBody.builder().username(registeredAccount.getUsername())
-                .roles(accountMapper.rolesToRoleNames(userRoles)).message("Signup success!").build();
-        return SignupResponse.builder().body(responseBody).build();
+        Account savedAccount = accountRepository.saveAndFlush(account);
+        int roleId = roleRepository.findByRole(ERole.ROLE_USER)
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "role", ERole.ROLE_USER)).getId();
+        AccountRole accountRole = AccountRole.builder()
+                .accountId(savedAccount.getId())
+                .roleId(roleId)
+                .build();
+        accountRoleRepository.save(accountRole);
+
+        Set<String> roles = new HashSet<>();
+        roles.add(ERole.ROLE_USER.toString());
+        SignupResponseBody responseBody = SignupResponseBody.builder()
+                .username(savedAccount.getUsername())
+                .roles(roles).message("Signup success!")
+                .build();
+        return SignupResponse.builder()
+                .body(responseBody)
+                .build();
     }
 
     @Transactional
@@ -114,7 +130,7 @@ public class AuthenticationService {
 
     @Transactional
     public LogoutResponse logoutFromAllDevices() {
-        refreshTokenService.deleteByUserId(getCurrentUserDetails().getId());
+        refreshTokenRepository.deleteByUserId(getCurrentUserDetails().getId());
         LogoutResponseBody response = LogoutResponseBody.builder()
                 .message("Logout from all devices success!")
                 .build();

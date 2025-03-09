@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.security.entity;
+package com.danghieu99.monolith.security.entity.join;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
 import jakarta.persistence.Column;

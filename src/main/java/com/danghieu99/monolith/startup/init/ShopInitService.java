@@ -1,10 +1,10 @@
-package com.danghieu99.monolith.product.service.init;
+package com.danghieu99.monolith.startup.init;
 
 import com.danghieu99.monolith.product.entity.Shop;
 import com.danghieu99.monolith.product.constant.EShopStatus;
 import com.danghieu99.monolith.product.repository.jpa.ShopRepository;
 import com.danghieu99.monolith.security.constant.ERole;
-import com.danghieu99.monolith.security.service.dao.AccountDaoService;
+import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,12 +17,12 @@ import java.util.Set;
 public class ShopInitService {
 
     private final ShopRepository shopRepository;
-    private final AccountDaoService accountDaoService;
+    private final AccountRepository accountRepository;
 
     @Transactional
     public void init() {
         if (shopRepository.findAll().isEmpty()) {
-            var sellers = accountDaoService.getByRole(ERole.ROLE_SELLER);
+            var sellers = accountRepository.findByERole(ERole.ROLE_SELLER);
             Set<Shop> shops = new HashSet<>();
             sellers.forEach(seller -> {
                 shops.add(Shop.builder()

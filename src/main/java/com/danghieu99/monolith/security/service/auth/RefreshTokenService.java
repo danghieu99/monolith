@@ -1,7 +1,7 @@
 package com.danghieu99.monolith.security.service.auth;
 
 import com.danghieu99.monolith.security.entity.Token;
-import com.danghieu99.monolith.security.repository.redis.TokenRepository;
+import com.danghieu99.monolith.security.repository.redis.RefreshTokenRepository;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Slf4j
 public class RefreshTokenService {
 
-    private final TokenRepository repository;
+    private final RefreshTokenRepository repository;
 
     public Token save(Token token) {
         return repository.save(token);

@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Repository
@@ -90,6 +89,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "where p.name like %:name%")
     Page<Product> findByNameContaining(String name, Pageable pageable);
 
+    @Transactional
     void deleteByUuid(UUID uuid);
 
     @Transactional

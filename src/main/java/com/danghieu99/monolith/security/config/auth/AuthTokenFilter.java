@@ -1,14 +1,13 @@
 package com.danghieu99.monolith.security.config.auth;
 
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.service.dao.AccountDaoService;
+import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
 import com.danghieu99.monolith.security.service.auth.AuthTokenUtilService;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import com.danghieu99.monolith.security.service.auth.UserDetailsServiceImpl;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.ServletException;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private final AuthTokenUtilService authTokenUtilService;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthTokenProperties authTokenProperties;
-    private final AccountDaoService accountDaoService;
+    private final AccountRepository accountRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -47,7 +46,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (access != null && !access.isEmpty()
                     && authTokenUtilService.isTokenValid(access)) {
                 Integer userId = Integer.valueOf(authTokenUtilService.parseClaimsFromToken(access).getSubject());
-                Account account = accountDaoService.getById(userId);
+                Account account = accountRepository.findById(userId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Account", "Id", userId));
                 UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
                 try {
                     UsernamePasswordAuthenticationToken authentication =

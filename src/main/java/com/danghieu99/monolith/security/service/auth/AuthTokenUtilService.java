@@ -1,9 +1,10 @@
 package com.danghieu99.monolith.security.service.auth;
 
+import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.security.config.auth.AuthTokenProperties;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.service.dao.AccountDaoService;
+import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -23,7 +24,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AuthTokenUtilService {
 
-    private final AccountDaoService accountDaoService;
+    private final AccountRepository accountRepository;
     private final AuthTokenProperties authTokenProperties;
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenService refreshTokenService;
@@ -60,8 +61,9 @@ public class AuthTokenUtilService {
     }
 
     public UserDetailsImpl getUserDetailsFromToken(String refreshToken) {
-        Account account = accountDaoService
-                .getById(Integer.valueOf(parseClaimsFromToken(refreshToken).getSubject()));
+        int accountId = Integer.parseInt(parseClaimsFromToken(refreshToken).getSubject());
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "Id", accountId));
         UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails,

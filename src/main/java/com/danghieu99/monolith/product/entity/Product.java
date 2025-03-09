@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.product.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
+import com.danghieu99.monolith.product.constant.EProductStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,4 +25,8 @@ public class Product extends BaseEntity {
 
     @Column(nullable = false)
     private BigDecimal basePrice;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EProductStatus status;
 }

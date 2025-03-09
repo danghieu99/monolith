@@ -1,5 +1,6 @@
 package com.danghieu99.monolith.security.dto.account.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotNull;
@@ -9,12 +10,9 @@ import jakarta.validation.constraints.Size;
 @Data
 public class UserChangePasswordRequest {
 
-    @NotNull
-    @Size(min = 8, max = 20)
-    @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
+    @NotEmpty
     private String oldPassword;
 
-    @NotNull
-    @Size(min = 8, max = 20)
+    @NotEmpty
     private String newPassword;
 }
