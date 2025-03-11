@@ -22,7 +22,7 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
-public class AuthTokenUtilService {
+public class AuthTokenService {
 
     private final AccountRepository accountRepository;
     private final AuthTokenProperties authTokenProperties;
@@ -53,7 +53,7 @@ public class AuthTokenUtilService {
 
     public Claims parseClaimsFromToken(String token) {
         SecretKey secretKey = Keys.hmacShaKeyFor(authTokenProperties.getTokenSecretKey().getBytes());
-        return TokenUtil.parseToken(secretKey, authTokenProperties.getTokenIssuer(), token);
+        return TokenUtil.parseClaimsFromToken(secretKey, authTokenProperties.getTokenIssuer(), token);
     }
 
     public boolean isTokenStored(String refreshToken) {

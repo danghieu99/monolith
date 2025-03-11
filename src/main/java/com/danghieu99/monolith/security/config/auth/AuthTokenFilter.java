@@ -3,7 +3,7 @@ package com.danghieu99.monolith.security.config.auth;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
-import com.danghieu99.monolith.security.service.auth.AuthTokenUtilService;
+import com.danghieu99.monolith.security.service.auth.AuthTokenService;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import com.danghieu99.monolith.security.service.auth.UserDetailsServiceImpl;
 import io.jsonwebtoken.JwtException;
@@ -32,7 +32,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-    private final AuthTokenUtilService authTokenUtilService;
+    private final AuthTokenService authTokenService;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthTokenProperties authTokenProperties;
     private final AccountRepository accountRepository;
@@ -44,8 +44,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             String access = TokenUtil.parseTokenFromCookies(request.getCookies(), authTokenProperties.getAccessTokenName());
             if (access != null && !access.isEmpty()
-                    && authTokenUtilService.isTokenValid(access)) {
-                Integer userId = Integer.valueOf(authTokenUtilService.parseClaimsFromToken(access).getSubject());
+                    && authTokenService.isTokenValid(access)) {
+                Integer userId = Integer.valueOf(authTokenService.parseClaimsFromToken(access).getSubject());
                 Account account = accountRepository.findById(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Account", "Id", userId));
                 UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
@@ -63,10 +63,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             } else {
                 String refresh = TokenUtil.parseTokenFromCookies(request.getCookies(), authTokenProperties.getRefreshTokenName());
                 if (refresh != null && !refresh.isEmpty()
-                        && authTokenUtilService.isTokenValid(refresh)
-                        && authTokenUtilService.isTokenStored(refresh)) {
-                    UserDetailsImpl userDetails = authTokenUtilService.getUserDetailsFromToken(refresh);
-                    String newAccessToken = authTokenUtilService.buildAccessToken(userDetails);
+                        && authTokenService.isTokenValid(refresh)
+                        && authTokenService.isTokenStored(refresh)) {
+                    UserDetailsImpl userDetails = authTokenService.getUserDetailsFromToken(refresh);
+                    String newAccessToken = authTokenService.buildAccessToken(userDetails);
                     ResponseCookie cookie = ResponseCookie.from(authTokenProperties.getAccessTokenName(), newAccessToken)
                             .httpOnly(true)
                             .secure(true)

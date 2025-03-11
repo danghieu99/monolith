@@ -22,7 +22,7 @@ public class TokenUtil {
                 .compact();
     }
 
-    public static Claims parseToken(SecretKey secretKey, String issuer, String token) {
+    public static Claims parseClaimsFromToken(SecretKey secretKey, String issuer, String token) {
         JwtParser parser = Jwts.parser()
                 .verifyWith(secretKey)
                 .requireIssuer(issuer)

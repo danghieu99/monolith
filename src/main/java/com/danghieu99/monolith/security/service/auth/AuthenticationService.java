@@ -33,6 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,7 +46,7 @@ public class AuthenticationService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AccountMapper accountMapper;
     private final AuthTokenProperties authTokenProperties;
-    private final AuthTokenUtilService authTokenUtilService;
+    private final AuthTokenService authTokenService;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final AccountRoleRepository accountRoleRepository;
@@ -61,9 +62,17 @@ public class AuthenticationService {
                 .collect(Collectors.toSet());
 
         ResponseCookie refreshTokenCookie = ResponseCookie
-                .from(authTokenProperties.getRefreshTokenName(), authTokenUtilService.buildRefreshToken(userDetails))
+                .from(authTokenProperties.getRefreshTokenName(), authTokenService.buildRefreshToken(userDetails))
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getRefreshTokenExpireMs()))
                 .build();
-        String accessToken = authTokenUtilService.buildAccessToken(userDetails);
+        ResponseCookie accessTokenCookie = ResponseCookie
+                .from(authTokenProperties.getAccessTokenName(), authTokenService.buildAccessToken(userDetails))
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getAccessTokenExpireMs()))
+                .build();
         var saveToken = Token.builder()
                 .userId(userId)
                 .tokenValue(refreshTokenCookie.getValue())
@@ -72,14 +81,11 @@ public class AuthenticationService {
         refreshTokenRepository.save(saveToken);
 
         HttpHeaders headers = new HttpHeaders();
-//        response.getCookies().forEach(cookie -> headers.add(HttpHeaders.SET_COOKIE, cookie.toString()));
-        headers.add(HttpHeaders.AUTHORIZATION, refreshTokenCookie.toString());
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-        headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Access-Control-Allow-Headers", "true");
+        headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+        headers.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         headers.add("Access-Control-Allow-Credentials", "true");
-        headers.add("Access-Control-Allow-Methods", "*");
-        headers.add("Access-Control-Max-Age", String.valueOf(authTokenProperties.getRefreshTokenExpireMs()));
+//        headers.add("Access-Control-Max-Age", String.valueOf(authTokenProperties.getRefreshTokenExpireMs()));
+
         var body = LoginResponseBody.builder()
                 .username(userDetails.getUsername())
                 .roles(roles)
@@ -123,7 +129,7 @@ public class AuthenticationService {
 
     @Transactional
     public LogoutResponse logout(HttpServletRequest request) {
-        authTokenUtilService.deleteCurrentRefreshToken(request);
+        authTokenService.deleteCurrentRefreshToken(request);
         LogoutResponseBody response = LogoutResponseBody.builder().message("Logout success!").build();
         return LogoutResponse.builder().body(response).build();
     }
@@ -138,7 +144,7 @@ public class AuthenticationService {
     }
 
     public ResponseCookie refreshAuthentication() {
-        return ResponseCookie.from(authTokenProperties.getRefreshTokenName(), authTokenUtilService.buildRefreshToken(getCurrentUserDetails())).build();
+        return ResponseCookie.from(authTokenProperties.getRefreshTokenName(), authTokenService.buildRefreshToken(getCurrentUserDetails())).build();
     }
 
     public UserDetailsImpl getCurrentUserDetails() {
