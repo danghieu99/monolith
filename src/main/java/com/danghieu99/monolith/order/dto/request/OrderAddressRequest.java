@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PlaceOrderAddress {
+public class OrderAddressRequest {
+
+
 
 }

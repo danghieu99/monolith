@@ -1,7 +1,10 @@
 package com.danghieu99.monolith.order.repository;
 
+import com.danghieu99.monolith.order.constant.EOrderStatus;
 import com.danghieu99.monolith.order.entity.Order;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -12,12 +15,19 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
-    List<Order> findByAccountId(int id);
+    List<Order> findByUserId(int userId);
 
     @Query("select o from Order o " +
-            "join Account a on o.accountId = a.id " +
+            "join Account a on o.userId = a.id " +
             "where a.uuid = :uuid")
     List<Order> findByUserUUID(UUID uuid);
 
     Optional<Order> findByUuid(UUID uuid);
+
+    @Modifying
+    @Transactional
+    @Query("update Order o " +
+            "set o.status = :status " +
+            "where o.uuid = :uuid")
+    void updateOrderStatus(UUID uuid, EOrderStatus status);
 }

@@ -7,11 +7,13 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PlaceOrderResponse {
-
-    @NotNull
-    private final boolean success;
+public class OrderItemResponse {
+    @NotEmpty
+    private final String productUUID;
 
     @NotEmpty
-    private final String message;
+    private final String variantUUID;
+
+    @NotNull
+    private final int quantity;
 }

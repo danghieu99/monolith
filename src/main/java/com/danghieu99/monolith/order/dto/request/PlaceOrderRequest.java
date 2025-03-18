@@ -13,10 +13,13 @@ import java.util.UUID;
 public class PlaceOrderRequest {
 
     @NotEmpty
-    private final List<PlaceOrderItem> items;
+    private final String shopUUID;
+
+    @NotEmpty
+    private final List<OrderItemRequest> items;
 
     @NotNull
-    private final PlaceOrderAddress address;
+    private final OrderAddressRequest address;
 
     @NotNull
     private UUID shipmentProviderUUID;

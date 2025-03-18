@@ -23,5 +23,6 @@ public class Order extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EOrderStatus status;
+    @Builder.Default
+    private EOrderStatus status = EOrderStatus.ORDER_PENDING;
 }
