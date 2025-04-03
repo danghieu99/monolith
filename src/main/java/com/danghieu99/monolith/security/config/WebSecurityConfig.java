@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.security.config.security;
+package com.danghieu99.monolith.security.config;
 
 import com.danghieu99.monolith.security.config.auth.AuthTokenEntryPoint;
 import com.danghieu99.monolith.security.config.auth.AuthTokenFilter;

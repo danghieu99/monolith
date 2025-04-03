@@ -16,10 +16,10 @@ import java.util.Map;
 public class KafkaTopicConfig {
 
     @Value("${spring.kafka.topics.order.place}")
-    private String placeOrderTopic;
+    private String placeOrderTopicName;
 
     @Value("${spring.kafka.topics.order.cancel}")
-    private String cancelOrderTopic;
+    private String cancelOrderTopicName;
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -30,19 +30,19 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic placeOrderTopic() {
-        return TopicBuilder.name(placeOrderTopic)
-                .partitions(10)
-                .replicas(3)
+        return TopicBuilder.name(placeOrderTopicName)
+                .partitions(4)
+                .replicas(2)
                 .compact()
                 .build();
     }
 
     @Bean
     public NewTopic cancelOrderTopic() {
-        return TopicBuilder.name(cancelOrderTopic)
-                .partitions(10)
-                .replicas(3)
-                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "snappy")
+        return TopicBuilder.name(cancelOrderTopicName)
+                .partitions(4)
+                .replicas(2)
+                .compact()
                 .build();
     }
 }
