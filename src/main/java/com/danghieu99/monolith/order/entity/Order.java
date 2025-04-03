@@ -5,6 +5,8 @@ import com.danghieu99.monolith.order.constant.EOrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "orders")
 @Getter
@@ -16,10 +18,10 @@ import lombok.*;
 public class Order extends BaseEntity {
 
     @Column(nullable = false)
-    private int shopId;
+    private UUID shopUUID;
 
     @Column(nullable = false)
-    private int userId;
+    private UUID userAccountUUID;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

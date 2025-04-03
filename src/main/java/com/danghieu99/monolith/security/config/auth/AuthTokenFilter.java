@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.security.config.auth;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
+import com.danghieu99.monolith.security.constant.EAccountStatus;
 import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
 import com.danghieu99.monolith.security.service.auth.AuthTokenService;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,6 +50,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 Integer userId = Integer.valueOf(authTokenService.parseClaimsFromToken(access).getSubject());
                 Account account = accountRepository.findById(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Account", "Id", userId));
+                if (account.getStatus() == EAccountStatus.ACCOUNT_INACTIVE) {
+                    throw new DisabledException("Account inactive");
+                }
                 UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
                 try {
                     UsernamePasswordAuthenticationToken authentication =
@@ -67,7 +72,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         && authTokenService.isTokenStored(refresh)) {
                     UserDetailsImpl userDetails = authTokenService.getUserDetailsFromToken(refresh);
                     String newAccessToken = authTokenService.buildAccessToken(userDetails);
-                    ResponseCookie cookie = ResponseCookie.from(authTokenProperties.getAccessTokenName(), newAccessToken)
+                    ResponseCookie cookie = ResponseCookie
+                            .from(authTokenProperties.getAccessTokenName(), newAccessToken)
                             .httpOnly(true)
                             .secure(true)
                             .path("/api/v1")
@@ -77,6 +83,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             }
         } catch (JwtException e) {
             log.error("Unexpected token exception: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected exception: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }

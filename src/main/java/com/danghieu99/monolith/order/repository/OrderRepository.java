@@ -15,10 +15,10 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
-    List<Order> findByUserId(int userId);
+    List<Order> findByUserAccountUUID(UUID uuid);
 
     @Query("select o from Order o " +
-            "join Account a on o.userId = a.id " +
+            "join Account a on o.userAccountUUID = a.uuid " +
             "where a.uuid = :uuid")
     List<Order> findByUserUUID(UUID uuid);
 

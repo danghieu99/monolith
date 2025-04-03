@@ -73,7 +73,7 @@ public class AccountInitService {
                         .phone("00100123456" + i)
                         .fullName("Seller Full Name " + i)
                         .build();
-                var savedSellerAccount = accountRepository.save(sellerAccount);
+                var savedSellerAccount = accountRepository.saveAndFlush(sellerAccount);
                 accountRoles.add(AccountRole.builder()
                         .accountId(savedSellerAccount.getId())
                         .roleId(roleRepository.findByRole(ERole.ROLE_SELLER).get().getId())

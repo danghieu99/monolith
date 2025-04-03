@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -15,12 +14,12 @@ public class PlaceOrderRequest {
     @NotEmpty
     private final String shopUUID;
 
-    @NotEmpty
-    private final List<OrderItemRequest> items;
-
     @NotNull
     private final OrderAddressRequest address;
 
     @NotNull
-    private UUID shipmentProviderUUID;
+    private String shipmentProviderUUID;
+
+    @NotEmpty
+    private final List<OrderItemRequest> items;
 }

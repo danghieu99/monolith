@@ -13,7 +13,7 @@ import com.danghieu99.monolith.product.mapper.VariantMapper;
 import com.danghieu99.monolith.product.repository.jpa.*;
 import com.danghieu99.monolith.product.repository.jpa.join.*;
 import com.danghieu99.monolith.product.service.file.UploadFileService;
-import com.danghieu99.monolith.security.service.auth.AuthenticationService;
+import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +34,6 @@ import java.util.UUID;
 public class SellerProductService {
 
     private final ProductMapper productMapper;
-    private final AuthenticationService authenticationService;
     private final VariantMapper variantMapper;
     private final ProductCategoryRepository pCategoryRepository;
     private final VariantAttributeRepository vAttributeRepository;
@@ -51,13 +50,15 @@ public class SellerProductService {
     private final ProductImageRepository productImageRepository;
     private final VariantImageRepository variantImageRepository;
 
-    public Page<ProductDetailsResponse> getAllByCurrentShop(@NotNull Pageable pageable) {
-        Page<Product> products = productRepository.findByShopId(authenticationService.getCurrentUserDetails().getId(), pageable);
+    public Page<ProductDetailsResponse> getAllByCurrentShop(@NotNull UserDetailsImpl userDetails,
+                                                            @NotNull Pageable pageable) {
+        Page<Product> products = productRepository.findByShopUUID(userDetails.getUuid(), pageable);
         return products.map(productMapper::toGetProductDetailsResponse);
     }
 
     @Transactional
-    public void addToCurrentShop(@NotNull SaveProductRequest request) {
+    public void addToCurrentShop(@NotNull UserDetailsImpl userDetails,
+                                 @NotNull SaveProductRequest request) {
         ProductShop productShop;
         Set<ProductCategory> productCategories = new HashSet<>();
         Set<Variant> variants = new HashSet<>();
@@ -66,12 +67,11 @@ public class SellerProductService {
         Set<VariantImage> variantImages = new HashSet<>();
 
         Product newProduct = productMapper.toProduct(request);
-        int userId = authenticationService.getCurrentUserDetails().getId();
         var savedProduct = productRepository.saveAndFlush(newProduct);
         productShop = ProductShop.builder()
                 .productId(savedProduct.getId())
-                .shopId(shopRepository.findByAccountId(userId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Shop", "accountId", userId))
+                .shopId(shopRepository.findByAccountUUID(userDetails.getUuid())
+                        .orElseThrow(() -> new ResourceNotFoundException("Shop", "accountId", userDetails.getUuid()))
                         .getId())
                 .build();
 

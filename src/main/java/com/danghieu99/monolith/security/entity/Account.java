@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.security.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
+import com.danghieu99.monolith.security.constant.EAccountStatus;
 import com.danghieu99.monolith.security.constant.EGender;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
@@ -39,4 +40,9 @@ public class Account extends BaseEntity {
     @JsonIgnore
     @ToString.Exclude
     private String password;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EAccountStatus status = EAccountStatus.ACCOUNT_INACTIVE;
 }

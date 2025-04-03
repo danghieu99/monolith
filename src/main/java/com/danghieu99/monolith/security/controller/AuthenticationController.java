@@ -1,5 +1,6 @@
 package com.danghieu99.monolith.security.controller;
 
+import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.dto.auth.request.LoginRequest;
 import com.danghieu99.monolith.security.dto.auth.request.SignupRequest;
 import com.danghieu99.monolith.security.dto.auth.response.LoginResponse;
@@ -7,10 +8,12 @@ import com.danghieu99.monolith.security.dto.auth.response.LogoutResponse;
 import com.danghieu99.monolith.security.dto.auth.response.SignupResponse;
 import com.danghieu99.monolith.security.service.auth.AuthenticationService;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,8 +53,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("user/auth/logout-all")
-    public ResponseEntity<?> logoutFromAllDevices() {
-        LogoutResponse response = authenticationService.logoutFromAllDevices();
+    public ResponseEntity<?> logoutFromAllDevices(@AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
+        LogoutResponse response = authenticationService.logoutFromAllDevices(userDetails);
         return ResponseEntity.ok()
                 .body(response.getBody());
     }

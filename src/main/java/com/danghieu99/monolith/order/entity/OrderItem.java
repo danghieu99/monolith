@@ -7,8 +7,10 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
-@Table(name = "items",
+@Table(name = "order_items",
         uniqueConstraints = {@UniqueConstraint(columnNames = "order_id, product_id, variant_id")})
 @Getter
 @Setter
@@ -16,16 +18,16 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-public class Item extends BaseEntity {
+public class OrderItem extends BaseEntity {
 
     @Column(nullable = false)
     private int orderId;
 
     @Column(nullable = false)
-    private int productId;
+    private UUID productUUID;
 
     @Column(nullable = false)
-    private int variantId;
+    private UUID variantUUID;
 
     @Column(nullable = false)
     private int quantity;

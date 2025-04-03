@@ -8,7 +8,9 @@ import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
 import com.danghieu99.monolith.security.util.TokenUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +33,28 @@ public class AuthTokenService {
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenService refreshTokenService;
 
+    public ResponseCookie buildRefreshTokenCookie(@NotNull UserDetailsImpl userDetails) {
+        return ResponseCookie
+                .from(authTokenProperties.getRefreshTokenName(), buildRefreshToken(userDetails))
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getRefreshTokenExpireMs()))
+                .build();
+    }
+
+    public ResponseCookie buildAccessTokenCookie(@NotNull UserDetailsImpl userDetails) {
+        return ResponseCookie
+                .from(authTokenProperties.getAccessTokenName(), buildAccessToken(userDetails))
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getAccessTokenExpireMs()))
+                .build();
+    }
+
     public String buildAccessToken(UserDetailsImpl userDetails) {
         SecretKey secretKey = Keys.hmacShaKeyFor(authTokenProperties.getTokenSecretKey().getBytes());
         Claims claims = Jwts.claims()
-                .subject(String.valueOf(userDetails.getId()))
+                .subject(String.valueOf(userDetails.getUuid()))
                 .issuer(authTokenProperties.getTokenIssuer())
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plusMillis(authTokenProperties.getAccessTokenExpireMs())))
@@ -43,7 +65,7 @@ public class AuthTokenService {
     public String buildRefreshToken(UserDetailsImpl userDetails) {
         SecretKey secretKey = Keys.hmacShaKeyFor(authTokenProperties.getTokenSecretKey().getBytes());
         Claims claims = Jwts.claims()
-                .subject(String.valueOf(userDetails.getId()))
+                .subject(String.valueOf(userDetails.getUuid()))
                 .issuer(authTokenProperties.getTokenIssuer())
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plusMillis(authTokenProperties.getRefreshTokenExpireMs())))
@@ -61,9 +83,9 @@ public class AuthTokenService {
     }
 
     public UserDetailsImpl getUserDetailsFromToken(String refreshToken) {
-        int accountId = Integer.parseInt(parseClaimsFromToken(refreshToken).getSubject());
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account", "Id", accountId));
+        String uuid = parseClaimsFromToken(refreshToken).getSubject();
+        Account account = accountRepository.findByUuid(UUID.fromString(uuid))
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "Id", uuid));
         UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails,

@@ -25,29 +25,12 @@ public class RefreshTokenService {
         return repository.existsByTokenValue(value);
     }
 
-    public boolean existsByUserId(int userId) {
-        return repository.existsByUserId(userId);
-    }
-
-    public Optional<Token> findByUserId(int userId) {
-        return repository.findByUserId(userId);
-    }
-
     public Optional<Token> findByValue(String value) {
         return repository.findByTokenValue(value);
     }
 
-    @Transactional
-    public Token updateByUserId(Token token) {
-        if (!repository.existsByUserId(token.getUserId())) {
-            throw new ResourceNotFoundException("Token", "userId", token.getUserId());
-        }
-        return repository.save(token);
-    }
-
-    @Transactional
-    public void deleteByUserId(Integer id) {
-        repository.deleteByUserId(id);
+    public void deleteByAccountUUID(String accountUUID) {
+        repository.deleteByAccountUUID(accountUUID);
     }
 
     @Transactional

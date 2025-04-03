@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.security.service.account;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
+import com.danghieu99.monolith.security.constant.EAccountStatus;
 import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.dto.account.request.AdminSaveAccountRequest;
 import com.danghieu99.monolith.security.dto.account.response.AdminSaveAccountResponse;
@@ -103,5 +104,9 @@ public class AdminAccountService {
 
     public void deleteAccountById(int id) {
         accountRepository.deleteById(id);
+    }
+
+    public void deactivateAccountById(int id) {
+        accountRepository.updateAccountStatusById(id, EAccountStatus.ACCOUNT_INACTIVE);
     }
 }

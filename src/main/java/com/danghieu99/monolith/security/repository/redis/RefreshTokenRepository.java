@@ -9,13 +9,13 @@ import java.util.UUID;
 public interface RefreshTokenRepository extends CrudRepository<Token, UUID> {
     boolean existsByTokenValue(String token);
 
-    boolean existsByUserId(int userId);
+    boolean existsByAccountUUID(String accountUUID);
 
-    void deleteByUserId(int userId);
+    Optional<Token> findByAccountUUID(String accountUUID);
 
     Optional<Token> findByTokenValue(String token);
 
-    Optional<Token> findByUserId(int userId);
-
     void deleteByTokenValue(String token);
+
+    void deleteByAccountUUID(String accountUUID);
 }

@@ -3,15 +3,13 @@ package com.danghieu99.monolith.security.config.auth;
 import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.security.entity.Role;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
@@ -19,7 +17,7 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     @Getter
-    private final int id;
+    private final UUID uuid;
 
     private final String username;
 
@@ -27,8 +25,11 @@ public class UserDetailsImpl implements UserDetails {
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(int id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
+    public UserDetailsImpl(UUID uuid,
+                           String username,
+                           String password,
+                           Collection<? extends GrantedAuthority> authorities) {
+        this.uuid = uuid;
         this.username = username;
         this.password = password;
         this.authorities = authorities;
@@ -40,7 +41,7 @@ public class UserDetailsImpl implements UserDetails {
                 .collect(Collectors.toList());
 
         return new UserDetailsImpl(
-                account.getId(),
+                account.getUuid(),
                 account.getUsername(),
                 account.getPassword(),
                 authorities);
@@ -88,6 +89,6 @@ public class UserDetailsImpl implements UserDetails {
         if (o == null || getClass() != o.getClass())
             return false;
         UserDetailsImpl user = (UserDetailsImpl) o;
-        return Objects.equals(id, user.id);
+        return Objects.equals(uuid, user.uuid);
     }
 }

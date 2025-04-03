@@ -100,7 +100,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> corsConfiguration))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/user/**").authenticated()
+                        .requestMatchers("/api/v1/user/**").hasRole("USER")
                         .requestMatchers("/api/v1/seller/**").hasRole("SELLER")
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/**").permitAll()

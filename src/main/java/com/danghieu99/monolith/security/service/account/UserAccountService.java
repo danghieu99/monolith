@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.security.service.account;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
+import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import com.danghieu99.monolith.security.dto.account.request.UserChangePasswordRequest;
 import com.danghieu99.monolith.security.dto.account.request.UserEditAccountDetailsRequest;
 import com.danghieu99.monolith.security.dto.account.response.UserEditAccountResponse;
@@ -37,9 +38,10 @@ public class UserAccountService {
         return detailsResponse;
     }
 
-    public UserEditAccountResponse editAccountDetails(@NotNull final UserEditAccountDetailsRequest request) {
-        Account account = accountRepository.findById(authenticationService.getCurrentUserDetails().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Account", "id", authenticationService.getCurrentUserDetails().getId()));
+    public UserEditAccountResponse editAccountDetails(@NotNull final UserEditAccountDetailsRequest request,
+                                                      @NotNull final UserDetailsImpl userDetails) {
+        Account account = accountRepository.findByUuid(userDetails.getUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "id", userDetails.getUuid()));
         if (request.getUsername() != null) account.setUsername(request.getUsername());
         if (request.getEmail() != null) account.setEmail(request.getEmail());
         if (request.getGender() != null) account.setGender(request.getGender());
@@ -50,7 +52,8 @@ public class UserAccountService {
     }
 
     //add email confirmation
-    public void changeUserAccountPassword(@NotNull final UserChangePasswordRequest request) {
+    public void changeUserAccountPassword(@NotNull final UserChangePasswordRequest request,
+                                          @NotNull final UserDetailsImpl userDetails) {
         try {
             authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(authenticationService.getCurrentUserDetails().getUsername(), request.getNewPassword()));
@@ -62,8 +65,8 @@ public class UserAccountService {
                 }
             };
         }
-        Account account = accountRepository.findById(authenticationService.getCurrentUserDetails().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Account", "id", authenticationService.getCurrentUserDetails().getId()));
+        Account account = accountRepository.findByUuid(userDetails.getUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "id", userDetails.getUuid()));
         if (request.getNewPassword().equals(account.getPassword())) {
             throw new IllegalArgumentException("Password not changed!");
         }

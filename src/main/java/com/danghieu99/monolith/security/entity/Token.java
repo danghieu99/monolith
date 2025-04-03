@@ -19,7 +19,7 @@ public class Token {
     private String id;
 
     @NotNull
-    private Integer userId;
+    private String accountUUID;
 
     @NotNull
     private String tokenValue;

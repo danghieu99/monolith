@@ -6,6 +6,7 @@ import com.danghieu99.monolith.product.dto.request.UpdateProductDetailsRequest;
 import com.danghieu99.monolith.product.dto.response.VariantDetailsResponse;
 import com.danghieu99.monolith.product.dto.response.ProductDetailsResponse;
 import com.danghieu99.monolith.product.service.product.SellerProductService;
+import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,13 +25,15 @@ public class SellerProductController {
     private final SellerProductService sellerProductService;
 
     @GetMapping("")
-    public Page<ProductDetailsResponse> getAllByCurrentShop(@PageableDefault Pageable pageable) {
-        return sellerProductService.getAllByCurrentShop(pageable);
+    public Page<ProductDetailsResponse> getAllByCurrentShop(@AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
+                                                            @PageableDefault Pageable pageable) {
+        return sellerProductService.getAllByCurrentShop(userDetails, pageable);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> addToCurrentShop(@RequestBody @NotNull SaveProductRequest request) {
-        sellerProductService.addToCurrentShop(request);
+    public ResponseEntity<?> addToCurrentShop(@AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
+                                              @RequestBody @NotNull SaveProductRequest request) {
+        sellerProductService.addToCurrentShop(userDetails, request);
         return ResponseEntity.ok().build();
     }
 

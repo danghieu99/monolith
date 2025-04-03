@@ -17,6 +17,7 @@ import com.danghieu99.monolith.security.repository.jpa.AccountRoleRepository;
 import com.danghieu99.monolith.security.repository.jpa.RoleRepository;
 import com.danghieu99.monolith.security.repository.redis.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,35 +58,25 @@ public class AuthenticationService {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        int userId = userDetails.getId();
         Set<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
-        ResponseCookie refreshTokenCookie = ResponseCookie
-                .from(authTokenProperties.getRefreshTokenName(), authTokenService.buildRefreshToken(userDetails))
-                .secure(true)
-                .httpOnly(true)
-                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getRefreshTokenExpireMs()))
-                .build();
-        ResponseCookie accessTokenCookie = ResponseCookie
-                .from(authTokenProperties.getAccessTokenName(), authTokenService.buildAccessToken(userDetails))
-                .secure(true)
-                .httpOnly(true)
-                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getAccessTokenExpireMs()))
-                .build();
+        ResponseCookie refreshTokenCookie = authTokenService.buildRefreshTokenCookie(userDetails);
+        ResponseCookie accessTokenCookie = authTokenService.buildAccessTokenCookie(userDetails);
+
         var saveToken = Token.builder()
-                .userId(userId)
+                .accountUUID(userDetails.getUuid().toString())
                 .tokenValue(refreshTokenCookie.getValue())
                 .expiration(authTokenProperties.getRefreshTokenExpireMs())
                 .build();
         refreshTokenRepository.save(saveToken);
 
+
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
         headers.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         headers.add("Access-Control-Allow-Credentials", "true");
-//        headers.add("Access-Control-Max-Age", String.valueOf(authTokenProperties.getRefreshTokenExpireMs()));
 
         var body = LoginResponseBody.builder()
                 .username(userDetails.getUsername())
@@ -135,8 +127,8 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public LogoutResponse logoutFromAllDevices() {
-        refreshTokenRepository.deleteByUserId(getCurrentUserDetails().getId());
+    public LogoutResponse logoutFromAllDevices(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        refreshTokenRepository.deleteByAccountUUID(userDetails.getUuid().toString());
         LogoutResponseBody response = LogoutResponseBody.builder()
                 .message("Logout from all devices success!")
                 .build();
@@ -144,7 +136,9 @@ public class AuthenticationService {
     }
 
     public ResponseCookie refreshAuthentication() {
-        return ResponseCookie.from(authTokenProperties.getRefreshTokenName(), authTokenService.buildRefreshToken(getCurrentUserDetails())).build();
+        return ResponseCookie.from(authTokenProperties.getRefreshTokenName(),
+                        authTokenService.buildRefreshToken(getCurrentUserDetails()))
+                .build();
     }
 
     public UserDetailsImpl getCurrentUserDetails() {

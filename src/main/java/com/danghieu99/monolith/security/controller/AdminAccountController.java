@@ -36,9 +36,15 @@ public class AdminAccountController {
         return ResponseEntity.ok(adminAccountService.updateAccount(id, request));
     }
 
+    @DeleteMapping("/deactivate")
+    public ResponseEntity<?> deactivateAccount(@RequestParam int id) {
+        adminAccountService.deactivateAccountById(id);
+        return ResponseEntity.ok("Deactivate account success");
+    }
+
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAccount(@RequestParam int id) {
         adminAccountService.deleteAccountById(id);
-        return ResponseEntity.ok("Delete success!");
+        return ResponseEntity.ok("Delete account success!");
     }
 }
