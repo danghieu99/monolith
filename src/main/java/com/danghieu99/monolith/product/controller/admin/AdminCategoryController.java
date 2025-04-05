@@ -6,11 +6,13 @@ import com.danghieu99.monolith.product.mapper.CategoryMapper;
 import com.danghieu99.monolith.product.service.category.AdminCategoryService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/admin/category")
 @RequiredArgsConstructor
+@Validated
 public class AdminCategoryController {
 
     private final AdminCategoryService adminCategoryService;

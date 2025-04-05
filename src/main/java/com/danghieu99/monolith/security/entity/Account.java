@@ -44,5 +44,5 @@ public class Account extends BaseEntity {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EAccountStatus status = EAccountStatus.ACCOUNT_INACTIVE;
+    private EAccountStatus status = EAccountStatus.ACCOUNT_ACTIVE;
 }

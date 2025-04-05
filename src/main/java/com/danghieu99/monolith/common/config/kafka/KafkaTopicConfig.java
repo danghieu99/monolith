@@ -2,7 +2,6 @@ package com.danghieu99.monolith.common.config.kafka;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,20 +28,12 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic placeOrderTopic() {
-        return TopicBuilder.name(placeOrderTopicName)
-                .partitions(4)
-                .replicas(2)
-                .compact()
-                .build();
-    }
-
-    @Bean
-    public NewTopic cancelOrderTopic() {
-        return TopicBuilder.name(cancelOrderTopicName)
-                .partitions(4)
-                .replicas(2)
-                .compact()
-                .build();
+    public KafkaAdmin.NewTopics orderTopics() {
+        return new KafkaAdmin.NewTopics(
+                TopicBuilder.name(placeOrderTopicName)
+                        .build(),
+                TopicBuilder.name(cancelOrderTopicName)
+                        .build()
+        );
     }
 }

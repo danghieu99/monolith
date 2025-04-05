@@ -22,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,45 +52,59 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final AccountRoleRepository accountRoleRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
-    public LoginResponse authenticate(LoginRequest request) {
+    public ResponseEntity<?> authenticate(@NotNull final LoginRequest request) {
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+                .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
+                        request.getPassword())
+                );
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         Set<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
-        ResponseCookie refreshTokenCookie = authTokenService.buildRefreshTokenCookie(userDetails);
-        ResponseCookie accessTokenCookie = authTokenService.buildAccessTokenCookie(userDetails);
+        String refreshToken = authTokenService.buildRefreshToken(userDetails);
+        String accessToken = authTokenService.buildAccessToken(userDetails);
+        ResponseCookie refreshTokenCookie = ResponseCookie
+                .from(authTokenProperties.getRefreshTokenName(), refreshToken)
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("None")
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getRefreshTokenExpireMs()))
+                .build();
+        ResponseCookie accessTokenCookie = ResponseCookie
+                .from(authTokenProperties.getAccessTokenName(), accessToken)
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("None")
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getAccessTokenExpireMs()))
+                .build();
 
         var saveToken = Token.builder()
                 .accountUUID(userDetails.getUuid().toString())
-                .tokenValue(refreshTokenCookie.getValue())
+                .tokenValue(refreshToken)
                 .expiration(authTokenProperties.getRefreshTokenExpireMs())
                 .build();
         refreshTokenRepository.save(saveToken);
-
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
         headers.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         headers.add("Access-Control-Allow-Credentials", "true");
-
-        var body = LoginResponseBody.builder()
+        LoginResponseBody body = LoginResponseBody.builder()
                 .username(userDetails.getUsername())
                 .roles(roles)
                 .message("Login success!")
                 .build();
-        return LoginResponse.builder()
-                .body(body)
+        return ResponseEntity.ok()
                 .headers(headers)
-                .build();
+                .body(body);
     }
 
     @Transactional
-    public SignupResponse register(SignupRequest request) {
+    public ResponseEntity<?> register(@NotNull final SignupRequest request) {
         if (accountRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new EntityExistsException("Account", "username", request.getUsername());
         }
@@ -99,7 +113,7 @@ public class AuthenticationService {
         }
         Account account = accountMapper.toAccount(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-        Account savedAccount = accountRepository.saveAndFlush(account);
+        Account savedAccount = accountRepository.save(account);
         int roleId = roleRepository.findByRole(ERole.ROLE_USER)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "role", ERole.ROLE_USER)).getId();
         AccountRole accountRole = AccountRole.builder()
@@ -114,34 +128,48 @@ public class AuthenticationService {
                 .username(savedAccount.getUsername())
                 .roles(roles).message("Signup success!")
                 .build();
-        return SignupResponse.builder()
-                .body(responseBody)
+        return ResponseEntity.ok().body(responseBody);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @Transactional
+    public ResponseEntity<?> logout(@NotNull final HttpServletRequest request) {
+        String refreshToken = authTokenService.parseRefreshTokenFromCookies(request.getCookies());
+        if (refreshToken != null
+                && !refreshToken.isEmpty()
+                && refreshTokenService.existsByValue(refreshToken)) {
+            refreshTokenService.deleteByValue(refreshToken);
+        }
+        LogoutResponseBody response = LogoutResponseBody
+                .builder()
+                .message("Logout success!")
                 .build();
+        return ResponseEntity.ok().body(response);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Transactional
-    public LogoutResponse logout(HttpServletRequest request) {
-        authTokenService.deleteCurrentRefreshToken(request);
-        LogoutResponseBody response = LogoutResponseBody.builder().message("Logout success!").build();
-        return LogoutResponse.builder().body(response).build();
-    }
-
-    @Transactional
-    public LogoutResponse logoutFromAllDevices(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> logoutFromAllDevices(@NotNull final UserDetailsImpl userDetails) {
         refreshTokenRepository.deleteByAccountUUID(userDetails.getUuid().toString());
         LogoutResponseBody response = LogoutResponseBody.builder()
                 .message("Logout from all devices success!")
                 .build();
-        return LogoutResponse.builder().body(response).build();
+        return ResponseEntity.ok().body(response);
     }
 
-    public ResponseCookie refreshAuthentication() {
-        return ResponseCookie.from(authTokenProperties.getRefreshTokenName(),
-                        authTokenService.buildRefreshToken(getCurrentUserDetails()))
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> refreshAuthentication(@NotNull final UserDetailsImpl userDetails) {
+        String accessToken = authTokenService.buildAccessToken(userDetails);
+        ResponseCookie accessTokenCookie = ResponseCookie
+                .from(authTokenProperties.getAccessTokenName(), accessToken)
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("None")
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(authTokenProperties.getAccessTokenExpireMs()))
                 .build();
-    }
-
-    public UserDetailsImpl getCurrentUserDetails() {
-        return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        headers.add("Access-Control-Allow-Credentials", "true");
+        return ResponseEntity.ok().headers(headers).body("Refresh token success!");
     }
 }

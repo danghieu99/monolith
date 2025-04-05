@@ -3,7 +3,6 @@ package com.danghieu99.monolith.security.config.auth;
 import com.danghieu99.monolith.security.entity.Account;
 import com.danghieu99.monolith.security.entity.Role;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

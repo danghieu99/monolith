@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/user/order")
 @RequiredArgsConstructor
+@Validated
 public class UserOrderController {
 
     private final UserOrderService userOrderService;
@@ -30,7 +32,7 @@ public class UserOrderController {
 
     @PostMapping("")
     @Transactional
-    public PlaceOrderResponse placeOrder(@RequestBody @Valid PlaceOrderRequest request,
+    public PlaceOrderResponse placeOrder(@RequestBody PlaceOrderRequest request,
                                          @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
         userOrderService.placeOrder(request, userDetails);
         return PlaceOrderResponse.builder()
@@ -41,7 +43,7 @@ public class UserOrderController {
 
     @PatchMapping("")
     @Transactional
-    public void cancelOrder(@RequestParam @Valid CancelOrderRequest request,
+    public void cancelOrder(@RequestParam CancelOrderRequest request,
                             @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
         userOrderService.cancelOrder(request, userDetails);
     }

@@ -28,7 +28,6 @@ public class UserAccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
     private final AuthenticationManager authenticationManager;
-    private final AuthenticationService authenticationService;
     private final RoleRepository roleRepository;
 
     public UserGetAccountDetailsResponse getPrivateAccountDetailsByUUID(@NotEmpty final String uuid) {
@@ -56,7 +55,8 @@ public class UserAccountService {
                                           @NotNull final UserDetailsImpl userDetails) {
         try {
             authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(authenticationService.getCurrentUserDetails().getUsername(), request.getNewPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
+                            request.getNewPassword()));
         } catch (Exception e) {
             throw new AuthenticationException("Cannot authenticate!") {
                 @Override
