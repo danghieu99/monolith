@@ -1,6 +1,5 @@
-package com.danghieu99.monolith.order.config.kafka;
+package com.danghieu99.monolith.common.config.kafka;
 
-import com.danghieu99.monolith.common.dto.BaseKafkaRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -17,12 +16,12 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class OrderKafkaProducerConfig {
+public class KafkaProducerConfig {
 
     private final KafkaProperties kafkaProperties;
 
     @Bean
-    public <T extends BaseKafkaRequest> ProducerFactory<String, T> producerOrderObjFactory() {
+    public <T> ProducerFactory<String, T> producerObjFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -31,7 +30,7 @@ public class OrderKafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, String> producerOrderStrFactory() {
+    public ProducerFactory<String, String> producerStrFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -40,13 +39,12 @@ public class OrderKafkaProducerConfig {
     }
 
     @Bean
-    public <T extends BaseKafkaRequest> KafkaTemplate<String, T> kafkaOrderObjTemplate() {
-        return new KafkaTemplate<>(producerOrderObjFactory());
+    public <T> KafkaTemplate<String, T> kafkaObjTemplate() {
+        return new KafkaTemplate<>(producerObjFactory());
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaOrderStrTemplate() {
-        return new KafkaTemplate<>(producerOrderStrFactory());
+    public KafkaTemplate<String, String> kafkaStrTemplate() {
+        return new KafkaTemplate<>(producerStrFactory());
     }
-
 }

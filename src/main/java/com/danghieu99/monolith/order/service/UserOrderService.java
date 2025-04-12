@@ -1,6 +1,5 @@
 package com.danghieu99.monolith.order.service;
 
-import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.order.dto.request.kafka.CancelOrderKafkaRequest;
 import com.danghieu99.monolith.order.dto.request.CancelOrderRequest;
 import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderKafkaRequest;
@@ -10,8 +9,6 @@ import com.danghieu99.monolith.order.kafka.PlaceOrderKafkaProducer;
 import com.danghieu99.monolith.order.mapper.OrderMapper;
 import com.danghieu99.monolith.order.repository.OrderRepository;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
-import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.repository.jpa.AccountRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service

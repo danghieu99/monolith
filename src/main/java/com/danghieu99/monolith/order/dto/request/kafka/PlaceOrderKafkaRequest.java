@@ -1,6 +1,5 @@
 package com.danghieu99.monolith.order.dto.request.kafka;
 
-import com.danghieu99.monolith.common.dto.BaseKafkaRequest;
 import com.danghieu99.monolith.order.dto.request.OrderAddressRequest;
 import com.danghieu99.monolith.order.dto.request.OrderItemRequest;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class PlaceOrderKafkaRequest extends BaseKafkaRequest {
+public class PlaceOrderKafkaRequest {
 
     @NotEmpty
     private final String shopUUID;

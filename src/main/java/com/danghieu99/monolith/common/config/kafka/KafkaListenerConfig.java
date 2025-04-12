@@ -1,7 +1,5 @@
-package com.danghieu99.monolith.order.config.kafka;
+package com.danghieu99.monolith.common.config.kafka;
 
-import com.danghieu99.monolith.common.dto.BaseKafkaRequest;
-import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderKafkaRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -23,7 +21,7 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZE
 @EnableKafka
 @Configuration
 @RequiredArgsConstructor
-public class OrderKafkaListenerConfig {
+public class KafkaListenerConfig {
 
     private final KafkaProperties kafkaProperties;
 
@@ -35,7 +33,7 @@ public class OrderKafkaListenerConfig {
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
-    public <T extends BaseKafkaRequest> ConsumerFactory<String, T> consumerObjFactory() {
+    public <T> ConsumerFactory<String, T> consumerObjFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         configProps.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -51,7 +49,7 @@ public class OrderKafkaListenerConfig {
     }
 
     @Bean
-    public <T extends BaseKafkaRequest> ConcurrentKafkaListenerContainerFactory<String, T> concurrentKafkaListenerContainerObjFactory() {
+    public <T> ConcurrentKafkaListenerContainerFactory<String, T> concurrentKafkaListenerContainerObjFactory() {
         ConcurrentKafkaListenerContainerFactory<String, T> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerObjFactory());
         return factory;

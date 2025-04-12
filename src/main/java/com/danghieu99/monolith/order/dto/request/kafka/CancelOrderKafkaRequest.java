@@ -1,13 +1,14 @@
 package com.danghieu99.monolith.order.dto.request.kafka;
 
-import com.danghieu99.monolith.common.dto.BaseKafkaRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
-public class CancelOrderKafkaRequest extends BaseKafkaRequest {
+public class CancelOrderKafkaRequest {
 
     @NotBlank
     private final String orderUUID;
