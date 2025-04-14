@@ -1,12 +1,11 @@
 package com.danghieu99.monolith.cart.entity;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 
-@Entity
+import java.util.Map;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,10 +16,8 @@ import org.springframework.data.redis.core.RedisHash;
 public class Cart {
 
     @Id
-    private String id;
+    private String accountUUID;
 
-    @NotEmpty
-    private String userUUID;
-
-
+    //variantUUID - quantity
+    private Map<String, Integer> items;
 }

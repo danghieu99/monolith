@@ -16,7 +16,7 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     @Getter
-    private final UUID uuid;
+    private final String uuid;
 
     private final String username;
 
@@ -24,7 +24,7 @@ public class UserDetailsImpl implements UserDetails {
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(UUID uuid,
+    public UserDetailsImpl(String uuid,
                            String username,
                            String password,
                            Collection<? extends GrantedAuthority> authorities) {
@@ -40,7 +40,7 @@ public class UserDetailsImpl implements UserDetails {
                 .collect(Collectors.toList());
 
         return new UserDetailsImpl(
-                account.getUuid(),
+                account.getUuid().toString(),
                 account.getUsername(),
                 account.getPassword(),
                 authorities);

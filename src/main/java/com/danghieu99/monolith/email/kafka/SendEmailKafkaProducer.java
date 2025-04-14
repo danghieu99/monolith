@@ -18,7 +18,8 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class SendEmailKafkaProducer {
 
-    private final SendEmailService sendEmailService;
+    @Value("${system.code.email}")
+    private String systemCode;
 
     @Value("${spring.kafka.topics.email.send}")
     private String topic;
@@ -28,6 +29,7 @@ public class SendEmailKafkaProducer {
     @Async
     public void send(SendEmailKafkaRequest request) {
         if (Objects.nonNull(request)) {
+            request.setSystemCode(systemCode);
             CompletableFuture<SendResult<String, SendEmailKafkaRequest>> future = kafkaTemplate.send(topic, request);
             future.thenAccept(sendResult -> {
                         log.info("Message [{}] delivered with offset {}", request, sendResult.getRecordMetadata().offset());

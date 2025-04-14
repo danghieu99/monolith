@@ -20,11 +20,15 @@ public class CancelOrderKafkaProducer {
     @Value("${spring.kafka.topics.order.cancel}")
     private String topic;
 
+    @Value("${system.code.order}")
+    private String systemCode;
+
     private final KafkaTemplate<String, CancelOrderKafkaRequest> kafkaTemplate;
 
     @Async
     public void send(final CancelOrderKafkaRequest request) {
         if (Objects.nonNull(request)) {
+            request.setSystemCode(systemCode);
             CompletableFuture<SendResult<String, CancelOrderKafkaRequest>> future = kafkaTemplate.send(topic, request);
             future.thenAccept(sendResult -> {
                         log.info("Message [{}] delivered with offset {}", request, sendResult.getRecordMetadata().offset());

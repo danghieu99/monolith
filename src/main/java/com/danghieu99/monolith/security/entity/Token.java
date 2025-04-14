@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.security.entity;
 
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
@@ -16,15 +17,13 @@ import java.util.concurrent.TimeUnit;
 public class Token {
 
     @Id
-    private String id;
+    @NotBlank
+    private String tokenValue;
 
-    @NotNull
+    @NotBlank
     private String accountUUID;
 
     @NotNull
-    private String tokenValue;
-
-    @NotNull
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
-    private int expiration;
+    private long expiration;
 }

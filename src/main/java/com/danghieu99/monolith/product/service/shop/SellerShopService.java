@@ -8,11 +8,9 @@ import com.danghieu99.monolith.product.entity.Shop;
 import com.danghieu99.monolith.product.mapper.ShopMapper;
 import com.danghieu99.monolith.product.repository.jpa.ShopRepository;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
-import com.danghieu99.monolith.security.service.auth.AuthenticationService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,7 +30,7 @@ public class SellerShopService {
 
     @Transactional
     public void deleteCurrentUserShop(@NotNull UserDetailsImpl userDetails) {
-        shopRepository.deleteByUuid(userDetails.getUuid());
+        shopRepository.deleteByAccountUUID(userDetails.getUuid());
     }
 
     @Transactional

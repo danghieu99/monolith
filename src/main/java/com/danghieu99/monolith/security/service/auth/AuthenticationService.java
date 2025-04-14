@@ -149,10 +149,10 @@ public class AuthenticationService {
 
     @PreAuthorize("isAuthenticated()")
     @Transactional
-    public ResponseEntity<?> logoutFromAllDevices(@NotNull final UserDetailsImpl userDetails) {
+    public ResponseEntity<?> deleteAllTokens(@NotNull final UserDetailsImpl userDetails) {
         refreshTokenRepository.deleteByAccountUUID(userDetails.getUuid().toString());
         LogoutResponseBody response = LogoutResponseBody.builder()
-                .message("Logout from all devices success!")
+                .message("Delete all account tokens success!")
                 .build();
         return ResponseEntity.ok().body(response);
     }

@@ -1,6 +1,7 @@
 package com.danghieu99.monolith.security.repository.redis;
 
 import com.danghieu99.monolith.security.entity.Token;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
@@ -18,4 +19,6 @@ public interface RefreshTokenRepository extends CrudRepository<Token, UUID> {
     void deleteByTokenValue(String token);
 
     void deleteByAccountUUID(String accountUUID);
+
+    boolean existsByDeviceId(@NotBlank String deviceId);
 }

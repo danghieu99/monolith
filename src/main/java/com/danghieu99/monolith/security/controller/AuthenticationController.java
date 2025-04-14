@@ -39,8 +39,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout-all")
-    public ResponseEntity<?> logoutFromAllDevices(@NotNull @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return authenticationService.logoutFromAllDevices(userDetails);
+    public ResponseEntity<?> deleteAllTokens(@NotNull @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return authenticationService.deleteAllTokens(userDetails);
     }
 
     @GetMapping("/refresh")

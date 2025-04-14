@@ -13,8 +13,6 @@ import java.util.Map;
 @Builder
 public class SendEmailKafkaRequest extends BaseKafkaRequest {
 
-    private String systemCode;
-
     private String[] from;
 
     private String[] to;

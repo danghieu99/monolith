@@ -24,7 +24,7 @@ public class Shop extends BaseEntity {
     private String description;
 
     @Column(nullable = false, unique = true, updatable = false)
-    private UUID accountUUID;
+    private String accountUUID;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

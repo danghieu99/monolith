@@ -51,8 +51,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (access != null
                     && !access.isEmpty()
                     && authTokenService.isTokenValid(access)) {
-                UUID accountUUID = UUID.fromString(authTokenService.parseClaimsFromToken(access).getSubject());
-                Account account = accountRepository.findByUuid(accountUUID)
+                String accountUUID = authTokenService.parseClaimsFromToken(access).getSubject();
+                Account account = accountRepository.findByUuid(UUID.fromString(accountUUID))
                         .orElseThrow(() -> new ResourceNotFoundException("Account", "Uuid", accountUUID));
                 if (account.getStatus() == EAccountStatus.ACCOUNT_INACTIVE) {
                     throw new DisabledException("Account inactive");

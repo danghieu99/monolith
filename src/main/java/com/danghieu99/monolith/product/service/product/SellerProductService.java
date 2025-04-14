@@ -12,7 +12,7 @@ import com.danghieu99.monolith.product.mapper.ProductMapper;
 import com.danghieu99.monolith.product.mapper.VariantMapper;
 import com.danghieu99.monolith.product.repository.jpa.*;
 import com.danghieu99.monolith.product.repository.jpa.join.*;
-import com.danghieu99.monolith.product.service.file.UploadFileService;
+import com.danghieu99.monolith.product.service.file.OrderUploadFileService;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
@@ -45,14 +45,14 @@ public class SellerProductService {
     private final ShopRepository shopRepository;
     private final CategoryRepository categoryRepository;
     private final AttributeRepository attributeRepository;
-    private final UploadFileService uploadFileService;
+    private final OrderUploadFileService orderUploadFileService;
     private final ImageRepository imageRepository;
     private final ProductImageRepository productImageRepository;
     private final VariantImageRepository variantImageRepository;
 
     public Page<ProductDetailsResponse> getAllByCurrentShop(@NotNull UserDetailsImpl userDetails,
                                                             @NotNull Pageable pageable) {
-        Page<Product> products = productRepository.findByShopUUID(userDetails.getUuid(), pageable);
+        Page<Product> products = productRepository.findByShopUUID(UUID.fromString(userDetails.getUuid()), pageable);
         return products.map(productMapper::toGetProductDetailsResponse);
     }
 
@@ -86,7 +86,7 @@ public class SellerProductService {
         request.getImgFiles().forEach(requestProductImage -> {
             String productImgObjectName = savedProduct.getUuid() + "/full/" + requestProductImage.getOriginalFilename();
             try {
-                uploadFileService.uploadImage(productImgObjectName, requestProductImage);
+                orderUploadFileService.uploadImage(productImgObjectName, requestProductImage);
             } catch (Exception e) {
                 throw new RuntimeException("Cannot upload image: " + requestProductImage.getOriginalFilename(), e);
             }
@@ -118,7 +118,7 @@ public class SellerProductService {
 
                 String variantImgObjectName = savedVariant.getUuid() + "/full/" + requestVariant.getImgFile().getOriginalFilename();
                 try {
-                    uploadFileService.uploadImage(variantImgObjectName, requestVariant.getImgFile());
+                    orderUploadFileService.uploadImage(variantImgObjectName, requestVariant.getImgFile());
                 } catch (Exception e) {
                     throw new RuntimeException("Cannot upload image: " + requestVariant.getImgFile().getOriginalFilename(), e);
                 }
@@ -204,7 +204,7 @@ public class SellerProductService {
         Set<VariantImage> vImages = new HashSet<>();
         String objectName = savedVariant.getUuid() + "/full/" + request.getImgFile().getOriginalFilename();
         try {
-            uploadFileService.uploadImage(objectName, request.getImgFile());
+            orderUploadFileService.uploadImage(objectName, request.getImgFile());
         } catch (Exception e) {
             throw new RuntimeException("Cannot upload image: " + request.getImgFile().getOriginalFilename(), e);
         }
