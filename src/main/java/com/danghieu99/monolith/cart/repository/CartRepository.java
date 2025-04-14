@@ -2,11 +2,10 @@ package com.danghieu99.monolith.cart.repository;
 
 import com.danghieu99.monolith.cart.entity.Cart;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
+@Repository
 public interface CartRepository extends CrudRepository<Cart, String> {
 
-
-    Optional<Cart> findByAccountUUID(String accountUUID);
+    Cart findByAccountUUID(String accountUUID);
 }

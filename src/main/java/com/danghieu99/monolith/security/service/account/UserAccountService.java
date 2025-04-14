@@ -39,7 +39,7 @@ public class UserAccountService {
 
     public UserEditAccountResponse editAccountDetails(@NotNull final UserEditAccountDetailsRequest request,
                                                       @NotNull final UserDetailsImpl userDetails) {
-        Account account = accountRepository.findByUuid(userDetails.getUuid())
+        Account account = accountRepository.findByUuid(UUID.fromString(userDetails.getUuid()))
                 .orElseThrow(() -> new ResourceNotFoundException("Account", "id", userDetails.getUuid()));
         if (request.getUsername() != null) account.setUsername(request.getUsername());
         if (request.getEmail() != null) account.setEmail(request.getEmail());
@@ -65,7 +65,7 @@ public class UserAccountService {
                 }
             };
         }
-        Account account = accountRepository.findByUuid(userDetails.getUuid())
+        Account account = accountRepository.findByUuid(UUID.fromString(userDetails.getUuid()))
                 .orElseThrow(() -> new ResourceNotFoundException("Account", "id", userDetails.getUuid()));
         if (request.getNewPassword().equals(account.getPassword())) {
             throw new IllegalArgumentException("Password not changed!");

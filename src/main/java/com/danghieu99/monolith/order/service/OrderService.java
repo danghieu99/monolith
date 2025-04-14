@@ -31,8 +31,8 @@ public class OrderService {
     public void save(@NotNull @Valid PlaceOrderKafkaRequest request) {
         List<OrderItem> orderItems = new ArrayList<>();
         Order newOrder = Order.builder()
-                .shopUUID(UUID.fromString(request.getShopUUID()))
-                .userAccountUUID(UUID.fromString(request.getAccountUUID()))
+                .shopUUID(request.getShopUUID())
+                .userAccountUUID(request.getAccountUUID())
                 .build();
         Order savedOrder = orderRepository.save(newOrder);
 

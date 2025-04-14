@@ -24,9 +24,9 @@ public class UserCartService {
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
 
-    public GetCartResponse getCart(@NotNull UserDetailsImpl userDetails) {
-        Cart cart = cartRepository.findByAccountUUID(userDetails.getUuid())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", "accountUUID", userDetails.getUuid()));
+    public GetCartResponse getCart(@NotNull final UserDetailsImpl userDetails) {
+        Cart cart = cartRepository.findByAccountUUID(userDetails.getUuid());
+        if (cart == null) throw new ResourceNotFoundException("Cart", "accountUUID", userDetails.getUuid());
         return cartMapper.toGetCartResponse(cart);
     }
 
@@ -34,15 +34,15 @@ public class UserCartService {
     public void updateCartItem(@NotNull final UserDetailsImpl userDetails,
                                @NotBlank final String variantUUID,
                                @NotNull final int quantity) {
-        Cart cart = cartRepository.findByAccountUUID(userDetails.getUuid())
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", "accountUUID", userDetails.getUuid()));
+        Cart cart = cartRepository.findByAccountUUID(userDetails.getUuid());
+        if (cart == null) throw new ResourceNotFoundException("Cart", "accountUUID", userDetails.getUuid());
         Map<String, Integer> items = new HashMap<>(cart.getItems());
         if (quantity <= 0) {
             items.remove(variantUUID);
         } else {
             items.put(variantUUID, quantity);
         }
-        cart.setItems(new HashMap<>(items));
+        cart.setItems(items);
         cartRepository.save(cart);
     }
 }

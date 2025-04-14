@@ -12,7 +12,7 @@ import com.danghieu99.monolith.product.mapper.ProductMapper;
 import com.danghieu99.monolith.product.mapper.VariantMapper;
 import com.danghieu99.monolith.product.repository.jpa.*;
 import com.danghieu99.monolith.product.repository.jpa.join.*;
-import com.danghieu99.monolith.product.service.file.OrderUploadFileService;
+import com.danghieu99.monolith.product.service.file.ProductUploadFileService;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
@@ -45,7 +45,7 @@ public class SellerProductService {
     private final ShopRepository shopRepository;
     private final CategoryRepository categoryRepository;
     private final AttributeRepository attributeRepository;
-    private final OrderUploadFileService orderUploadFileService;
+    private final ProductUploadFileService orderUploadFileService;
     private final ImageRepository imageRepository;
     private final ProductImageRepository productImageRepository;
     private final VariantImageRepository variantImageRepository;

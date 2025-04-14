@@ -11,6 +11,4 @@ import org.mapstruct.ReportingPolicy;
 public interface EmailMapper {
 
     SendEmailKafkaRequest toSendEmailKafkaRequest(SendEmailRequest sendEmailRequest);
-
-    SendEmailKafkaRequest toSendEmailKafkaRequest(SendEmailTemplateRequest sendEmailKafkaRequest);
 }

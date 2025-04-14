@@ -29,7 +29,7 @@ public class UserOrderService {
     private final CancelOrderKafkaProducer cancelOrderKafkaProducer;
 
     public List<String> getOrderUUIDsByCurrentUser(@NotNull UserDetailsImpl userDetails) {
-        return orderRepository.findByUserUUID(userDetails.getUuid()).stream()
+        return orderRepository.findByUserAccountUUID(userDetails.getUuid()).stream()
                 .map(order -> order.getUuid().toString())
                 .collect(Collectors.toList());
     }
@@ -38,7 +38,7 @@ public class UserOrderService {
     @Transactional
     public void placeOrder(@RequestBody final PlaceOrderRequest request, final UserDetailsImpl userDetails) {
         PlaceOrderKafkaRequest kafkaRequest = orderMapper.toKafkaPlaceOrderRequest(request);
-        kafkaRequest.setAccountUUID(userDetails.getUuid().toString());
+        kafkaRequest.setAccountUUID(userDetails.getUuid());
         placeOrderKafkaProducer.send(kafkaRequest);
     }
 
@@ -46,7 +46,7 @@ public class UserOrderService {
     @Transactional
     public void cancelOrder(CancelOrderRequest request, UserDetailsImpl userDetails) {
         CancelOrderKafkaRequest kafkaRequest = orderMapper.toKafkaCancelOrderRequest(request);
-        kafkaRequest.setAccountUUID(userDetails.getUuid().toString());
+        kafkaRequest.setAccountUUID(userDetails.getUuid());
         cancelOrderKafkaProducer.send(kafkaRequest);
     }
 }

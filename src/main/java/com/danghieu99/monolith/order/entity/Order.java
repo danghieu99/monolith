@@ -18,10 +18,10 @@ import java.util.UUID;
 public class Order extends BaseEntity {
 
     @Column(nullable = false)
-    private UUID shopUUID;
+    private String shopUUID;
 
     @Column(nullable = false)
-    private UUID userAccountUUID;
+    private String userAccountUUID;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

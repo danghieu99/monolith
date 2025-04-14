@@ -1,9 +1,9 @@
 package com.danghieu99.monolith.email.dto;
 
 import com.danghieu99.monolith.common.dto.BaseRequest;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
@@ -20,17 +20,14 @@ public class SendEmailRequest extends BaseRequest {
 
     private String systemCode;
 
-    @NotBlank
-    private String from;
+    @NotEmpty
+    private List<@NotBlank String> from;
 
-    @Valid
+    @NotEmpty
     private List<@NotBlank @Email String> to;
 
-    @Valid
     private List<@NotBlank @Email String> cc;
 
-    @NotBlank
-    @Valid
     private List<@NotBlank @Email String> bcc;
 
     private String subject;
@@ -44,6 +41,6 @@ public class SendEmailRequest extends BaseRequest {
     @Size(min = 1)
     private Map<@NotBlank String, @NotBlank String> paramMap;
 
-    @Size(min = 1, max = 3)
+    @Size(min = 1, max = 5)
     private List<MultipartFile> files;
 }
