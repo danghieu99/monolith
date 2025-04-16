@@ -1,8 +1,7 @@
 package com.danghieu99.monolith.security.service.auth;
 
-import com.danghieu99.monolith.security.entity.Token;
+import com.danghieu99.monolith.security.entity.redis.Token;
 import com.danghieu99.monolith.security.repository.redis.RefreshTokenRepository;
-import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +21,11 @@ public class RefreshTokenService {
     }
 
     public boolean existsByValue(String value) {
-        return repository.existsByTokenValue(value);
+        return repository.existsByValue(value);
     }
 
     public Optional<Token> findByValue(String value) {
-        return repository.findByTokenValue(value);
+        return repository.findByValue(value);
     }
 
     public void deleteByAccountUUID(String accountUUID) {
@@ -35,6 +34,6 @@ public class RefreshTokenService {
 
     @Transactional
     public void deleteByValue(String value) {
-        repository.deleteByTokenValue(value);
+        repository.deleteByValue(value);
     }
 }

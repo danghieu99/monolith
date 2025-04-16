@@ -14,7 +14,10 @@ public class SendEmailKafkaConsumer {
 
     private final SendEmailService sendEmailService;
 
-    @KafkaListener(topics = "${spring.kafka.topics.email.send}", groupId = "group-email-worker")
+    @KafkaListener(topics = "${spring.kafka.topics.email.send}",
+            groupId = "group-email-worker",
+            concurrency = "4",
+            containerFactory = "sendEmailListenerFactory")
     public void listen(SendEmailKafkaRequest request) {
         sendEmailService.send(request);
     }

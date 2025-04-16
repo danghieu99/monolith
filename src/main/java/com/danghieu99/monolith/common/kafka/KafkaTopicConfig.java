@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.common.config.kafka;
+package com.danghieu99.monolith.common.kafka;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.beans.factory.annotation.Value;

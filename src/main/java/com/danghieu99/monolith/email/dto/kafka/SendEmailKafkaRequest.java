@@ -1,16 +1,17 @@
 package com.danghieu99.monolith.email.dto.kafka;
 
 import com.danghieu99.monolith.common.dto.BaseKafkaRequest;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.List;
 import java.util.Map;
 
-@EqualsAndHashCode(callSuper = false)
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Builder
+@Getter
+@Setter
 public class SendEmailKafkaRequest extends BaseKafkaRequest {
 
     private String[] from;

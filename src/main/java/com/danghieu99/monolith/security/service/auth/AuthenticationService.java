@@ -2,13 +2,17 @@ package com.danghieu99.monolith.security.service.auth;
 
 import com.danghieu99.monolith.common.exception.EntityExistsException;
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
+import com.danghieu99.monolith.email.dto.SendEmailRequest;
+import com.danghieu99.monolith.email.service.SendEmailToKafkaService;
 import com.danghieu99.monolith.security.config.auth.AuthTokenProperties;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
+import com.danghieu99.monolith.security.constant.EAccountStatus;
+import com.danghieu99.monolith.security.dto.auth.request.ConfirmEmailRequest;
 import com.danghieu99.monolith.security.dto.auth.request.LoginRequest;
 import com.danghieu99.monolith.security.dto.auth.request.SignupRequest;
 import com.danghieu99.monolith.security.dto.auth.response.*;
 import com.danghieu99.monolith.security.entity.Account;
-import com.danghieu99.monolith.security.entity.Token;
+import com.danghieu99.monolith.security.entity.redis.Token;
 import com.danghieu99.monolith.security.constant.ERole;
 import com.danghieu99.monolith.security.entity.join.AccountRole;
 import com.danghieu99.monolith.security.mapper.AccountMapper;
@@ -20,6 +24,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +39,9 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,6 +60,11 @@ public class AuthenticationService {
     private final AccountRepository accountRepository;
     private final AccountRoleRepository accountRoleRepository;
     private final RefreshTokenService refreshTokenService;
+    private final ConfirmCodeEmailService confirmCodeEmailService;
+    private final SendEmailToKafkaService sendEmailToKafkaService;
+
+    @Value("${authentication.email.from}")
+    private String fromEmail;
 
     @Transactional
     public ResponseEntity<?> authenticate(@NotNull final LoginRequest request) {
@@ -84,7 +96,7 @@ public class AuthenticationService {
 
         var saveToken = Token.builder()
                 .accountUUID(userDetails.getUuid().toString())
-                .tokenValue(refreshToken)
+                .value(refreshToken)
                 .expiration(authTokenProperties.getRefreshTokenExpireMs())
                 .build();
         refreshTokenRepository.save(saveToken);
@@ -122,6 +134,16 @@ public class AuthenticationService {
                 .build();
         accountRoleRepository.save(accountRole);
 
+        //replace with template
+        String code = UUID.randomUUID().toString();
+        confirmCodeEmailService.create(savedAccount.getUuid().toString(), code);
+        sendEmailToKafkaService.sendToKafka(SendEmailRequest.builder()
+                .from(List.of(fromEmail))
+                .to(List.of(request.getEmail()))
+                .subject("email confirm code")
+                .plainText(code)
+                .build());
+
         Set<String> roles = new HashSet<>();
         roles.add(ERole.ROLE_USER.toString());
         SignupResponseBody responseBody = SignupResponseBody.builder()
@@ -150,7 +172,7 @@ public class AuthenticationService {
     @PreAuthorize("isAuthenticated()")
     @Transactional
     public ResponseEntity<?> deleteAllTokens(@NotNull final UserDetailsImpl userDetails) {
-        refreshTokenRepository.deleteByAccountUUID(userDetails.getUuid().toString());
+        refreshTokenRepository.deleteByAccountUUID(userDetails.getUuid());
         LogoutResponseBody response = LogoutResponseBody.builder()
                 .message("Delete all account tokens success!")
                 .build();
@@ -158,6 +180,7 @@ public class AuthenticationService {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @Transactional
     public ResponseEntity<?> refreshAuthentication(@NotNull final UserDetailsImpl userDetails) {
         String accessToken = authTokenService.buildAccessToken(userDetails);
         ResponseCookie accessTokenCookie = ResponseCookie
@@ -171,5 +194,16 @@ public class AuthenticationService {
         headers.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         headers.add("Access-Control-Allow-Credentials", "true");
         return ResponseEntity.ok().headers(headers).body("Refresh token success!");
+    }
+
+    @Transactional
+    public ResponseEntity<ConfirmEmailResponse> confirmEmail(@NotNull final ConfirmEmailRequest request) {
+        String accountUUID = confirmCodeEmailService.validate(request.getCode());
+        accountRepository.updateAccountStatusByUUID(UUID.fromString(accountUUID), EAccountStatus.ACCOUNT_ACTIVE);
+        return ResponseEntity.ok()
+                .body(ConfirmEmailResponse.builder()
+                        .success(true)
+                        .message("Confirm email success")
+                        .build());
     }
 }

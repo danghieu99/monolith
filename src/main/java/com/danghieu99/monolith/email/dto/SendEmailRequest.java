@@ -13,12 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 public class SendEmailRequest extends BaseRequest {
-
-    private String systemCode;
 
     @NotEmpty
     private List<@NotBlank String> from;

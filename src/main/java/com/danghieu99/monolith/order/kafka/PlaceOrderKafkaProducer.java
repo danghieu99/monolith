@@ -20,11 +20,15 @@ public class PlaceOrderKafkaProducer {
     @Value("${spring.kafka.topics.order.place}")
     private String topic;
 
+    @Value("${system.code.order}")
+    private String systemCode;
+
     private final KafkaTemplate<String, PlaceOrderKafkaRequest> kafkaTemplate;
 
     @Async
     public void send(final PlaceOrderKafkaRequest request) {
         if (Objects.nonNull(request)) {
+            request.setSystemCode(systemCode);
             CompletableFuture<SendResult<String, PlaceOrderKafkaRequest>> future = kafkaTemplate.send(topic, request);
             future.thenAccept(sendResult -> {
                         log.info("Message [{}] delivered with offset {}", request, sendResult.getRecordMetadata().offset());

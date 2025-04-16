@@ -24,13 +24,15 @@ public class SendEmailToKafkaService {
     @Transactional
     public void sendToKafka(SendEmailRequest request) {
         SendEmailKafkaRequest kafkaRequest = emailMapper.toSendEmailKafkaRequest(request);
-        kafkaRequest.setAttachments(request.getFiles().stream().map(file -> {
-            return SendEmailKafkaRequestAttachment.builder()
-                    .fileName(file.getName())
-                    .contentType(file.getContentType())
-                    .fileUrl("")
-                    .build();
-        }).toList());
+        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
+            kafkaRequest.setAttachments(request.getFiles().stream().map(file -> {
+                return SendEmailKafkaRequestAttachment.builder()
+                        .fileName(file.getName())
+                        .contentType(file.getContentType())
+                        .fileUrl("")
+                        .build();
+            }).toList());
+        }
         producer.send(kafkaRequest);
     }
 

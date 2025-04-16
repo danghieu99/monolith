@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.security.entity;
+package com.danghieu99.monolith.security.entity.redis;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class Token {
 
     @Id
-    private String tokenValue;
+    private String value;
 
     @Indexed
     private String accountUUID;

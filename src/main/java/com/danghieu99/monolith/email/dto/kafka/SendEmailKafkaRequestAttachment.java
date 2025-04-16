@@ -1,22 +1,24 @@
 package com.danghieu99.monolith.email.dto.kafka;
 
+import com.danghieu99.monolith.common.dto.BaseKafkaRequest;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
-@EqualsAndHashCode(callSuper = false)
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Builder
-public class SendEmailKafkaRequestAttachment {
+@Getter
+@Setter
+public class SendEmailKafkaRequestAttachment extends BaseKafkaRequest {
 
     @NotBlank
-    private final String fileName;
+    private String fileName;
 
     @NotBlank
-    private final String fileUrl;
+    private String fileUrl;
 
     @NotBlank
-    private final String contentType;
+    private String contentType;
 
 }

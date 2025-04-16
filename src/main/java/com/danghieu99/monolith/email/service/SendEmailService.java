@@ -39,18 +39,22 @@ public class SendEmailService {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = this.prepareMessage(mimeMessage, request, from);
-            String content = request.getPlainText();
+            String plainText = request.getPlainText();
             String htmlContent = request.getHtml();
             if (request.getTemplateName() != null && !request.getTemplateName().isBlank()) {
                 Context ctx = this.prepareContext(request);
                 String processedContent = templateEngine.process(request.getTemplateName(), ctx);
                 helper.setText(processedContent, true);
             } else if (htmlContent != null && !htmlContent.isBlank()) {
-                if (content != null && !content.isBlank()) {
-                    helper.setText(content, htmlContent);
+                if (plainText != null && !plainText.isBlank()) {
+                    helper.setText(plainText, htmlContent);
                 } else {
                     helper.setText(htmlContent, true);
                 }
+            } else if (plainText != null && !plainText.isBlank()) {
+                helper.setText(plainText, false);
+            } else {
+                throw new IllegalArgumentException("No plain text or html content provided");
             }
             if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
                 this.prepareAttachments(helper, request);

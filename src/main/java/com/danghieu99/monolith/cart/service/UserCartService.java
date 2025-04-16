@@ -31,9 +31,9 @@ public class UserCartService {
     }
 
     @Async
-    public void updateItemQuantity(@NotNull final UserDetailsImpl userDetails,
-                                   @NotBlank final String variantUUID,
-                                   @NotNull final int quantity) {
+    public void setItemQuantity(@NotNull final UserDetailsImpl userDetails,
+                                @NotBlank final String variantUUID,
+                                @NotNull final int quantity) {
         Cart cart = cartRepository.findByAccountUUID(userDetails.getUuid());
         if (cart == null) throw new ResourceNotFoundException("Cart", "accountUUID", userDetails.getUuid());
         Map<String, Integer> items = new HashMap<>(cart.getItems());

@@ -1,7 +1,6 @@
 package com.danghieu99.monolith.email.kafka;
 
 import com.danghieu99.monolith.email.dto.kafka.SendEmailKafkaRequest;
-import com.danghieu99.monolith.email.service.SendEmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,18 +17,15 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class SendEmailKafkaProducer {
 
-    @Value("${system.code.email}")
-    private String systemCode;
-
     @Value("${spring.kafka.topics.email.send}")
     private String topic;
 
-    private KafkaTemplate<String, SendEmailKafkaRequest> kafkaTemplate;
+    private final KafkaTemplate<String, SendEmailKafkaRequest> kafkaTemplate;
 
     @Async
-    public void send(SendEmailKafkaRequest request) {
+    public void send(final SendEmailKafkaRequest request) {
         if (Objects.nonNull(request)) {
-            request.setSystemCode(systemCode);
+            request.setSystemCode(request.getSystemCode());
             CompletableFuture<SendResult<String, SendEmailKafkaRequest>> future = kafkaTemplate.send(topic, request);
             future.thenAccept(sendResult -> {
                         log.info("Message [{}] delivered with offset {}", request, sendResult.getRecordMetadata().offset());
