@@ -4,6 +4,10 @@ import com.danghieu99.monolith.order.dto.request.kafka.CancelOrderKafkaRequest;
 import com.danghieu99.monolith.order.dto.request.CancelOrderRequest;
 import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderKafkaRequest;
 import com.danghieu99.monolith.order.dto.request.PlaceOrderRequest;
+import com.danghieu99.monolith.order.dto.response.OrderDetailsResponse;
+import com.danghieu99.monolith.order.dto.response.OrderItemResponse;
+import com.danghieu99.monolith.order.entity.Order;
+import com.danghieu99.monolith.order.entity.OrderItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -15,4 +19,8 @@ public interface OrderMapper {
     PlaceOrderKafkaRequest toKafkaPlaceOrderRequest(PlaceOrderRequest request);
 
     CancelOrderKafkaRequest toKafkaCancelOrderRequest(CancelOrderRequest request);
+
+    OrderDetailsResponse toOrderDetailsResponse(Order order);
+
+    OrderItemResponse toOrderItemResponse(OrderItem item);
 }

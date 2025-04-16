@@ -25,10 +25,10 @@ public class CartController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> addUpdateRemoveItem(@AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
-                                                 @RequestParam @NotBlank String variantUUID,
-                                                 @RequestParam int quantity) {
-        userCartService.updateCartItem(userDetails, variantUUID, quantity);
+    public ResponseEntity<?> updateItemQuantity(@AuthenticationPrincipal @NotNull UserDetailsImpl userDetails,
+                                                @RequestParam @NotBlank String variantUUID,
+                                                @RequestParam int quantity) {
+        userCartService.updateItemQuantity(userDetails, variantUUID, quantity);
         return ResponseEntity.ok().build();
     }
 }

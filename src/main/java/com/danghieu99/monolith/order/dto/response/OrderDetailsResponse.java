@@ -1,5 +1,6 @@
 package com.danghieu99.monolith.order.dto.response;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
@@ -10,14 +11,14 @@ import java.util.List;
 @Builder
 public class OrderDetailsResponse {
 
-    @NotEmpty
+    @NotBlank
     private String shopUUID;
 
-    @NotEmpty
-    private String userUUID;
+    @NotBlank
+    private String userAccountUUID;
 
-    @NotEmpty
-    private String orderStatus;
+    @NotBlank
+    private String status;
 
     @NotEmpty
     private List<OrderItemResponse> items;
