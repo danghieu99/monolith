@@ -12,5 +12,8 @@ public class CancelOrderRequest {
     private final String orderUUID;
 
     @NotBlank
+    private final String shopUUID;
+
+    @NotBlank
     private final String reason;
 }

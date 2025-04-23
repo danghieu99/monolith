@@ -19,14 +19,6 @@ import java.util.UUID;
 @Builder
 public class GlobalAttributeType extends BaseEntity {
 
-    @Column(nullable = false, updatable = false, unique = true)
-    private UUID uuid;
-
-    @PrePersist
-    private void prePersist() {
-        this.uuid = UUID.randomUUID();
-    }
-
     @Column(nullable = false, unique = true)
     private String name;
 }

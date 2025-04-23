@@ -3,6 +3,8 @@ package com.danghieu99.monolith.order.repository;
 import com.danghieu99.monolith.order.constant.EOrderStatus;
 import com.danghieu99.monolith.order.entity.Order;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +27,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "set o.status = :status " +
             "where o.uuid = :uuid")
     void updateOrderStatus(UUID uuid, EOrderStatus status);
+
+    Page<Order> findByShopUUID(String shopUUID, Pageable pageable);
 }

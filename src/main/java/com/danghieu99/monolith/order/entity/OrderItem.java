@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "order_items",
-        uniqueConstraints = {@UniqueConstraint(columnNames = "order_id, product_id, variant_id")})
+        uniqueConstraints = {@UniqueConstraint(columnNames = "order_id, variant_uuid")})
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,10 +23,7 @@ public class OrderItem extends BaseEntity {
     @Column(nullable = false)
     private int orderId;
 
-    @Column(nullable = false)
-    private UUID productUUID;
-
-    @Column(nullable = false)
+    @Column(name = "variant_uuid", nullable = false)
     private UUID variantUUID;
 
     @Column(nullable = false)

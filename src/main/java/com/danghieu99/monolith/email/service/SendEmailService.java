@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -33,28 +34,38 @@ public class SendEmailService {
     @Value("${spring.mail.from}")
     private String from;
 
+    @Retryable
     @Async
     @Transactional
     public void send(SendEmailKafkaRequest request) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = this.prepareMessage(mimeMessage, request, from);
-            String plainText = request.getPlainText();
-            String htmlContent = request.getHtml();
             if (request.getTemplateName() != null && !request.getTemplateName().isBlank()) {
                 Context ctx = this.prepareContext(request);
                 String processedContent = templateEngine.process(request.getTemplateName(), ctx);
                 helper.setText(processedContent, true);
-            } else if (htmlContent != null && !htmlContent.isBlank()) {
-                if (plainText != null && !plainText.isBlank()) {
+            } else {
+                if (request.getSubject() != null && !request.getSubject().isBlank()) {
+                    throw new IllegalArgumentException("Subject cannot be empty");
+                }
+                mimeMessage.setSubject(request.getSubject());
+                String plainText = request.getPlainText();
+                String htmlContent = request.getHtml();
+                boolean plainTextPresent = plainText != null && !plainText.isBlank();
+                boolean htmlPresent = htmlContent != null && !htmlContent.isBlank();
+                if (htmlPresent && plainTextPresent) {
                     helper.setText(plainText, htmlContent);
-                } else {
+                }
+                if (htmlPresent && !plainTextPresent) {
                     helper.setText(htmlContent, true);
                 }
-            } else if (plainText != null && !plainText.isBlank()) {
-                helper.setText(plainText, false);
-            } else {
-                throw new IllegalArgumentException("No plain text or html content provided");
+                if (!htmlPresent && plainTextPresent) {
+                    helper.setText(plainText, false);
+                }
+                if (!htmlPresent && !plainTextPresent) {
+                    throw new IllegalArgumentException("No plain text or html content provided");
+                }
             }
             if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
                 this.prepareAttachments(helper, request);
@@ -82,7 +93,6 @@ public class SendEmailService {
     @SneakyThrows
     private MimeMessageHelper prepareMessage(MimeMessage mimeMessage, SendEmailKafkaRequest request, String from) {
         MimeMessageHelper message = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
-        message.setSubject(request.getSubject());
         message.setFrom(from);
         message.setTo(request.getTo());
         if (request.getCc() != null && request.getCc().length > 0) {

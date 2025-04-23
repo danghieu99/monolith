@@ -1,25 +1,24 @@
 package com.danghieu99.monolith.order.service;
 
-import com.danghieu99.monolith.order.dto.request.kafka.CancelOrderKafkaRequest;
+import com.danghieu99.monolith.order.dto.request.kafka.OrderCancelEvenKafkaRequest;
 import com.danghieu99.monolith.order.dto.request.CancelOrderRequest;
-import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderKafkaRequest;
+import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderEventKafkaRequest;
 import com.danghieu99.monolith.order.dto.request.PlaceOrderRequest;
 import com.danghieu99.monolith.order.dto.response.OrderDetailsResponse;
+import com.danghieu99.monolith.order.entity.Cancel;
 import com.danghieu99.monolith.order.kafka.CancelOrderKafkaProducer;
 import com.danghieu99.monolith.order.kafka.PlaceOrderKafkaProducer;
 import com.danghieu99.monolith.order.mapper.OrderMapper;
+import com.danghieu99.monolith.order.repository.CancelRepository;
 import com.danghieu99.monolith.order.repository.OrderItemRepository;
 import com.danghieu99.monolith.order.repository.OrderRepository;
 import com.danghieu99.monolith.security.config.auth.UserDetailsImpl;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +29,9 @@ public class UserOrderService {
     private final PlaceOrderKafkaProducer placeOrderKafkaProducer;
     private final CancelOrderKafkaProducer cancelOrderKafkaProducer;
     private final OrderItemRepository orderItemRepository;
+    private final CancelRepository cancelRepository;
 
-    public List<String> getUUIDsByCurrentUser(@NotNull UserDetailsImpl userDetails) {
-        return orderRepository.findByUserAccountUUID(userDetails.getUuid())
-                .stream()
-                .map(order -> order.getUuid().toString())
-                .toList();
-    }
-
-    public List<OrderDetailsResponse> getAllByCurrentUser(@NotNull UserDetailsImpl userDetails) {
+    public List<OrderDetailsResponse> getAllByCurrentUser(UserDetailsImpl userDetails) {
         return orderRepository.findByUserAccountUUID(userDetails.getUuid())
                 .stream()
                 .map(order -> {
@@ -54,17 +47,25 @@ public class UserOrderService {
 
     @Async
     @Transactional
-    public void place(@RequestBody final PlaceOrderRequest request, final UserDetailsImpl userDetails) {
-        PlaceOrderKafkaRequest kafkaRequest = orderMapper.toKafkaPlaceOrderRequest(request);
+    public void place(final PlaceOrderRequest request,
+                      final UserDetailsImpl userDetails) {
+        PlaceOrderEventKafkaRequest kafkaRequest = orderMapper.toKafkaPlaceOrderRequest(request);
         kafkaRequest.setAccountUUID(userDetails.getUuid());
-        placeOrderKafkaProducer.send(kafkaRequest);
+//        placeOrderKafkaProducer.send(kafkaRequest);
     }
 
     @Async
     @Transactional
     public void cancel(CancelOrderRequest request, UserDetailsImpl userDetails) {
-        CancelOrderKafkaRequest kafkaRequest = orderMapper.toKafkaCancelOrderRequest(request);
+        OrderCancelEvenKafkaRequest kafkaRequest = orderMapper.toKafkaCancelOrderRequest(request);
         kafkaRequest.setAccountUUID(userDetails.getUuid());
-        cancelOrderKafkaProducer.send(kafkaRequest);
+//        cancelOrderKafkaProducer.send(kafkaRequest);
+
+        Cancel cancel = Cancel.builder()
+                .userAccountUUID(userDetails.getUuid())
+                .orderUUID(request.getOrderUUID())
+                .shopUUID(request.getShopUUID())
+                .build();
+        cancelRepository.save(cancel);
     }
 }

@@ -1,28 +1,30 @@
 package com.danghieu99.monolith.order.entity;
 
 import com.danghieu99.monolith.common.entity.BaseEntity;
-import com.danghieu99.monolith.order.constant.EOrderStatus;
+import com.danghieu99.monolith.order.constant.EReturnStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "returns")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Builder
-public class Order extends BaseEntity {
+public class Return extends BaseEntity {
 
     @Column(nullable = false)
-    private String shopUUID;
+    private int orderItemId;
 
     @Column(nullable = false)
-    private String userAccountUUID;
+    private int quantity;
+
+    @Column(nullable = false)
+    private String reason;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Builder.Default
-    private EOrderStatus status = EOrderStatus.ORDER_PENDING;
+    private EReturnStatus status;
 }

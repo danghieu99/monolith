@@ -32,7 +32,7 @@ public class ProductInitService {
     @Transactional
     public void init() {
         if (productRepository.findAll().isEmpty()) {
-            IntStream.range(1, 50).parallel().forEach(i -> {
+            IntStream.range(1, 500).parallel().forEach(i -> {
                 var savedProduct = productRepository.save(Product.builder()
                         .name("Default product " + i)
                         .description("Default product description " + i)

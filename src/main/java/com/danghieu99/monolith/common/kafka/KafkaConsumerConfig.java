@@ -40,7 +40,7 @@ public class KafkaConsumerConfig {
     public <T extends BaseKafkaRequest> ConsumerFactory<String, T> objConsumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
-        configProps.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        configProps.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 //        configProps.put(VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         JsonDeserializer<T> deserializer = new JsonDeserializer<>();
         deserializer.addTrustedPackages("*");

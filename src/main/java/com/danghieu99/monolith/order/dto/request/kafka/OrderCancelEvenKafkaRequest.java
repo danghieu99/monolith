@@ -10,10 +10,13 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-public class CancelOrderKafkaRequest extends BaseKafkaRequest {
+public class OrderCancelEvenKafkaRequest extends BaseKafkaRequest {
 
     @NotBlank
     private String orderUUID;
+
+    @NotBlank
+    private String shopUUID;
 
     @NotBlank
     private String reason;

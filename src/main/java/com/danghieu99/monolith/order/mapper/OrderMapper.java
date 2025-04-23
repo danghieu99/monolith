@@ -1,8 +1,8 @@
 package com.danghieu99.monolith.order.mapper;
 
-import com.danghieu99.monolith.order.dto.request.kafka.CancelOrderKafkaRequest;
+import com.danghieu99.monolith.order.dto.request.kafka.OrderCancelEvenKafkaRequest;
 import com.danghieu99.monolith.order.dto.request.CancelOrderRequest;
-import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderKafkaRequest;
+import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderEventKafkaRequest;
 import com.danghieu99.monolith.order.dto.request.PlaceOrderRequest;
 import com.danghieu99.monolith.order.dto.response.OrderDetailsResponse;
 import com.danghieu99.monolith.order.dto.response.OrderItemResponse;
@@ -16,9 +16,9 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.WARN)
 public interface OrderMapper {
 
-    PlaceOrderKafkaRequest toKafkaPlaceOrderRequest(PlaceOrderRequest request);
+    PlaceOrderEventKafkaRequest toKafkaPlaceOrderRequest(PlaceOrderRequest request);
 
-    CancelOrderKafkaRequest toKafkaCancelOrderRequest(CancelOrderRequest request);
+    OrderCancelEvenKafkaRequest toKafkaCancelOrderRequest(CancelOrderRequest request);
 
     OrderDetailsResponse toOrderDetailsResponse(Order order);
 

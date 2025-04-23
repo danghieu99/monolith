@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,8 +28,21 @@ public class ProductService {
         return productRepository.findAll(pageable);
     }
 
-    public Page<Product> getByCategoriesContains(@NotNull int categoryId, @NotNull Pageable pageable) {
+    public Page<Product> getByCategoryId(@NotNull int categoryId, @NotNull Pageable pageable) {
         return productRepository.findByCategoryId(categoryId, pageable);
+    }
+
+    public Page<Product> getByCategoryUUID(@NotBlank String categoryUUID, @NotNull Pageable pageable) {
+        return productRepository.findByCategoryUUID(UUID.fromString(categoryUUID), pageable);
+    }
+
+    public Page<Product> getByCategoryUUIDsAny(@NotNull List<String> categoryUUIDs, @NotNull Pageable pageable) {
+        List<UUID> uuids = categoryUUIDs.stream().map(UUID::fromString).toList();
+        return productRepository.findByCategoryUUIDsAny(uuids, pageable);
+    }
+
+    public Page<Product> getByShopUUID(@NotNull String shopUUID, @NotNull Pageable pageable) {
+        return productRepository.findByShopUUID(UUID.fromString(shopUUID), pageable);
     }
 
     public ProductDetailsResponse getProductDetailsByUUID(@NotBlank String uuid) {

@@ -1,6 +1,6 @@
 package com.danghieu99.monolith.order.kafka;
 
-import com.danghieu99.monolith.order.dto.request.kafka.CancelOrderKafkaRequest;
+import com.danghieu99.monolith.order.dto.request.kafka.OrderCancelEvenKafkaRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,13 +23,13 @@ public class CancelOrderKafkaProducer {
     @Value("${system.code.order}")
     private String systemCode;
 
-    private final KafkaTemplate<String, CancelOrderKafkaRequest> kafkaTemplate;
+    private final KafkaTemplate<String, OrderCancelEvenKafkaRequest> kafkaTemplate;
 
     @Async
-    public void send(final CancelOrderKafkaRequest request) {
+    public void send(final OrderCancelEvenKafkaRequest request) {
         if (Objects.nonNull(request)) {
             request.setSystemCode(systemCode);
-            CompletableFuture<SendResult<String, CancelOrderKafkaRequest>> future = kafkaTemplate.send(topic, request);
+            CompletableFuture<SendResult<String, OrderCancelEvenKafkaRequest>> future = kafkaTemplate.send(topic, request);
             future.thenAccept(sendResult -> {
                         log.info("Message [{}] delivered with offset {}", request, sendResult.getRecordMetadata().offset());
                     })

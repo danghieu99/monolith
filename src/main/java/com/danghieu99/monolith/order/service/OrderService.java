@@ -2,8 +2,8 @@ package com.danghieu99.monolith.order.service;
 
 import com.danghieu99.monolith.common.exception.ResourceNotFoundException;
 import com.danghieu99.monolith.order.constant.EOrderStatus;
-import com.danghieu99.monolith.order.dto.request.kafka.CancelOrderKafkaRequest;
-import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderKafkaRequest;
+import com.danghieu99.monolith.order.dto.request.kafka.OrderCancelEvenKafkaRequest;
+import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderEventKafkaRequest;
 import com.danghieu99.monolith.order.entity.OrderItem;
 import com.danghieu99.monolith.order.entity.Order;
 import com.danghieu99.monolith.order.repository.OrderItemRepository;
@@ -28,7 +28,7 @@ public class OrderService {
 
     @Async
     @Transactional
-    public void save(@NotNull @Valid PlaceOrderKafkaRequest request) {
+    public void save(@NotNull @Valid PlaceOrderEventKafkaRequest request) {
         List<OrderItem> orderItems = new ArrayList<>();
         Order newOrder = Order.builder()
                 .shopUUID(request.getShopUUID())
@@ -39,7 +39,6 @@ public class OrderService {
         request.getItems().forEach(requestItem -> {
             OrderItem newOrderItem = OrderItem.builder()
                     .orderId(savedOrder.getId())
-                    .productUUID(UUID.fromString(requestItem.getProductUUID()))
                     .variantUUID(UUID.fromString(requestItem.getVariantUUID()))
                     .quantity(requestItem.getQuantity())
                     .build();
@@ -49,10 +48,10 @@ public class OrderService {
     }
 
     @Transactional
-    public void cancel(@NotNull @Valid CancelOrderKafkaRequest request) {
+    public void cancel(@NotNull @Valid OrderCancelEvenKafkaRequest request) {
         Order savedOrder = orderRepository.findByUuid(UUID.fromString(request.getOrderUUID()))
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "uuid", request.getOrderUUID()));
-        savedOrder.setStatus(EOrderStatus.ORDER_CANCELLED);
+        savedOrder.setStatus(EOrderStatus.ORDER_CANCELED);
         orderRepository.save(savedOrder);
     }
 

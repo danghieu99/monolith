@@ -56,12 +56,24 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("select p from Product p " +
             "join ProductCategory pc on p.id = pc.productId " +
             "where pc.categoryId in :categoryIds")
-    List<Product> findByCategoryAnyOf(Collection<Integer> categoryIds);
+    List<Product> findByCategoryIdContain(Collection<Integer> categoryIds);
 
     @Query("select p from Product p " +
             "join ProductCategory pc on p.id = pc.productId " +
             "where pc.categoryId in :categoryIds")
-    Page<Product> findByCategoryAnyOf(Collection<Integer> categoryIds, Pageable pageable);
+    Page<Product> findByCategoryIdContain(Collection<Integer> categoryIds, Pageable pageable);
+
+    @Query("select p from Product p " +
+            "join ProductCategory pc on pc.productId = p.id " +
+            "join Category c on c.id = pc.categoryId " +
+            "where c.uuid = :uuid")
+    Page<Product> findByCategoryUUID(UUID uuid, Pageable pageable);
+
+    @Query("select p from Product p " +
+            "join ProductCategory pc on pc.productId = p.id " +
+            "join Category c on c.id = pc.categoryId " +
+            "where c.uuid in :uuids")
+    Page<Product> findByCategoryUUIDsAny(List<UUID> uuids, Pageable pageable);
 
     @Query("select p from Product p " +
             "join ProductShop ps on p.id = ps.productId " +

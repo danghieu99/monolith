@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-public class PlaceOrderKafkaRequest extends BaseKafkaRequest {
+public class PlaceOrderEventKafkaRequest extends BaseKafkaRequest {
 
     @NotEmpty
     private String shopUUID;

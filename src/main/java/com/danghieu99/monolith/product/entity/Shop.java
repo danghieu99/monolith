@@ -5,8 +5,6 @@ import com.danghieu99.monolith.product.constant.EShopStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "shops")
 @Getter
@@ -23,7 +21,7 @@ public class Shop extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false, unique = true, updatable = false)
+    @Column(name = "account_uuid", nullable = false, unique = true, updatable = false)
     private String accountUUID;
 
     @Column(nullable = false)

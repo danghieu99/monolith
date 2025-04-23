@@ -22,7 +22,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAll(pageable));
     }
 
-    @GetMapping("/details/{uuid}")
+    @GetMapping("/{uuid}")
     public ResponseEntity<?> getProductDetailsByUUID(@PathVariable @NotBlank String uuid) {
         return ResponseEntity.ok(productService.getProductDetailsByUUID(uuid));
     }

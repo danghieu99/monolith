@@ -23,17 +23,12 @@ public class UserOrderController {
 
     private final UserOrderService userOrderService;
 
-    @GetMapping("")
-    public List<String> getAllUUIDsByCurrentUser(@AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
-        return userOrderService.getUUIDsByCurrentUser(userDetails);
-    }
-
-    @GetMapping("/details")
+    @GetMapping("/")
     public List<OrderDetailsResponse> getAllByCurrentUser(@AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
         return userOrderService.getAllByCurrentUser(userDetails);
     }
 
-    @PostMapping("")
+    @PostMapping("/place")
     @Transactional
     public PlaceOrderResponse place(@RequestBody PlaceOrderRequest request,
                                     @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
@@ -44,7 +39,7 @@ public class UserOrderController {
                 .build();
     }
 
-    @PatchMapping("")
+    @PostMapping("/cancel")
     @Transactional
     public void cancel(@RequestParam CancelOrderRequest request,
                        @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
