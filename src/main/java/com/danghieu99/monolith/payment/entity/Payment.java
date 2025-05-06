@@ -35,15 +35,8 @@ public class Payment extends BaseEntity {
     @Column(nullable = false)
     private EPaymentStatus status;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EPaymentMethod paymentMethod;
-
-    @Column(nullable = false)
-    private String externalPaymentId;
-
-    @Column(nullable = false)
-    private String transactionToken;
+    private int paymentMethodId;
 
     @Column
     private Instant closedAt;

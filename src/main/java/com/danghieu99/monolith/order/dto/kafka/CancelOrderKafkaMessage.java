@@ -1,4 +1,4 @@
-package com.danghieu99.monolith.order.dto.request.kafka;
+package com.danghieu99.monolith.order.dto.kafka;
 
 import com.danghieu99.monolith.common.dto.BaseKafkaRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -10,17 +10,11 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-public class OrderCancelEvenKafkaRequest extends BaseKafkaRequest {
+public class CancelOrderKafkaMessage extends BaseKafkaRequest {
 
     @NotBlank
     private String orderUUID;
 
     @NotBlank
-    private String shopUUID;
-
-    @NotBlank
     private String reason;
-
-    @NotBlank
-    private String accountUUID;
 }

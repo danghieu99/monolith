@@ -1,7 +1,8 @@
 package com.danghieu99.monolith.order.controller;
 
 import com.danghieu99.monolith.order.dto.request.CancelOrderRequest;
-import com.danghieu99.monolith.order.dto.request.PlaceOrderRequest;
+import com.danghieu99.monolith.order.dto.request.UserPlaceOrderRequest;
+import com.danghieu99.monolith.order.dto.request.UserUpdateOrderAddressRequest;
 import com.danghieu99.monolith.order.dto.response.OrderDetailsResponse;
 import com.danghieu99.monolith.order.dto.response.PlaceOrderResponse;
 import com.danghieu99.monolith.order.service.UserOrderService;
@@ -23,14 +24,14 @@ public class UserOrderController {
 
     private final UserOrderService userOrderService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<OrderDetailsResponse> getAllByCurrentUser(@AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
         return userOrderService.getAllByCurrentUser(userDetails);
     }
 
     @PostMapping("/place")
     @Transactional
-    public PlaceOrderResponse place(@RequestBody PlaceOrderRequest request,
+    public PlaceOrderResponse place(@RequestBody UserPlaceOrderRequest request,
                                     @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
         userOrderService.place(request, userDetails);
         return PlaceOrderResponse.builder()
@@ -43,6 +44,11 @@ public class UserOrderController {
     @Transactional
     public void cancel(@RequestParam CancelOrderRequest request,
                        @AuthenticationPrincipal @NotNull UserDetailsImpl userDetails) {
-        userOrderService.cancel(request, userDetails);
+        userOrderService.requestCancel(request, userDetails);
+    }
+
+    @PatchMapping("/update-address")
+    public void updateOrderAddress(UserUpdateOrderAddressRequest request, UserDetailsImpl userDetails) {
+        userOrderService.updateOrderAddress(request, userDetails);
     }
 }

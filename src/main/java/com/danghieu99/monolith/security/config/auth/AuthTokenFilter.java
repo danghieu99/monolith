@@ -54,9 +54,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 String accountUUID = authTokenService.parseClaimsFromToken(access).getSubject();
                 Account account = accountRepository.findByUuid(UUID.fromString(accountUUID))
                         .orElseThrow(() -> new ResourceNotFoundException("Account", "Uuid", accountUUID));
-                if (account.getStatus() == EAccountStatus.ACCOUNT_INACTIVE) {
-                    throw new DisabledException("Account inactive");
-                }
                 UserDetails userDetails = userDetailsService.loadUserByUsername(account.getUsername());
                 try {
                     UsernamePasswordAuthenticationToken authentication =

@@ -1,6 +1,6 @@
-package com.danghieu99.monolith.order.kafka;
+package com.danghieu99.monolith.order.kafka.producer;
 
-import com.danghieu99.monolith.order.dto.request.kafka.PlaceOrderEventKafkaRequest;
+import com.danghieu99.monolith.order.dto.kafka.PlaceOrderKafkaMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,13 +23,13 @@ public class PlaceOrderKafkaProducer {
     @Value("${system.code.order}")
     private String systemCode;
 
-    private final KafkaTemplate<String, PlaceOrderEventKafkaRequest> kafkaTemplate;
+    private final KafkaTemplate<String, PlaceOrderKafkaMessage> kafkaTemplate;
 
     @Async
-    public void send(final PlaceOrderEventKafkaRequest request) {
+    public void send(final PlaceOrderKafkaMessage request) {
         if (Objects.nonNull(request)) {
             request.setSystemCode(systemCode);
-            CompletableFuture<SendResult<String, PlaceOrderEventKafkaRequest>> future = kafkaTemplate.send(topic, request);
+            CompletableFuture<SendResult<String, PlaceOrderKafkaMessage>> future = kafkaTemplate.send(topic, request);
             future.thenAccept(sendResult -> {
                         log.info("Message [{}] delivered with offset {}", request, sendResult.getRecordMetadata().offset());
                     })

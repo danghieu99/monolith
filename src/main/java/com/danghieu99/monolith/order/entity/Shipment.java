@@ -16,6 +16,9 @@ import lombok.*;
 public class Shipment extends BaseEntity {
 
     @Column(nullable = false)
+    private int orderId;
+
+    @Column(nullable = false)
     private String providerId;
 
     @Column(nullable = false)

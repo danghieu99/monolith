@@ -1,8 +1,8 @@
-package com.danghieu99.monolith.order.dto.request.kafka;
+package com.danghieu99.monolith.order.dto.kafka;
 
 import com.danghieu99.monolith.common.dto.BaseKafkaRequest;
-import com.danghieu99.monolith.order.dto.request.OrderAddressRequest;
-import com.danghieu99.monolith.order.dto.request.OrderItemRequest;
+import com.danghieu99.monolith.order.dto.ShippingAddress;
+import com.danghieu99.monolith.order.dto.OrderItem;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -15,19 +15,19 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-public class PlaceOrderEventKafkaRequest extends BaseKafkaRequest {
+public class PlaceOrderKafkaMessage extends BaseKafkaRequest {
 
     @NotEmpty
     private String shopUUID;
 
     @NotNull
-    private OrderAddressRequest address;
+    private ShippingAddress address;
 
     @NotNull
     private String shipmentProviderUUID;
 
     @NotEmpty
-    private List<OrderItemRequest> items;
+    private List<OrderItem> items;
 
     @NotEmpty
     private String accountUUID;

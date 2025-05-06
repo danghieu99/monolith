@@ -60,7 +60,7 @@ public class AuthenticationService {
     private final AccountRepository accountRepository;
     private final AccountRoleRepository accountRoleRepository;
     private final RefreshTokenService refreshTokenService;
-    private final ConfirmCodeEmailService confirmCodeEmailService;
+    private final ConfirmCodeService confirmCodeService;
     private final SendEmailToKafkaService sendEmailToKafkaService;
 
     @Value("${authentication.email.from}")
@@ -95,7 +95,7 @@ public class AuthenticationService {
                 .build();
 
         var saveToken = Token.builder()
-                .accountUUID(userDetails.getUuid().toString())
+                .accountUUID(userDetails.getUuid())
                 .value(refreshToken)
                 .expiration(authTokenProperties.getRefreshTokenExpireMs())
                 .build();
@@ -136,7 +136,7 @@ public class AuthenticationService {
 
         //replace with template
         String code = UUID.randomUUID().toString();
-        confirmCodeEmailService.create(savedAccount.getUuid().toString(), code);
+        confirmCodeService.save(savedAccount.getUuid().toString(), code, "email");
         sendEmailToKafkaService.sendToKafka(SendEmailRequest.builder()
                 .from(List.of(fromEmail))
                 .to(List.of(request.getEmail()))
@@ -198,7 +198,7 @@ public class AuthenticationService {
 
     @Transactional
     public ResponseEntity<ConfirmEmailResponse> confirmEmail(@NotNull final ConfirmEmailRequest request) {
-        String accountUUID = confirmCodeEmailService.validate(request.getCode());
+        String accountUUID = confirmCodeService.validate(request.getCode());
         accountRepository.updateAccountStatusByUUID(UUID.fromString(accountUUID), EAccountStatus.ACCOUNT_ACTIVE);
         return ResponseEntity.ok()
                 .body(ConfirmEmailResponse.builder()

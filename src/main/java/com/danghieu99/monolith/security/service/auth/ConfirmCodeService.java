@@ -15,24 +15,22 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Validated
-public class ConfirmCodeEmailService {
+public class ConfirmCodeService {
 
     private final ConfirmCodeRepository confirmCodeRepository;
 
     @Value("${confirm.code.email.expiration.minutes}")
     private long confirmCodeExpirationMinutes;
 
-    @Value("${confirm.code.email.type}")
-    private String confirmCodeType;
-
     @Async
     @Transactional
-    public void create(@NotBlank final String accountUUID,
-                       String code) {
+    public void save(@NotBlank final String accountUUID,
+                     @NotBlank String code,
+                     @NotBlank String type) {
         ConfirmCode confirmCode = ConfirmCode.builder()
                 .accountUUID(accountUUID)
                 .value(code)
-                .type(confirmCodeType)
+                .type(type)
                 .expiration(confirmCodeExpirationMinutes)
                 .build();
         confirmCodeRepository.save(confirmCode);

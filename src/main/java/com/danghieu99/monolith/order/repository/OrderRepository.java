@@ -17,7 +17,7 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
-    List<Order> findByUserAccountUUID(String uuid);
+    List<Order> findByUserAccountUUID(UUID uuid);
 
     Optional<Order> findByUuid(UUID uuid);
 
@@ -26,7 +26,19 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("update Order o " +
             "set o.status = :status " +
             "where o.uuid = :uuid")
-    void updateOrderStatus(UUID uuid, EOrderStatus status);
+    Order updateOrderStatus(UUID uuid, EOrderStatus status);
 
-    Page<Order> findByShopUUID(String shopUUID, Pageable pageable);
+    @Modifying
+    @Transactional
+    @Query("update Order o " +
+            "set o.status  = :status," +
+            "o.details = :details " +
+            "where o.uuid = :uuid")
+    void updateOrderStatusAndDetails(UUID uuid, EOrderStatus status, String details);
+
+    Page<Order> findByShopUUID(UUID shopUUID, Pageable pageable);
+
+    Page<Order> findByShopUUIDAndStatus(UUID shopUUID, EOrderStatus status, Pageable pageable);
+
+    void deleteByUuid(UUID uuid);
 }

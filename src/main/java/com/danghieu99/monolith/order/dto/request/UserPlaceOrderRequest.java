@@ -1,5 +1,7 @@
 package com.danghieu99.monolith.order.dto.request;
 
+import com.danghieu99.monolith.order.dto.OrderItem;
+import com.danghieu99.monolith.order.dto.ShippingAddress;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -9,17 +11,17 @@ import java.util.List;
 
 @Data
 @Builder
-public class PlaceOrderRequest {
+public class UserPlaceOrderRequest {
 
     @NotEmpty
     private final String shopUUID;
 
     @NotNull
-    private final OrderAddressRequest address;
+    private final ShippingAddress address;
 
     @NotNull
     private String shipmentProviderUUID;
 
     @NotEmpty
-    private final List<OrderItemRequest> items;
+    private final List<OrderItem> items;
 }
